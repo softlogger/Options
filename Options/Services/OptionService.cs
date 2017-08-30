@@ -21,7 +21,7 @@ namespace Options.Services
 
         public string GetResponseString(string ticker, int? expirationDate)
         {
-            //Trying github checking
+            
             string responseString = "";
                
 
