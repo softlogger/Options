@@ -19,6 +19,20 @@ namespace Options.Services
             return optionContainer;
         }
 
+        public List<OptionContainer> GetOptionContainerFor(string ticker)
+        {
+            List <int?> expirationDates = new List<int?>() { null, 1518739200, 1547769600 };
+            List<OptionContainer> containers = new List<OptionContainer>();
+
+            foreach(var date in expirationDates)
+            {
+                var responseString = GetResponseString(ticker, date);
+                containers.Add(JsonConvert.DeserializeObject<OptionContainer>(responseString));
+            }
+
+            return containers;
+        }
+
         public string GetResponseString(string ticker, int? expirationDate)
         {
             

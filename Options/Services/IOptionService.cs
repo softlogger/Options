@@ -9,6 +9,8 @@ namespace Options.Services
     public interface IOptionService
     {
         OptionContainer GetOptionContainerFor(string ticker, int? expirationDate);
-        
+        List<OptionContainer> GetOptionContainerFor(string ticker);
+
+
     }
 }
