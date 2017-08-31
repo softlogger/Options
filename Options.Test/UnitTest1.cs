@@ -6,13 +6,14 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Options.Test
 {
     [TestClass]
     public class UnitTest1
     {
-        
+
         public string ResponseStringFromFile(string filePath)
         {
             return File.ReadAllText(filePath);
@@ -63,7 +64,7 @@ namespace Options.Test
 
             OptionContainer containerFromNet = JsonConvert.DeserializeObject<OptionContainer>(responseStringFromNet);
             Assert.IsNull(containerFromNet.optionChain.error);
-            
+
 
         }
 
@@ -78,7 +79,7 @@ namespace Options.Test
 
             //1518739200,1547769600
 
-             OptionContainer containerFromFile = JsonConvert.DeserializeObject<OptionContainer>(responseStringFromFile);
+            OptionContainer containerFromFile = JsonConvert.DeserializeObject<OptionContainer>(responseStringFromFile);
             Assert.IsNull(containerFromFile.optionChain.error);
 
 
@@ -93,7 +94,7 @@ namespace Options.Test
             OptionContainer containerFromFile = JsonConvert.DeserializeObject<OptionContainer>(responseStringFromFile);
 
             var stringDates = containerFromFile.optionChain.result.First().expirationDates.Select(dt => ConvertFrom(dt.ToString())).ToList();
-                       
+
         }
 
         public string ConvertFrom(string unixDate)
@@ -125,6 +126,51 @@ namespace Options.Test
             string unixDateFromFriendlyDateTime = (DateTime.Parse(friendlyDateTime) - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds.ToString();
 
             Assert.IsTrue(unixDate.Equals(unixDateFromFriendlyDateTime));
+        }
+
+        
+
+        //[DataRow(@"C:\Users\Paresh\Documents\FileTransfer\Intrinio\BBBY_OptionChain.txt")]
+        //[DataRow(@"C:\Users\Paresh\Documents\FileTransfer\Intrinio\BBBY_OptionChain_1547769600.txt")]
+        //[DataRow(@"C:\Users\Paresh\Documents\FileTransfer\Intrinio\BBBY_OptionChain_1518739200.txt")]
+        [TestMethod]
+        public void VerifyTickerContainer()
+        {
+            TickerContainer tickerContainer = new TickerContainer("BBBY");
+
+            List<string> filePaths = new List<string>()
+            {
+                @"C:\Users\Paresh\Documents\FileTransfer\Intrinio\BBBY_OptionChain.txt",
+                @"C:\Users\Paresh\Documents\FileTransfer\Intrinio\BBBY_OptionChain_1547769600.txt",
+                @"C:\Users\Paresh\Documents\FileTransfer\Intrinio\BBBY_OptionChain_1518739200.txt"
+            };
+
+            foreach (var filePath in filePaths)
+            {
+
+                string responseStringFromFile = ResponseStringFromFile(filePath);
+
+                //1518739200,1547769600
+
+                OptionContainer containerFromFile = JsonConvert.DeserializeObject<OptionContainer>(responseStringFromFile);
+                Assert.IsNull(containerFromFile.optionChain.error);
+
+             
+                tickerContainer.Add(containerFromFile);
+
+                
+            }
+
+            Assert.IsTrue(tickerContainer.ContainerDictionary.Count > 0);
+            Assert.IsTrue(tickerContainer.ExpirationDates.Count > 0);
+            Assert.IsTrue(tickerContainer.Strikes.Count > 0);
+
+
+            if (tickerContainer.ContainerDictionary.Count == 3)
+            {
+                tickerContainer.SetJsonStrings();
+                var t = tickerContainer;
+            }
         }
     }
 }

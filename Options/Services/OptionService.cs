@@ -19,6 +19,19 @@ namespace Options.Services
             return optionContainer;
         }
 
+        public TickerContainer GetTickerContainerFor(string ticker)
+        {
+            var listOfContainer = GetOptionContainerFor(ticker);
+            TickerContainer container = new TickerContainer(listOfContainer.First().optionChain.result.First().underlyingSymbol.ToUpper());
+            foreach(OptionContainer cont in listOfContainer)
+            {
+                container.Add(cont);
+            }
+
+            container.SetJsonStrings();
+            return container;
+        }
+
         public List<OptionContainer> GetOptionContainerFor(string ticker)
         {
             List <int?> expirationDates = new List<int?>() { null, 1518739200, 1547769600 };

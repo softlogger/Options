@@ -1,0 +1,104 @@
+﻿@model Options.Models.OptionContainer
+
+@{
+    var RESULT = Model.optionChain.result.First();
+}
+
+
+
+
+<div class="row">
+    <label style="text-align:right" class="col-lg-3">Ticker:</label>
+    <label style="text-align:left" class="col-lg-2">@RESULT.underlyingSymbol</label>
+</div>
+
+<div class="row">
+
+    @{
+        var expDates = RESULT.expirationDates.Select(dt => new SelectListItem() { Text = Options.Utility.Utility.ConvertFrom(dt.ToString()), Value = dt.ToString() }).ToList();
+        var finalDate = expDates.Last().Value.ToString();
+    }
+    <label asp-for="@finalDate" style="text-align:right" class="col-lg-3">Expiration:</label>
+    <select asp-for="@finalDate" id="finalDate" asp-items=@expDates class="dropdown btn btn-link col-lg-4"></select>
+</div>
+
+<div class="row">
+    @{
+        var bid = RESULT.quote.bid;
+        var strike = RESULT.strikes.Where(s => s >= bid).First().ToString();
+    }
+
+    <label asp-for="@strike" style="text-align:right" class="col-lg-3">Strikes:</label>
+    <select asp-for="@strike" asp-items="RESULT.strikes.Select(d => new SelectListItem() { Text = d.ToString(), Value = d.ToString() }).ToList();" class="dropdown btn btn-link  col-lg-4"></select>
+
+</div>
+
+<div class="hidden">
+    @{
+        var callOption = RESULT.options.First().calls.Where(o => o.strike == float.Parse(strike)).First();
+        var lastTrade = Options.Utility.Utility.ConvertToDateTime(callOption.lastTradeDate.ToString());
+        var lastPrice = callOption.lastPrice;
+        var bidPrice = callOption.bid;
+        var ask = callOption.ask;
+        var change = callOption.change;
+        var percentChange = callOption.percentChange * 100;
+        var volume = callOption.volume;
+        var openInterest = callOption.openInterest;
+        var impliedVolatility = callOption.impliedVolatility * 100;
+    }
+</div>
+
+<table class="table table-condensed table-bordered">
+    <thead>
+        <tr>
+            <td>Last Trade</td>
+            <td>Last Price</td>
+            <td>Bid</td>
+            <td>Ask</td>
+            <td>Change</td>
+            <td>% Change</td>
+            <td>Volume</td>
+            <td>Open Interest</td>
+            <td>Imp Volatility</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@lastTrade</td>
+            <td>@lastPrice</td>
+            <td>@bidPrice</td>
+            <td>@ask</td>
+            <td>@change</td>
+            <td>@percentChange</td>
+            <td>@volume</td>
+            <td>@openInterest</td>
+            <td>@impliedVolatility %</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<div class="row">
+    <button class="btn btn-link theButton col-sm-4" type="button" onclick="theButt()"><b>Calculate</b></button>
+</div>
+
+
+<div class="row">
+    <button class="btn-link test col-md-4" type="button" onclick="TestJS()">Test JS</button>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var dates = @Html.Raw(Json.Serialize(Model.optionChain.result.First().expirationDates));
+        for (var i = 0; i < dates.length; i++) {
+            var date = new Date(dates[i]).toDateString();
+            $('<option/>').val(date).html(date).appendTo('#finalDate');
+
+        }
+    });
+
+    function TestJS() {
+        var v = @Html.Raw(Json.Serialize(Model.optionChain.result.First().expirationDates));
+        alert(v);
+    }
+</script>

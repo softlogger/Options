@@ -10,7 +10,7 @@ namespace Options.Services
     {
         OptionContainer GetOptionContainerFor(string ticker, int? expirationDate);
         List<OptionContainer> GetOptionContainerFor(string ticker);
-
+        TickerContainer GetTickerContainerFor(string ticker);
 
     }
 }

@@ -1,15 +1,73 @@
-﻿<div class="container col-xs-8">
-
-    <input id="ticker" placeholder="enter ticker" />
-    <button class="btn btn-primary" id="searchButton" type="submit">Search</button>
-
-
-    
-
-    <div class="container" id="result">
-
+﻿@model Options.Models.TickerContainer
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <input id="ticker" placeholder="enter ticker" />
+                
+                <button class="btn btn-link col-lg-pull-2" id="searchButton" onclick="searchTicker()" type="submit">Search  <span class="glyphicon glyphicon-search"></span></button>
+            </div>
+        </div>
     </div>
-    
- 
 
-</div>
+    @*@{ 
+        var hidden = Model.Ticker == "NONE" ? "hidden" : string.Empty;
+    }
+    <div id="#displayForm" hidden=@hidden>*@
+        <div id="#displayForm">
+
+            <div id="shortNameId">test</div>
+
+            <div>
+                <label>Expiration Dates</label>
+                <select id="expDateId"></select>
+
+                <label>Strikes</label>
+                <select id="strikeId" onchange="UpdateCall()">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+
+            <table class="table table-bordered table-condensed col-sm-push-6">
+                <thead>
+                    <tr>
+                        <td>Last Trade</td>
+                        <td>Last Price</td>
+                        <td>Bid</td>
+                        <td>Ask</td>
+                        <td>Change</td>
+                        <td>Volume</td>
+                        <td>Open Int</td>
+                        <td>Imp Vltylty</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Jan 10, 1999 10:20:20 AM</td>
+                        <td>4.50</td>
+                        <td>5.00</td>
+                        <td>4.50</td>
+                        <td>5.00</td>
+                        <td>4.50</td>
+                        <td>5.00</td>
+                        <td>5.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div>
+                <button class="btn btn-link" onclick="Testy(dts)">Test</button>
+            </div>
+
+        </div>
+    </div>
+<script>
+    
+    var jsonDates = @Html.Raw(Model.JsonExpirationDatesArray)  
+    var jsonStrikes = @Html.Raw(Model.JsonStrikesDictionary)  
+    var jsonContainer =  @Html.Raw(Model.JsonCallDictionary)  
+    var jsonQuoteObject =  @Html.Raw(Model.JsonQuoteObject)  
+
+</script>
