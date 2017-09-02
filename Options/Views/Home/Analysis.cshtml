@@ -1,4 +1,73 @@
-﻿<div class="container">
+﻿@model Options.Models.TickerContainer
+
+<br />
+
+<div>
+    <input id="ticker" placeholder="enter ticker" />
+    <button id="searchTickerBtn" onclick="searchTicker()">Search <span class="glyphicon glyphicon-search"></span></button>
+</div>
+
+<br />
+<div>
+    <div id="shortNameId"></div>
+    <div id="bidAskId"></div>
+   
+</div>
+<br />
+<div>
+    <label>Expiration Date:</label>
+    <select id="expDateId" onchange="loadStrikes()"></select>
+    
+    <label>Strike:</label>
+    <select id="strikeId" onchange="loadOptionQuotes()"></select>
+</div>
+
+<div>
+    
+</div>
+
+<table id="quoteTableId" class="table table-bordered table-condensed col-sm-push-6">
+    <thead>
+        <tr></tr>
+        @*<tr id="tableHeaderRowId">
+                <td>Last Trade</td>
+                <td>Last Price</td>
+                <td>Bid</td>
+                <td>Ask</td>
+                <td>Change</td>
+                <td>Volume</td>
+                <td>Open Int</td>
+                <td>Imp Vltylty</td>
+            </tr>*@
+    </thead>
+    <tbody>
+        <tr></tr>
+        @*<tr id="tableBodyRowId">
+                <td>Jan 10, 1999 10:20:20 AM</td>
+                <td>4.50</td>
+                <td>5.00</td>
+                <td>4.50</td>
+                <td>5.00</td>
+                <td>4.50</td>
+                <td>5.00</td>
+                <td>5.00</td>
+            </tr>*@
+    </tbody>
+</table>
+
+<script>
+    var jsonDates = @Html.Raw(Model.JsonExpirationDatesArray)
+    var jsonStrikes = @Html.Raw(Model.JsonStrikesDictionary)
+    var jsonContainer =  @Html.Raw(Model.JsonCallDictionary)
+    var jsonQuoteObject =  @Html.Raw(Model.JsonQuoteObject)
+</script>
+
+
+
+<!--
+    PANEL EXAMPLE
+
+<div class="container">
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row">
@@ -14,6 +83,4 @@
     </div>
 </div>
 
-
-
-
+-->

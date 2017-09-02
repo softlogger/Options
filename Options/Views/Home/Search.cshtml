@@ -1,0 +1,40 @@
+﻿@{ 
+    ViewBag.IsLandingPage = true;
+}
+
+<div>
+    <input id="ticker" placeholder="enter ticker"  />
+    <button id="searchTickerBtn" onclick="searchTicker()">Search <span class="glyphicon glyphicon-search"></span></button>
+</div>
+
+
+
+
+
+<script>
+    function searchTicker() {
+        console.log("In search ticker");
+        var tickerName = $("#ticker").val();
+        console.log(tickerName);
+        console.log(window.location.origin);
+        console.log(window.location.href);
+        var isHome = window.location.href.includes('Home');
+        var url = "";
+        if (isHome === true) {
+            url = 'Analysis?tickerName=' + tickerName;
+        }
+        else {
+            url = 'Home/Analysis?tickerName=' + tickerName;
+        }
+
+        console.log(url);
+
+        window.location.href = url;
+    }
+
+    
+
+
+  
+</script>
+

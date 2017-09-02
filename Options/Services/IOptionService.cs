@@ -12,5 +12,7 @@ namespace Options.Services
         List<OptionContainer> GetOptionContainerFor(string ticker);
         TickerContainer GetTickerContainerFor(string ticker);
 
+        TickerContainer GetNetTickerContainerFor(string ticker);
+
     }
 }

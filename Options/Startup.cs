@@ -30,7 +30,9 @@ namespace Options
         {
             // Add framework services.
             services.AddMvc();
+            services.AddScoped<INetService, NetService>();
             services.AddScoped<IOptionService, OptionService>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +57,7 @@ namespace Options
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Analysis}/{id?}");
+                    template: "{controller=Home}/{action=Search}/{id?}");
             });
         }
     }

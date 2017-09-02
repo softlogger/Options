@@ -11,7 +11,57 @@ namespace Options.Services
 {
     public class OptionService : IOptionService
     {
-       
+
+        INetService _netService;
+
+        public OptionService() { }
+
+        public OptionService(INetService netService)
+        {
+            _netService = netService;
+        }
+
+        public TickerContainer GetNetTickerContainerFor(string ticker)
+        {
+            string responseString = "";
+            responseString = _netService.GetResponseFor(GetURLFor(ticker));
+            OptionContainer container = JsonConvert.DeserializeObject<OptionContainer>(responseString);
+           // int[] expDates = container.optionChain.result.First().expirationDates.Skip(1).OrderByDescending(dt => dt).Take(3).OrderBy(dt => dt).ToArray();
+            int[] expDates = container.optionChain.result.First().expirationDates.Skip(1).ToArray();
+            List<OptionContainer> containers = new List<OptionContainer>();
+            containers.Add(container);
+            foreach(var xDate in expDates)
+            {
+                responseString = _netService.GetResponseFor(GetURLFor(ticker, xDate));
+                containers.Add(JsonConvert.DeserializeObject<OptionContainer>(responseString));
+            }
+
+            TickerContainer tickerContainer = new TickerContainer();
+            foreach(var c in containers)
+            {
+                tickerContainer.Add(c);
+            }
+            tickerContainer.SetJsonStrings();
+            return tickerContainer;
+        }
+
+
+        public string GetURLFor(string ticker)
+        {
+
+            string baseUrl = @"https://query1.finance.yahoo.com/v7/finance/options/";
+            return baseUrl + ticker;
+           
+            //    baseUrl = @"https://query1.finance.yahoo.com/v7/finance/options/" + ticker + "?&date=" + expirationDate;
+           
+        }
+
+        public string GetURLFor(string ticker, int? expirationDate)
+        {
+            string baselineUrl = GetURLFor(ticker);
+            return baselineUrl + "?&date=" + expirationDate;
+        }
+
         public OptionContainer GetOptionContainerFor(string ticker, int? expirationDate)
         {
             string responseString = GetResponseString(ticker, expirationDate);

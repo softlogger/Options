@@ -2,16 +2,25 @@
 
 $(document).ready(function () {
 
-    $(alert("wtf"));
+    // alert("In site.js");
 
     $('#ticker').focus();
 
     $(document).bind('keypress', function (e) {
-        if (e.keyCode == 13) {
-            $("#searchButton").trigger('click');
+        if (e.keyCode === 13) {
+            $("#searchTickerBtn").trigger('click');
         }
     });
 
+    var shorty = jsonQuoteObject["shortName"];
+    var bid = jsonQuoteObject["bid"];
+    var ask = jsonQuoteObject["ask"];
+    //  alert(shorty);
+    $("#shortNameId").html("<h4>" + shorty + "</h4>");
+    $("#bidAskId").html("<h6> Bid: " + bid + "          Ask: " + ask + " </h6>");
+   
+
+    loadExpDates();
     //$("#searchButton").on("click", function (e) {
     //    //e.preventDefault();
     //    var tickerName = $("#ticker").val();
@@ -20,22 +29,11 @@ $(document).ready(function () {
     //    $.get('Home/Temp', { tickerName: tickerName });
     //});
 })
-
-function searchTicker() {
-    var ticker = $("#ticker").val();
-    //alert(tickerName);
-    // $("#result").load('/Home/ExpVC', { tickerName: tickerName });
-    $.get('Home/Temp', { ticker: ticker }, function (data) {
-        $('#displayId').html(data);
-    });
-    loadExpDates();
-  //  $.get('Home/Temp', { tickerName: tickerName });
-}
-
 function loadExpDates() {
     var ele = '#expDateId';
     //1503619200,1518739200,1547769600
     console.log(jsonDates);
+    console.log(jsonDates[0]);
     $(ele).empty();
     for (var i = 0; i < jsonDates.length; i++) {
         $(ele).append("<option value='" + jsonDates[i] + "'>" + EpochToDate(jsonDates[i]) + "</option>")
@@ -51,14 +49,98 @@ function loadStrikes() {
     var ele = '#strikeId';
     var selectedDate = $("#expDateId").find(":selected").val();
     var strikes = jsonStrikes[selectedDate];
-    alert(strikes);
     $(ele).empty();
+    var quote = jsonQuoteObject['bid'];
     for (var i = 0; i < strikes.length; i++) {
-        $(ele).append("<option value='" + strikes[i] + "'>" + strikes[i] + "</option>")
+        $(ele).append("<option value='" + strikes[i] + "'>" + strikes[i] + "</option>");
     }
-    
-    $("#shortNameId").html("<h4>" + jsonQuoteObject["shortName"] + "</h4>");
+
+    var highStrike = 0;
+    for (var i = 0; i < strikes.length; i++) {
+        if (strikes[i] > quote) {
+            highStrike = strikes[i];
+            break;
+        }
+    }
+    //$('#strikeId option[value=' + highStrike + ']').prop('selected', 'selected');
+    $('#strikeId').val(highStrike);
+    loadOptionQuotes();
 }
+
+/*
+    <td > Last Trade</td >
+    <td>Last Price</td>
+    <td>Bid</td>
+    <td>Ask</td>
+    <td>Change</td>
+    <td>Volume</td>
+    <td>Open Int</td>
+        <td>Imp Vltylty</td>
+*/
+
+function loadOptionQuotes() {
+    console.log("in option quotes");
+    var expDateVal = $('#expDateId').val();
+
+    //For text values: ('#expDateId option:selected').text()
+
+    var expDict = jsonContainer[expDateVal];
+    var strikeVal = $('#strikeId').val();
+    var strikeDict = expDict[strikeVal];
+
+    $('#quoteTableId').empty();
+    $('#quoteTableId').append('<thead><tr></thead></tr>');
+    $('#quoteTableId').append('<tbody><tr></tbody></tr>');
+    $('#quoteTableId > thead > tr').append("<td>" + "Last Trade" + "</td>");
+    $('#quoteTableId > thead > tr').append("<td>" + "Last Price" + "</td>");
+    $('#quoteTableId > thead > tr').append("<td>" + "Bid" + "</td>");
+    $('#quoteTableId > thead > tr').append("<td>" + "Ask" + "</td>");
+    $('#quoteTableId > thead > tr').append("<td>" + "Change" + "</td>");
+    $('#quoteTableId > thead > tr').append("<td>" + "Volume" + "</td>");
+    $('#quoteTableId > thead > tr').append("<td>" + "Open Int" + "</td>");
+    $('#quoteTableId > thead > tr').append("<td>" + "Imp Volatility" + "</td>");
+
+    $('#quoteTableId > tbody > tr').append("<td>" + EpochToDate(strikeDict['lastTradeDate']) + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['lastPrice'] + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['bid'] + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['ask'] + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['change'] + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['volume'] + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['openInterest'] + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['impliedVolatility']  + "</td>");
+
+    console.log('outta option quotes');
+}
+
+function searchTicker() {
+    console.log("In search ticker");
+    var tickerName = $("#ticker").val();
+    console.log(tickerName);
+    console.log(window.location.origin);
+    console.log(window.location.href);
+    var isHome = window.location.href.includes('Home');
+    var url = "";
+    if (isHome === true) {
+        url = 'Analysis?tickerName=' + tickerName;
+    }
+    else {
+        url = 'Home/Analysis?tickerName=' + tickerName;
+    }
+
+    console.log(url);
+
+    window.location.href = url;
+    //$(location).removeAttr('href');
+    //$(location).attr('href', url);
+    //$.get('Home/Analysis', { tickerName: tickerName });
+    //$.get('Home/Temp', { ticker: ticker }, function (data) {
+    //    $('#displayId').html(data);
+    //});
+    //loadExpDates();
+    //  $.get('Home/Temp', { tickerName: tickerName });
+}
+
+
 
 
 function theButt(e) {
