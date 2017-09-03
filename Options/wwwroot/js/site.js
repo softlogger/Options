@@ -67,16 +67,7 @@ function loadStrikes() {
     loadOptionQuotes();
 }
 
-/*
-    <td > Last Trade</td >
-    <td>Last Price</td>
-    <td>Bid</td>
-    <td>Ask</td>
-    <td>Change</td>
-    <td>Volume</td>
-    <td>Open Int</td>
-        <td>Imp Vltylty</td>
-*/
+
 
 function loadOptionQuotes() {
     console.log("in option quotes");

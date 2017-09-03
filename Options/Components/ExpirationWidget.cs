@@ -20,9 +20,6 @@ namespace Options.Components
         {
             return await Task.FromResult<IViewComponentResult>(View(_OptionService.GetOptionContainerFor(ticker, expirationDate)));
 
-            //var view = View(_OptionService.GetOptionContainerFor(expirationDate));
-
-           // return view;
         }
     }
 }

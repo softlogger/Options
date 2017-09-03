@@ -1,9 +1,10 @@
-﻿1. Script hack to navigtate by removing "Analysis"
-2. View page hack to exclude Site.js from Search Page (Landing Page)
-3. Exp Dates control shows dates off by one day and display not matching yahoo web site
-4. Display stock prices - regular market and post market price
-5. Present Implied Vol as percent
-6. Present last trader as EDT
-7. Round change for eg. 0.179999 to 0.18
-8. Show colors for increases and decreases
-9. Fix the hack to limit expiration dates if neccessary - currently it retrieves all or requires code change
+﻿1.	Script hack to navigtate by removing "Analysis"
+2.	View page hack to exclude Site.js from Search Page (Landing Page)
+3.	Exp Dates control shows dates off by one day and display not matching yahoo web site
+4.	Display stock prices - regular market and post market price
+5.	Present Implied Vol as percent
+6.	Present last trader as EDT
+7.	Round change for eg. 0.179999 to 0.18
+8.	Show colors for increases and decreases
+9.	Fix the hack to limit expiration dates by configuration file or user entry if neccessary - currently it retrieves all or requires code change
+10.	Fix the Models; remove the set Json string hack and field varilables as the properties can do the job

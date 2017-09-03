@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Options.Test
 {
     [TestClass]
-    public class UnitTest1
+    public class YahooOptions
     {
 
         public string ResponseStringFromFile(string filePath)
@@ -115,13 +115,13 @@ namespace Options.Test
         public void ConvertUnixTimeStamp()
         {
             //1502409600,1503014400,1503619200,1504224000,1504828800,1505433600,1506038400,1510876800,1516320000,1518739200,1547769600
-            https://query1.finance.yahoo.com/v7/finance/options/BBBY?&date=1518739200&date=1547769600
+            //https://query1.finance.yahoo.com/v7/finance/options/BBBY?&date=1518739200&date=1547769600
             string unixDate = "1504828800";
 
             DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(Convert.ToDouble(unixDate));
 
-            //String friendlyDateTime = dt.ToString("MMMM dd, yyyy");
-            String friendlyDateTime = dt.ToString("MMMM dd, yyyy HH:MM:ss tt");
+            String friendlyDateTime = dt.ToString("MMMM dd, yyyy");
+            //String friendlyDateTime = dt.ToString("MMMM dd, yyyy HH:MM:ss tt");
 
             string unixDateFromFriendlyDateTime = (DateTime.Parse(friendlyDateTime) - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds.ToString();
 

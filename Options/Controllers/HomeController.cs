@@ -12,8 +12,6 @@ namespace Options.Controllers
     {
         IOptionService _optionService;
 
-       // public HomeController() { }
-
         public HomeController(IOptionService optionService)
         {
             _optionService = optionService;
@@ -21,8 +19,6 @@ namespace Options.Controllers
 
         public IActionResult Analysis(string tickerName)
         {
-            //OptionService optionService = new OptionService();
-            //TickerContainer container = optionService.GetTickerContainerFor(tickerName);
             TickerContainer container = _optionService.GetNetTickerContainerFor(tickerName);
             return View("Analysis", container);
         }
