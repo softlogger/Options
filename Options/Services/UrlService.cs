@@ -18,5 +18,11 @@ namespace Options.Services
 
             return string.Format($"https://api.intrinio.com/prices?identifier={identifier}&start_date={start_date}&end_date={end_date}&frequency={frequency}");
         }
+
+        // @"https://api.intrinio.com/financials/standardized?identifier=BBBY&statement=income_statement&type=FY&fiscal_year=2016";
+        public string StatementUrl(string identifier, string statement, string type, string fiscalYear)
+        {
+            return $"https://api.intrinio.com/financials/standardized?identifier={identifier}&statement={statement}&type={type}&fiscal_year={fiscalYear}";
+        }
     }
 }

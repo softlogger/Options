@@ -14,3 +14,4 @@
 13. Get a handle on data types - int, long, float, decimal...
 14. Make Json DeSerialization and Serialization process more resilient (add error handling).
 15. Check MSFT July 3rd prices - low value is wrong.
+16. Added end_date to every statement - verify if is ok

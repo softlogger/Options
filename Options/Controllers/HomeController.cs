@@ -31,6 +31,14 @@ namespace Options.Controllers
 
             viewModel.HistoricalLowPrices = HistoricalLowPrices;
 
+            Dictionary<int, string> fiscalYears = _intrinioService.GetFiscalYears(tickerName);
+
+            viewModel.FiscalYears = fiscalYears;
+
+            Dictionary<int, Dictionary<string, Dictionary<string, string>>> Statements = _intrinioService.GetStatements(tickerName, fiscalYears);
+
+            viewModel.Statements = Statements;
+
             viewModel.SetJsonStrings();
 
             return View("Analysis", viewModel);

@@ -27,6 +27,9 @@ $(document).ready(function () {
     $("#bidAskId").html("<h6> Bid: " + bid + "          Ask: " + ask + " </h6>");
 
 
+
+
+
     loadExpDates();
     //$("#searchButton").on("click", function (e) {
     //    //e.preventDefault();
@@ -35,7 +38,36 @@ $(document).ready(function () {
     //    // $("#result").load('/Home/ExpVC', { tickerName: tickerName });
     //    $.get('Home/Temp', { tickerName: tickerName });
     //});
+
+    var obj = jsonStatements["2016"];
+    var inc_statement = obj["income_statement"];
+    var opr_rev = inc_statement["operatingrevenue"];
+    var grs_prft = inc_statement["totalgrossprofit"];
+    var end_date = inc_statement["end_date"];
+
+    $("#statementId").html("<h6> Opr Rev: " + opr_rev + " Gross Profit: " + grs_prft + "End Date: " + end_date + " </h6>");
+
+    var obj2 = jsonStatements["2015"];
+    var inc_statement2 = obj2["income_statement"];
+    var opr_rev2 = inc_statement2["operatingrevenue"];
+    var grs_prft2 = inc_statement2["totalgrossprofit"];
+    var end_date2 = inc_statement2["end_date"];
+
+    $("#statementId").html("<h6> Opr Rev: " + opr_rev2 + " Gross Profit: " + grs_prft2 + "End Date: " + end_date2 + " </h6>");
 })
+
+
+/*
+
+{"2016":{"income_statement":"{\"operatingrevenue\":\"12215757000.0\",\"totalrevenue\":\"12215757000.0\",
+\"operatingcostofrevenue\":\"7639407000.0\",\"totalcostofrevenue\":\"7639407000.0\",\"totalgrossprofit\":
+\"4576350000.0\",\"sgaexpense\":\"3441140000.0\",
+
+
+
+*/
+
+
 function loadExpDates() {
     var ele = '#expDateId';
     //1503619200,1518739200,1547769600
@@ -120,8 +152,7 @@ function loadHistoricalLowPrices() {
     $('#historicalPricessId').append('<thead><tr></thead></tr>');
     $('#historicalPricessId').append('<tbody><tr></tbody></tr>');
 
-    for (var key in historicalPrices)
-    {
+    for (var key in historicalPrices) {
         if (historicalPrices.hasOwnProperty(key)) {
             $('#historicalPricessId > thead > tr').append("<td>" + key + "</td>");
 
@@ -130,11 +161,32 @@ function loadHistoricalLowPrices() {
 
     }
 
-    //$('#quoteTableId > thead > tr').append("<td>" + "Last Trade" + "</td>");
-    //$('#quoteTableId > thead > tr').append("<td>" + "Last Price" + "</td>");
 
-    //$('#quoteTableId > tbody > tr').append("<td>" + EpochToDate(strikeDict['lastTradeDate']) + "</td>");
-    //$('#quoteTableId > tbody > tr').append("<td>" + strikeDict['lastPrice'] + "</td>");
+    loadStatements();
+}
+
+function loadStatements() {
+    var fiscalYear = jsonFiscalYears;
+
+    $("#fiscalYearsId").empty;
+
+    $('#fiscalYearsId').empty();
+    $('#fiscalYearsId').append('<thead><tr></thead></tr>');
+    $('#fiscalYearsId > thead > tr').append("<td>" + "" + "</td>");
+    $('#fiscalYearsId').append('<tbody><tr></tbody></tr>');
+    $('#fiscalYearsId > tbody > tr').append("<td>" + "" + "</td>");
+
+    for (var key in fiscalYear) {
+        if (fiscalYear.hasOwnProperty(key)) {
+            $('#fiscalYearsId > thead > tr').append("<td>" + key + "</td>");
+
+            $('#fiscalYearsId > tbody > tr').append("<td>" + fiscalYear[key] + "</td>");
+        }
+
+    }
+
+
+   
 }
 
 function searchTicker() {

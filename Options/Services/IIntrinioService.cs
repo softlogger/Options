@@ -37,7 +37,10 @@ namespace Options.Services
         */
 
         Dictionary<int, string> GetHistoricalLowPrices(string ticker);
-        List<Dictionary<int, Dictionary<string, string>>> GetStatements(string ticker);
+
+        Dictionary<int, Dictionary<string, Dictionary<string, string>>> GetStatements(string ticker, Dictionary<int, string> fiscalYears);
+
+        Dictionary<int, string> GetFiscalYears(string ticker);
 
     }
 }

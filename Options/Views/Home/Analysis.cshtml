@@ -87,6 +87,12 @@
     </tbody>
 </table>
 
+<br />
+
+<table id="fiscalYearsId" class="table table-bordered table-condensed col-sm-push-6">
+    
+</table>
+
 <script>
     var jsonDates = @Html.Raw(Model.TickerContainer.JsonExpirationDatesArray)
     var jsonStrikes = @Html.Raw(Model.TickerContainer.JsonStrikesDictionary)
@@ -94,6 +100,9 @@
     var jsonQuoteObject =  @Html.Raw(Model.TickerContainer.JsonQuoteObject)
 
     var historicalPrices = @Html.Raw(Model.JsonHistoricalPrices)
+
+    var jsonFiscalYears = @Html.Raw(Model.JsonFiscalYears)
+    var jsonStatements = @Html.Raw(Model.JsonStatements)
 </script>
 
 
