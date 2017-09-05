@@ -11,16 +11,29 @@ namespace Options.Controllers
     public class HomeController : Controller
     {
         IOptionService _optionService;
+        IIntrinioService _intrinioService;
 
-        public HomeController(IOptionService optionService)
+        public HomeController(IOptionService optionService, IIntrinioService intrinioService)
         {
             _optionService = optionService;
+            _intrinioService = intrinioService;
         }
 
         public IActionResult Analysis(string tickerName)
         {
+            ViewModel viewModel = new ViewModel();
+            
             TickerContainer container = _optionService.GetNetTickerContainerFor(tickerName);
-            return View("Analysis", container);
+
+            viewModel.TickerContainer = container;
+
+            Dictionary<int, string> HistoricalLowPrices = _intrinioService.GetHistoricalLowPrices(tickerName);
+
+            viewModel.HistoricalLowPrices = HistoricalLowPrices;
+
+            viewModel.SetJsonStrings();
+
+            return View("Analysis", viewModel);
         }
 
 

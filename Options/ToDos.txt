@@ -8,3 +8,9 @@
 8.	Show colors for increases and decreases
 9.	Fix the hack to limit expiration dates by configuration file or user entry if neccessary - currently it retrieves all or requires code change
 10.	Fix the Models; remove the set Json string hack and field varilables as the properties can do the job
+
+11. Intrinio model objects cleanup - Volume, split ratio, and adjusted volume converted to float from int
+12. Cash flow value parsed to long - double check if ok.... check if all numbers should be decimal or string.
+13. Get a handle on data types - int, long, float, decimal...
+14. Make Json DeSerialization and Serialization process more resilient (add error handling).
+15. Check MSFT July 3rd prices - low value is wrong.

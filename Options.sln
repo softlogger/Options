@@ -5,7 +5,12 @@ VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Options", "Options\Options.csproj", "{C6F30BF4-54BB-466A-B3B3-08639780AC2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Options.Test", "Options.Test\Options.Test.csproj", "{B933A32D-4709-4CB4-837E-A34A50810DD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Options.Test", "Options.Test\Options.Test.csproj", "{B933A32D-4709-4CB4-837E-A34A50810DD0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DEB82E5C-2AB0-424D-A357-8D770C588D0E}"
+	ProjectSection(SolutionItems) = preProject
+		TextFile1.txt = TextFile1.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

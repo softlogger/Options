@@ -15,10 +15,17 @@ $(document).ready(function () {
     var shorty = jsonQuoteObject["shortName"];
     var bid = jsonQuoteObject["bid"];
     var ask = jsonQuoteObject["ask"];
+    var regPrice = jsonQuoteObject["regularMarketPreviousClose"];
+    var postMktPrice = jsonQuoteObject["postMarketPrice"];
+
+
+
+
     //  alert(shorty);
     $("#shortNameId").html("<h4>" + shorty + "</h4>");
+    $('#pricesId').html("<h6>Last Close: " + regPrice + "        Post Market: " + postMktPrice + " </h6>");
     $("#bidAskId").html("<h6> Bid: " + bid + "          Ask: " + ask + " </h6>");
-   
+
 
     loadExpDates();
     //$("#searchButton").on("click", function (e) {
@@ -98,9 +105,36 @@ function loadOptionQuotes() {
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['change'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['volume'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['openInterest'] + "</td>");
-    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['impliedVolatility']  + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['impliedVolatility'] + "</td>");
 
     console.log('outta option quotes');
+
+    loadHistoricalLowPrices();
+}
+
+function loadHistoricalLowPrices() {
+    //historicalPricessId
+    //var historicalPricesDict = 
+
+    $('#historicalPricessId').empty();
+    $('#historicalPricessId').append('<thead><tr></thead></tr>');
+    $('#historicalPricessId').append('<tbody><tr></tbody></tr>');
+
+    for (var key in historicalPrices)
+    {
+        if (historicalPrices.hasOwnProperty(key)) {
+            $('#historicalPricessId > thead > tr').append("<td>" + key + "</td>");
+
+            $('#historicalPricessId > tbody > tr').append("<td>" + historicalPrices[key] + "</td>");
+        }
+
+    }
+
+    //$('#quoteTableId > thead > tr').append("<td>" + "Last Trade" + "</td>");
+    //$('#quoteTableId > thead > tr').append("<td>" + "Last Price" + "</td>");
+
+    //$('#quoteTableId > tbody > tr').append("<td>" + EpochToDate(strikeDict['lastTradeDate']) + "</td>");
+    //$('#quoteTableId > tbody > tr').append("<td>" + strikeDict['lastPrice'] + "</td>");
 }
 
 function searchTicker() {

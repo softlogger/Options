@@ -31,7 +31,9 @@ namespace Options
             // Add framework services.
             services.AddMvc();
             services.AddScoped<INetService, NetService>();
+            services.AddScoped<IUrlService, UrlService>();
             services.AddScoped<IOptionService, OptionService>();
+            services.AddScoped<IIntrinioService, IntrinioService>();
             
         }
 

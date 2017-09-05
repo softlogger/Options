@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Options.Test
 {
     [TestClass]
-    public class YahooOptions
+    public class YahooModelsTest
     {
 
         public string ResponseStringFromFile(string filePath)
