@@ -180,8 +180,8 @@ namespace Options.Services
 
             List<List<string>> statementTable = new List<List<string>>();
 
-            List<string> colHeader = statements.Keys.OrderBy(k => k).Select(k => k.ToString()).ToList();
-            colHeader.Add("Projected");
+            List<string> colHeader = statements.Keys.Select(k => k.ToString()).ToList();
+            
             colHeader.Insert(0, string.Empty);
             
 
@@ -192,7 +192,7 @@ namespace Options.Services
                 var row = statements[key]["income_statement"]["totalrevenue"];
                 Revenues.Add(row);
             }
-            Revenues.Add("Projected Revenue");
+            
 
             List<string> Ebit = new List<string>();
             Ebit.Add("Ebit");
@@ -201,7 +201,7 @@ namespace Options.Services
                 var row = statements[key]["calculations"]["ebit"];
                 Ebit.Add(row);
             }
-            Ebit.Add("Projected Ebit");
+            
 
             List<string> Ebitda = new List<string>();
             Ebitda.Add("Ebitda");
@@ -210,7 +210,7 @@ namespace Options.Services
                 var row = statements[key]["calculations"]["ebitda"];
                 Ebitda.Add(row);
             }
-            Ebitda.Add("Projected Ebitda");
+            
 
             List<string> EbitdaPerRev = new List<string>();
             EbitdaPerRev.Add("Ebitda/Per Revenue");
@@ -219,7 +219,7 @@ namespace Options.Services
                 var row = statements[key]["calculations"]["ebitdamargin"];
                 EbitdaPerRev.Add(row);
             }
-            EbitdaPerRev.Add("Projected Ebitda/Per Revenue");
+           
 
             List<string> TotalLiabilities = new List<string>();
             TotalLiabilities.Add("Total Liabilities");
@@ -228,10 +228,10 @@ namespace Options.Services
             CurrentAssets.Add("Current Assets");
 
             List<string> TotalLiabilitesMinusCurrentAssets = new List<string>();
-            TotalLiabilitesMinusCurrentAssets.Add("Total Lb. per Current Assets");
+            TotalLiabilitesMinusCurrentAssets.Add("Total Lb. minus Current Assets");
 
 
-            foreach (var key in statements.Keys.OrderBy(k => k))
+            foreach (var key in statements.Keys)
             {
                 var totLblRow = statements[key]["balance_sheet"]["totalliabilities"];
                 var currentAssRow = statements[key]["balance_sheet"]["totalcurrentassets"];
@@ -242,10 +242,7 @@ namespace Options.Services
             }
 
 
-            TotalLiabilities.Add("Projected Ebitda/Per Revenue");
-            CurrentAssets.Add("Projected current assets");
-            TotalLiabilitesMinusCurrentAssets.Add("Projected Total Lbs minus Curr Assets");
-
+         
             //weightedavedilutedsharesos
 
             List<string> WeightedAvgDilutedShares = new List<string>();
@@ -255,11 +252,17 @@ namespace Options.Services
                 var row = statements[key]["income_statement"]["weightedavedilutedsharesos"];
                 WeightedAvgDilutedShares.Add(row);
             }
-            WeightedAvgDilutedShares.Add("Projected Weighted diluted avg shares");
 
+            //freecashflow
 
-
-
+            List<string> FreeCashFlow = new List<string>();
+            FreeCashFlow.Add("Free Cash Flow");
+            foreach (var key in statements.Keys)
+            {
+                var row = statements[key]["calculations"]["freecashflow"];
+                FreeCashFlow.Add(row);
+            }
+            
             statementTable.Add(colHeader);
             statementTable.Add(Revenues);
             statementTable.Add(Ebit);
@@ -269,6 +272,7 @@ namespace Options.Services
             statementTable.Add(CurrentAssets);
             statementTable.Add(TotalLiabilitesMinusCurrentAssets);
             statementTable.Add(WeightedAvgDilutedShares);
+            statementTable.Add(FreeCashFlow);
 
             /*
 Inc State "income_statement"

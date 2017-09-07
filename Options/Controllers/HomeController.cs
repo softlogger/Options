@@ -22,6 +22,8 @@ namespace Options.Controllers
 
         public IActionResult Analysis(string tickerName)
         {
+            tickerName = tickerName.ToUpper();
+
             ViewModel viewModel = new ViewModel();
 
             var colHeaders = GetStatementColumnHeaders();
