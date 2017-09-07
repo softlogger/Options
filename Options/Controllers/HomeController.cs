@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Options.Services;
 using Options.Models;
+using Newtonsoft.Json;
 
 namespace Options.Controllers
 {
@@ -22,6 +23,12 @@ namespace Options.Controllers
         public IActionResult Analysis(string tickerName)
         {
             ViewModel viewModel = new ViewModel();
+
+            var colHeaders = GetStatementColumnHeaders();
+
+            viewModel.JsonStatementColoumnHeaders = colHeaders;
+
+            viewModel.Report10KUrl = _intrinioService.GetReport10KUrl(tickerName);
             
             TickerContainer container = _optionService.GetNetTickerContainerFor(tickerName);
 
@@ -38,6 +45,10 @@ namespace Options.Controllers
             Dictionary<int, Dictionary<string, Dictionary<string, string>>> Statements = _intrinioService.GetStatements(tickerName, fiscalYears);
 
             viewModel.Statements = Statements;
+
+            List<List<string>> statementTable = _intrinioService.GetStatementsTable(Statements);
+
+            viewModel.StatementTable = statementTable;
 
             viewModel.SetJsonStrings();
 
@@ -89,5 +100,20 @@ namespace Options.Controllers
         {
             return View();
         }
+
+        public string GetStatementColumnHeaders()
+        {
+            var cols = new List<string>()
+            {
+                "Revenue", "EBIT", "EBITDA", "EBITDA/Revenue", "Total Liab", "Current Assets", "Wt Avg Diluted Shares", "(TLbl - Curr Ass)/Num. of Shares"
+            };
+
+            return JsonConvert.SerializeObject(cols);
+
+        }
+
+      
+
+        
     }
 }

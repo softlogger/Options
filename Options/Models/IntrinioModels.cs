@@ -35,7 +35,7 @@ namespace Options.Models
         public int total_pages { get; set; }
         public int api_call_credits { get; set; }
 
-       
+
     }
 
     public class HistoricalPriceItem
@@ -134,6 +134,32 @@ namespace Options.Models
         public string Value { get; set; }
 
     }
+
+
+    public class Report10K
+    {
+        public Report10KItem[] data { get; set; }
+        public int result_count { get; set; }
+        public int page_size { get; set; }
+        public int current_page { get; set; }
+        public int total_pages { get; set; }
+        public int api_call_credits { get; set; }
+    }
+
+    public class Report10KItem
+    {
+        public string filing_date { get; set; }
+        public string accepted_date { get; set; }
+        public string period_ended { get; set; }
+        public string accno { get; set; }
+        public string report_type { get; set; }
+        public string filing_url { get; set; }
+        public string report_url { get; set; }
+        public string instance_url { get; set; }
+    }
+
+
+
 
     public static class URL
     {

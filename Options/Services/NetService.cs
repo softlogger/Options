@@ -13,7 +13,13 @@ namespace Options.Services
         {
             using (var httpClient = new HttpClient())
             {
-                var authByteArray = Encoding.ASCII.GetBytes("cb37932f61b12276ca705a086b7075d4:8f111a1586d46b1f6a41f07ad23a66c6");
+                //gmail
+                var authByteArray = Encoding.ASCII.GetBytes("87dff17be472960508abfa9f7bee9a3b:16771fd0b4c4a3716663354f96336302");
+                
+
+
+                    //softlogger
+               // var authByteArray = Encoding.ASCII.GetBytes("cb37932f61b12276ca705a086b7075d4:8f111a1586d46b1f6a41f07ad23a66c6");
                 var authString = Convert.ToBase64String(authByteArray);
                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authString);
                 httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));

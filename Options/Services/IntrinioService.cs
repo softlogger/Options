@@ -26,10 +26,10 @@ namespace Options.Services
         {
             _urlService = urlService;
             _netService = netService;
-            
+
         }
 
-        
+
 
         public Dictionary<int, string> GetHistoricalLowPrices(string ticker)
         {
@@ -66,7 +66,21 @@ namespace Options.Services
 
         }
 
-       public Dictionary<int, string> GetFiscalYears(string ticker)
+        public string GetReport10KUrl(string ticker)
+        {
+            string urlString = _urlService.Report10KUrl(ticker);
+            string responseString = _netService.GetResponseFor(urlString);
+
+            Report10K report10K = JsonConvert.DeserializeObject<Report10K>(responseString);
+
+
+
+            string report10KUrlString = report10K.data.First().report_url;
+
+            return report10KUrlString;
+        }
+
+        public Dictionary<int, string> GetFiscalYears(string ticker)
         {
             string todaysDate = DateTime.Now.ToString("yyyy-MM-dd");
 
@@ -81,18 +95,18 @@ namespace Options.Services
             return fiscalYears;
         }
 
-        public Dictionary<int, Dictionary<string, Dictionary<string,string>>> GetStatements(string ticker, Dictionary<int, string> fiscalYears)
+        public Dictionary<int, Dictionary<string, Dictionary<string, string>>> GetStatements(string ticker, Dictionary<int, string> fiscalYears)
         {
 
-            Dictionary<int, Dictionary<string, Dictionary<string,string>>> Dict = new Dictionary<int, Dictionary<string, Dictionary<string,string>>>();
+            Dictionary<int, Dictionary<string, Dictionary<string, string>>> Dict = new Dictionary<int, Dictionary<string, Dictionary<string, string>>>();
 
-            foreach(var sf in fiscalYears.Keys)
+            foreach (var sf in fiscalYears.Keys)
             {
                 var year = sf;
 
-                var statementDictionary = new Dictionary<string, Dictionary<string,string>>();
+                var statementDictionary = new Dictionary<string, Dictionary<string, string>>();
 
-                foreach(var statement in STATEMENTS)
+                foreach (var statement in STATEMENTS)
                 {
                     var resp = responseStringFor(ticker, statement, FISCAL_YEAR, year.ToString());
                     resp.Add("end_date", fiscalYears[sf]);
@@ -111,7 +125,7 @@ namespace Options.Services
 
             string response = _netService.GetResponseFor(url);
 
-            Dictionary<string,string> filteredResponse = Filter(statement, response);
+            Dictionary<string, string> filteredResponse = Filter(statement, response);
 
             return filteredResponse;
         }
@@ -124,7 +138,7 @@ namespace Options.Services
             {
                 case "income_statement":
                     IncomeStatement incomeStatement = JsonConvert.DeserializeObject<IncomeStatement>(response);
-                    foreach(var i in incomeStatement.data)
+                    foreach (var i in incomeStatement.data)
                     {
                         tagValueDictionary.Add(i.tag, i.value);
                     }
@@ -155,6 +169,152 @@ namespace Options.Services
             }
 
             return tagValueDictionary;
+        }
+
+        public List<List<string>> GetStatementsTable(Dictionary<int, Dictionary<string, Dictionary<string, string>>> statements)
+        {
+            var cols = new List<string>()
+            {
+                "Revenue", "EBIT", "EBITDA", "EBITDA/Revenue", "Total Liab", "Current Assets", "Wt Avg Diluted Shares", "(TLbl - Curr Ass)/Num. of Shares"
+            };
+
+            List<List<string>> statementTable = new List<List<string>>();
+
+            List<string> colHeader = statements.Keys.OrderBy(k => k).Select(k => k.ToString()).ToList();
+            colHeader.Add("Projected");
+            colHeader.Insert(0, string.Empty);
+            
+
+            List<string> Revenues = new List<string>();
+            Revenues.Add("Total Revenue");
+            foreach (var key in statements.Keys)
+            {
+                var row = statements[key]["income_statement"]["totalrevenue"];
+                Revenues.Add(row);
+            }
+            Revenues.Add("Projected Revenue");
+
+            List<string> Ebit = new List<string>();
+            Ebit.Add("Ebit");
+            foreach (var key in statements.Keys)
+            {
+                var row = statements[key]["calculations"]["ebit"];
+                Ebit.Add(row);
+            }
+            Ebit.Add("Projected Ebit");
+
+            List<string> Ebitda = new List<string>();
+            Ebitda.Add("Ebitda");
+            foreach (var key in statements.Keys)
+            {
+                var row = statements[key]["calculations"]["ebitda"];
+                Ebitda.Add(row);
+            }
+            Ebitda.Add("Projected Ebitda");
+
+            List<string> EbitdaPerRev = new List<string>();
+            EbitdaPerRev.Add("Ebitda/Per Revenue");
+            foreach (var key in statements.Keys)
+            {
+                var row = statements[key]["calculations"]["ebitdamargin"];
+                EbitdaPerRev.Add(row);
+            }
+            EbitdaPerRev.Add("Projected Ebitda/Per Revenue");
+
+            List<string> TotalLiabilities = new List<string>();
+            TotalLiabilities.Add("Total Liabilities");
+
+            List<string> CurrentAssets = new List<string>();
+            CurrentAssets.Add("Current Assets");
+
+            List<string> TotalLiabilitesMinusCurrentAssets = new List<string>();
+            TotalLiabilitesMinusCurrentAssets.Add("Total Lb. per Current Assets");
+
+
+            foreach (var key in statements.Keys.OrderBy(k => k))
+            {
+                var totLblRow = statements[key]["balance_sheet"]["totalliabilities"];
+                var currentAssRow = statements[key]["balance_sheet"]["totalcurrentassets"];
+                var totLblRowMinusCurrentAssRow = (decimal.Parse(totLblRow) - decimal.Parse(currentAssRow)).ToString();
+                TotalLiabilities.Add(totLblRow);
+                CurrentAssets.Add(currentAssRow);
+                TotalLiabilitesMinusCurrentAssets.Add(totLblRowMinusCurrentAssRow);
+            }
+
+
+            TotalLiabilities.Add("Projected Ebitda/Per Revenue");
+            CurrentAssets.Add("Projected current assets");
+            TotalLiabilitesMinusCurrentAssets.Add("Projected Total Lbs minus Curr Assets");
+
+            //weightedavedilutedsharesos
+
+            List<string> WeightedAvgDilutedShares = new List<string>();
+            WeightedAvgDilutedShares.Add("Weighted Avg Diluted Shares");
+            foreach (var key in statements.Keys)
+            {
+                var row = statements[key]["income_statement"]["weightedavedilutedsharesos"];
+                WeightedAvgDilutedShares.Add(row);
+            }
+            WeightedAvgDilutedShares.Add("Projected Weighted diluted avg shares");
+
+
+
+
+            statementTable.Add(colHeader);
+            statementTable.Add(Revenues);
+            statementTable.Add(Ebit);
+            statementTable.Add(Ebitda);
+            statementTable.Add(EbitdaPerRev);
+            statementTable.Add(TotalLiabilities);
+            statementTable.Add(CurrentAssets);
+            statementTable.Add(TotalLiabilitesMinusCurrentAssets);
+            statementTable.Add(WeightedAvgDilutedShares);
+
+            /*
+Inc State "income_statement"
+Revenue - totalrevenue
+Ebit - totaloperatingincome
+Int exp - totalinterestincome
+Wt avg diluted shares - weightedavedilutedsharesos
+
+Bal Sheet balance_sheet
+Total Liab - totalliabilities
+Total curr assets - totalcurrentassets
+
+Cash Flow cash_flow
+Depreciation - depreciationexpense
+
+Self Calc
+
+
+Reported Calc calculations
+{
+      "tag": "freecashflow",
+      "value": 474483805.1
+    },
+{
+      "tag": "ebit",
+      "value": 1135210000
+    },
+    {
+      "tag": "depreciationandamortization",
+      "value": 290914000
+    },
+    {
+      "tag": "ebitda",
+      "value": 1426124000
+    },
+ebitda/revenue
+{
+      "tag": "ebitdamargin",
+      "value": 0.116745
+    },
+
+
+*/
+
+
+            return statementTable;
         }
     }
 }

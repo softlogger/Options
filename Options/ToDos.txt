@@ -13,5 +13,6 @@
 12. Cash flow value parsed to long - double check if ok.... check if all numbers should be decimal or string.
 13. Get a handle on data types - int, long, float, decimal...
 14. Make Json DeSerialization and Serialization process more resilient (add error handling).
-15. Check MSFT July 3rd prices - low value is wrong.
+15. Check MSFT July 3rd prices - low value is wrong. Total Liab on BBBY 2016 Bal Sheet is wrong?
 16. Added end_date to every statement - verify if is ok
+17. Check if multiple 10-K should be displayed for instance BBBY Total Liablilities was updated in the subsequenct 10-K

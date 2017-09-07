@@ -10,5 +10,7 @@ namespace Options.Services
          string HistoricalPricesUrl(string identifier, string start_date, string end_date, string frequency);
 
         string StatementUrl(string identifier, string statement, string type, string fiscalYear);
+
+        string Report10KUrl(string identifier);
     }
 }

@@ -42,5 +42,10 @@ namespace Options.Services
 
         Dictionary<int, string> GetFiscalYears(string ticker);
 
+        string GetReport10KUrl(string ticker);
+
+        List<List<string>> GetStatementsTable(Dictionary<int, Dictionary<string, Dictionary<string, string>>> statements);
+       
+
     }
 }

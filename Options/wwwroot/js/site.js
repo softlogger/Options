@@ -31,13 +31,7 @@ $(document).ready(function () {
 
 
     loadExpDates();
-    //$("#searchButton").on("click", function (e) {
-    //    //e.preventDefault();
-    //    var tickerName = $("#ticker").val();
-    //    //alert(tickerName);
-    //    // $("#result").load('/Home/ExpVC', { tickerName: tickerName });
-    //    $.get('Home/Temp', { tickerName: tickerName });
-    //});
+    
 
     var obj = jsonStatements["2016"];
     var inc_statement = obj["income_statement"];
@@ -58,11 +52,44 @@ $(document).ready(function () {
 
 
 /*
+Inc State "income_statement"
+Revenue - totalrevenue
+Ebit - totaloperatingincome
+Int exp - totalinterestincome
+Wt avg diluted shares - weightedavedilutedsharesos
 
-{"2016":{"income_statement":"{\"operatingrevenue\":\"12215757000.0\",\"totalrevenue\":\"12215757000.0\",
-\"operatingcostofrevenue\":\"7639407000.0\",\"totalcostofrevenue\":\"7639407000.0\",\"totalgrossprofit\":
-\"4576350000.0\",\"sgaexpense\":\"3441140000.0\",
+Bal Sheet balance_sheet
+Total Liab - totalliabilities
+Total curr assets - totalcurrentassets
 
+Cash Flow cash_flow
+Depreciation - depreciationexpense
+
+Self Calc
+
+
+Reported Calc calculations
+{
+      "tag": "freecashflow",
+      "value": 474483805.1
+    },
+{
+      "tag": "ebit",
+      "value": 1135210000
+    },
+    {
+      "tag": "depreciationandamortization",
+      "value": 290914000
+    },
+    {
+      "tag": "ebitda",
+      "value": 1426124000
+    },
+ebitda/revenue
+{
+      "tag": "ebitdamargin",
+      "value": 0.116745
+    },
 
 
 */
@@ -162,31 +189,54 @@ function loadHistoricalLowPrices() {
     }
 
 
-    loadStatements();
+    loadStatementTable();
 }
 
 function loadStatements() {
     var fiscalYear = jsonFiscalYears;
+    var statementColHeaders = JsonStatementColoumnHeaders;
 
     $("#fiscalYearsId").empty;
-
-    $('#fiscalYearsId').empty();
-    $('#fiscalYearsId').append('<thead><tr></thead></tr>');
-    $('#fiscalYearsId > thead > tr').append("<td>" + "" + "</td>");
-    $('#fiscalYearsId').append('<tbody><tr></tbody></tr>');
-    $('#fiscalYearsId > tbody > tr').append("<td>" + "" + "</td>");
+    $('#fiscalYearsId').append('<thead></thead>');
+    $('#fiscalYearsId').append('<tbody></tbody>');
+    
+    $('#fiscalYearsId > thead').append("<tr></tr>");
+    $('#fiscalYearsId > thead > tr').append("<th></th>");
 
     for (var key in fiscalYear) {
         if (fiscalYear.hasOwnProperty(key)) {
-            $('#fiscalYearsId > thead > tr').append("<td>" + key + "</td>");
-
-            $('#fiscalYearsId > tbody > tr').append("<td>" + fiscalYear[key] + "</td>");
+            $('#fiscalYearsId  > thead > tr').append("<th>" + fiscalYear[key] + "</th>");
         }
 
     }
 
+    for (var i = 0; i < statementColHeaders.length; i++) {
+        $("#fiscalYearsId   > tbody").append("<tr></tr>");
+        $("#fiscalYearsId   > tbody").append("<td>" + statementColHeaders[i] + "</td>");
+        $("#fiscalYearsId   > tbody").append("<td>" + "Some Col A: " + i + "</td>");
+        $("#fiscalYearsId   > tbody").append("<td>" + "Some Col B: " + i + "</td>");
+        $("#fiscalYearsId   > tbody").append("<td>" + "Some Col C: " + i + "</td>");
+        
+    }
 
+    loadStatementTable();
    
+}
+
+function loadStatementTable() {
+    var table = $('#statementTableId');
+    table.empty();
+    // JsonStatementTable;
+
+    for (var i = 0; i < JsonStatementTable.length; i++) {
+        $('#statementTableId').append('<tr>' + val + '</tr>');
+        for (var j = 0; j < JsonStatementTable[i].length; j++) {
+            var val = JsonStatementTable[i][j];
+            $('#statementTableId').append('<td>' + val + '</td>');
+        }
+    }
+
+
 }
 
 function searchTicker() {

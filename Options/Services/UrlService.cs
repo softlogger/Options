@@ -24,5 +24,12 @@ namespace Options.Services
         {
             return $"https://api.intrinio.com/financials/standardized?identifier={identifier}&statement={statement}&type={type}&fiscal_year={fiscalYear}";
         }
+
+        public string Report10KUrl(string identifier)
+        {
+            var startDate = new DateTime(DateTime.Now.Year - 1, 1, 1).ToString("yyyy-MM-dd");
+
+            return $"https://api.intrinio.com/companies/filings?identifier={identifier}&report_type=10-K&start_date={startDate}";
+        }
     }
 }
