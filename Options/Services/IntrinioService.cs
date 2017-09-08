@@ -175,7 +175,7 @@ namespace Options.Services
         {
             var cols = new List<string>()
             {
-                "Revenue", "EBIT", "EBITDA", "EBITDA/Revenue", "Total Liab", "Current Assets", "Wt Avg Diluted Shares", "(TLbl - Curr Ass)/Num. of Shares"
+                "Revenue", "EBIT", "EBITDA", "EBITDA_Per_Revenue", "Total Liab", "Current Assets", "Wt Avg Diluted Shares", "(TLbl - Curr Ass)/Num. of Shares"
             };
 
             List<List<string>> statementTable = new List<List<string>>();
@@ -186,7 +186,7 @@ namespace Options.Services
             
 
             List<string> Revenues = new List<string>();
-            Revenues.Add("Total Revenue");
+            Revenues.Add("Total_Revenue");
             foreach (var key in statements.Keys)
             {
                 var row = statements[key]["income_statement"]["totalrevenue"];
@@ -213,7 +213,7 @@ namespace Options.Services
             
 
             List<string> EbitdaPerRev = new List<string>();
-            EbitdaPerRev.Add("Ebitda/Per Revenue");
+            EbitdaPerRev.Add("Ebitda_Per_Revenue");
             foreach (var key in statements.Keys)
             {
                 var row = statements[key]["calculations"]["ebitdamargin"];
@@ -222,13 +222,13 @@ namespace Options.Services
            
 
             List<string> TotalLiabilities = new List<string>();
-            TotalLiabilities.Add("Total Liabilities");
+            TotalLiabilities.Add("Total_Liabilities");
 
             List<string> CurrentAssets = new List<string>();
-            CurrentAssets.Add("Current Assets");
+            CurrentAssets.Add("Current_Assets");
 
             List<string> TotalLiabilitesMinusCurrentAssets = new List<string>();
-            TotalLiabilitesMinusCurrentAssets.Add("Total Lb. minus Current Assets");
+            TotalLiabilitesMinusCurrentAssets.Add("Total_Lbs_Minus_Assets");
 
 
             foreach (var key in statements.Keys)
@@ -246,7 +246,7 @@ namespace Options.Services
             //weightedavedilutedsharesos
 
             List<string> WeightedAvgDilutedShares = new List<string>();
-            WeightedAvgDilutedShares.Add("Weighted Avg Diluted Shares");
+            WeightedAvgDilutedShares.Add("Weighted_Avg_Diluted Shares");
             foreach (var key in statements.Keys)
             {
                 var row = statements[key]["income_statement"]["weightedavedilutedsharesos"];
@@ -256,7 +256,7 @@ namespace Options.Services
             //freecashflow
 
             List<string> FreeCashFlow = new List<string>();
-            FreeCashFlow.Add("Free Cash Flow");
+            FreeCashFlow.Add("Free_Cash_Flow");
             foreach (var key in statements.Keys)
             {
                 var row = statements[key]["calculations"]["freecashflow"];

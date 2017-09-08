@@ -16,3 +16,4 @@
 15. Check MSFT July 3rd prices - low value is wrong. Total Liab on BBBY 2016 Bal Sheet is wrong?
 16. Added end_date to every statement - verify if is ok
 17. Check if multiple 10-K should be displayed for instance BBBY Total Liablilities was updated in the subsequenct 10-K
+18. Handle exceptions - enter invalid ticker or ticker w/o reports available (eg. BABA)

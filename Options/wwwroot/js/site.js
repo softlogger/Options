@@ -24,14 +24,15 @@ $(document).ready(function () {
     //  alert(shorty);
     $("#shortNameId").html("<h4>" + shorty + "</h4>");
     $('#pricesId').html("<h6>Last Close: " + regPrice + "        Post Market: " + postMktPrice + " </h6>");
-    $("#bidAskId").html("<h6> Bid: " + bid + "          Ask: " + ask + " </h6>");
+    $("#bidId").html("<h6>" + bid + "</h6>");
+    $("#askId").html("<h6>" + ask + "</h6>");
 
 
 
 
 
     loadExpDates();
-    
+
 
     var obj = jsonStatements["2016"];
     var inc_statement = obj["income_statement"];
@@ -159,7 +160,7 @@ function loadOptionQuotes() {
 
     $('#quoteTableId > tbody > tr').append("<td>" + EpochToDate(strikeDict['lastTradeDate']) + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['lastPrice'] + "</td>");
-    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['bid'] + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td id='optionBid'>" + strikeDict['bid'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['ask'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['change'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['volume'] + "</td>");
@@ -184,6 +185,7 @@ function loadHistoricalLowPrices() {
             $('#historicalPricessId > thead > tr').append("<td>" + key + "</td>");
 
             $('#historicalPricessId > tbody > tr').append("<td>" + historicalPrices[key] + "</td>");
+            
         }
 
     }
@@ -199,7 +201,7 @@ function loadStatements() {
     $("#fiscalYearsId").empty;
     $('#fiscalYearsId').append('<thead></thead>');
     $('#fiscalYearsId').append('<tbody></tbody>');
-    
+
     $('#fiscalYearsId > thead').append("<tr></tr>");
     $('#fiscalYearsId > thead > tr').append("<th></th>");
 
@@ -216,28 +218,93 @@ function loadStatements() {
         $("#fiscalYearsId   > tbody").append("<td>" + "Some Col A: " + i + "</td>");
         $("#fiscalYearsId   > tbody").append("<td>" + "Some Col B: " + i + "</td>");
         $("#fiscalYearsId   > tbody").append("<td>" + "Some Col C: " + i + "</td>");
-        
+
     }
 
     loadStatementTable();
-   
+
 }
 
-function loadStatementTable() {
-    var table = $('#statementTableId');
-    table.empty();
-    // JsonStatementTable;
 
-    for (var i = 0; i < JsonStatementTable.length; i++) {
-        $('#statementTableId').append('<tr>' + val + '</tr>');
-        for (var j = 0; j < JsonStatementTable[i].length; j++) {
-            var val = JsonStatementTable[i][j];
-            $('#statementTableId').append('<td>' + val + '</td>');
+
+function loadStatementTable() {
+
+   // $('#statementTableId').empty();
+    $('#statementTableId').append('<thead></thead>');
+    $('#statementTableId').append('<tbody></tbody>');
+
+    $('#statementTableId > thead').append('<tr></tr>');
+
+   
+
+    var firstArray = JsonStatementTable[0];
+    // JsonStatementTable;
+    for (var i = 0; i < firstArray.length; i++) {
+        var tableHeaderColVal = firstArray[i];
+        $('#statementTableId > thead:last').append('<th>' + tableHeaderColVal + '</th>');
+    }
+    for (var j = 0; j < JsonStatementTable.length - 1; j++) {
+        $('#statementTableId > tbody:last').append('<tr></tr>');
+        var nextArray = JsonStatementTable[j + 1];
+        for (var k = 0; k < nextArray.length; k++) {
+            var nextId = nextArray[0] + k;
+            var colVal = nextArray[k];
+            $('#statementTableId > tbody:last').append('<td id=' + nextId + '>' + colVal + '</td>');
         }
     }
 
-
+    CalculateBuyPrice();
 }
+
+function CalculateBuyPrice() {
+
+    $("#projectedEbitdaId").val(ProjectEbitda());
+    $("#projectedNumOfSharesId").val(ProjectNumOfShares());
+    $("#sharePriceId").val(SharePrice());
+    $("#callPremiumId").val(CallPremiumId());
+    $("#lblMinusCurrAssId").val(TotalLblMinusCurrentAssets());
+    $("#buyingPriceId").val(BuyingPrice());
+    $("#cashFlowMultipleId").val(CashFlowMultiple());
+    
+         // id="calculateId" 
+}
+
+function ProjectEbitda() {
+    return 960000000;
+}
+
+function ProjectNumOfShares() {
+    return 140000000;
+}
+
+function SharePrice() {
+    return Number($('#bidId').text());
+}
+
+function CallPremiumId() {
+    return Number($('#optionBid').text());
+}
+
+function TotalLiabiliy() {
+    return 4103378000.0;
+}
+
+function CurrentAssets() {
+    return 3591901000.0;
+}
+
+function TotalLblMinusCurrentAssets() {
+   return 511477000.0
+}
+
+function BuyingPrice() {
+    return ((SharePrice() - CallPremiumId()) + ((TotalLblMinusCurrentAssets()) / ProjectNumOfShares()));
+}
+
+function CashFlowMultiple() {
+    return (BuyingPrice() / (ProjectEbitda() / ProjectNumOfShares()));
+}
+
 
 function searchTicker() {
     console.log("In search ticker");

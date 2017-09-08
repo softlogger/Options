@@ -1,55 +1,91 @@
 ﻿@model Options.Models.ViewModel
-
-<br />
-
 <div class="container">
     <div class="row">
-        <div class="col-sm-6">
-            <input id="ticker" placeholder="enter ticker" />
-            <button id="searchTickerBtn" onclick="searchTicker()">Search <span class="glyphicon glyphicon-search"></span></button>
-        </div>
-
-
-        <div class="col-sm-6">
-            <div id="shortNameId"></div>
-            <div id="pricesId"></div>
-            <div id="bidAskId"></div>
-            <a href="@Model.Report10KUrl">10-K</a>
-        </div>
+        <form class="form-horizontal">
+            <div class="col-md-4">
+                <input id="ticker" placeholder="enter ticker" />
+                <button id="searchTickerBtn" onclick="searchTicker()">Search <span class="glyphicon glyphicon-search"></span></button>
+            </div>
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label id="shortNameId" class="col-md-2"></label>
+                    <label id="pricesId" class="col-md-2 currency"></label>
+                    <label id="bidId" class="col-md-2 currency"></label>
+                    <label id="askId" class="col-md-2 currency"></label>
+                </div>
+                <div>
+                    <a href="@Model.Report10KUrl" target="_blank" class="btn btn-primary">10-K</a>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 <br />
-<div>
-    <label>Expiration Date:</label>
-    <select id="expDateId" onchange="loadStrikes()"></select>
+<div class="container">
+    <div class="row">
+        <label>Expiration Date:</label>
+        <select id="expDateId" onchange="loadStrikes()"></select>
 
-    <label>Strike:</label>
-    <select id="strikeId" onchange="loadOptionQuotes()"></select>
+        <label>Strike:</label>
+        <select id="strikeId" onchange="loadOptionQuotes()"></select>
+    </div>
 </div>
 
 <div>
-
+    <table id="quoteTableId" class="table table-bordered table-condensed col-sm-push-6"></table>
 </div>
 
-<table id="quoteTableId" class="table table-bordered table-condensed col-sm-push-6">
-   
-</table>
 
-<br />
+<div>
+    <label><strong>Low Prices</strong></label>
+    <table id="historicalPricessId" class="table table-bordered table-condensed col-sm-push-6"></table>
+</div>
+ <div>
+     
+    <table id="fiscalYearsId" class="table table-bordered table-condensed col-sm-push-6"></table>
+</div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <table id="statementTableId" border="1" class="table table-bordered table-condensed"></table>
+                </div>
 
-<table id="historicalPricessId" class="table table-bordered table-condensed col-sm-push-6">
-    
-</table>
+                <div class="col-md-6">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-md-6  text-right">Projected Ebitda: </label><input class="col-md-6 form-control" id="projectedEbitdaId" /> <label><input class="col-md-4" type="checkbox" value="" /> Locked</label>
+                            
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6   text-right">Projected # of shares: </label><input class="col-md-6 form-control" id="projectedNumOfSharesId" />
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6   text-right">Share Price: </label><input class="col-md-6" id="sharePriceId" />
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6  text-right">Call Premium: </label><input class="col-md-6" id="callPremiumId" />
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6  text-right">Tot Liab minu Current Assets: </label><input class="col-md-6" id="lblMinusCurrAssId" />
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6   text-right" title="Share Price - Bying price">Buying Price: </label><input class="col-md-6" id="buyingPriceId" />
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6   text-right">Cash Flow Multiple: </label><input class="col-md-6" id="cashFlowMultipleId" />
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6"></label>
+                            <button id="calculateId" onclick="CalculateBuyPrice()" class="col-md-6 btn btn-primary">Caculate</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-<br />
 
-<table id="fiscalYearsId" class="table table-bordered table-condensed col-sm-push-6"></table>
 
-<br />
-
-<table id="statementTableId" class="table table-bordered table-condensed col-sm-push-6"></table>
-
-<script>
+        <script>
     var jsonDates = @Html.Raw(Model.TickerContainer.JsonExpirationDatesArray)
     var jsonStrikes = @Html.Raw(Model.TickerContainer.JsonStrikesDictionary)
     var jsonContainer =  @Html.Raw(Model.TickerContainer.JsonCallDictionary)
@@ -63,27 +99,27 @@
     var JsonStatementColoumnHeaders = @Html.Raw(Model.JsonStatementColoumnHeaders)
 
     var JsonStatementTable = @Html.Raw(Model.JsonStatementTable)
-</script>
+        </script>
 
 
 
-<!--
-    PANEL EXAMPLE
+        <!--
+            PANEL EXAMPLE
 
-<div class="container">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="row">
-                <input id="ticker" placeholder="enter ticker" />
-                <button class="btn btn-link col-lg-pull-2" id="searchButton" type="button">Search  <span class="glyphicon glyphicon-search"></span></button>
+        <div class="container">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <input id="ticker" placeholder="enter ticker" />
+                        <button class="btn btn-link col-lg-pull-2" id="searchButton" type="button">Search  <span class="glyphicon glyphicon-search"></span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="expirationWidget" class="row"></div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div id="expirationWidget" class="row"></div>
-        </div>
-    </div>
-</div>
 
--->
+        -->
