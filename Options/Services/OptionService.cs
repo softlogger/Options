@@ -27,7 +27,7 @@ namespace Options.Services
             responseString = _netService.GetResponseFor(GetURLFor(ticker));
             OptionContainer container = JsonConvert.DeserializeObject<OptionContainer>(responseString);
            // int[] expDates = container.optionChain.result.First().expirationDates.Skip(1).OrderByDescending(dt => dt).Take(3).OrderBy(dt => dt).ToArray();
-            int[] expDates = container.optionChain.result.First().expirationDates.Skip(1).ToArray();
+            int[] expDates = container.optionChain.result.First().expirationDates.Skip(1).Take(2).ToArray();
             List<OptionContainer> containers = new List<OptionContainer>();
             containers.Add(container);
             foreach(var xDate in expDates)

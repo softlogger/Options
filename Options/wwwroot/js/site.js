@@ -185,7 +185,7 @@ function loadHistoricalLowPrices() {
             $('#historicalPricessId > thead > tr').append("<td>" + key + "</td>");
 
             $('#historicalPricessId > tbody > tr').append("<td>" + historicalPrices[key] + "</td>");
-            
+           
         }
 
     }
@@ -194,63 +194,37 @@ function loadHistoricalLowPrices() {
     loadStatementTable();
 }
 
-function loadStatements() {
-    var fiscalYear = jsonFiscalYears;
-    var statementColHeaders = JsonStatementColoumnHeaders;
-
-    $("#fiscalYearsId").empty;
-    $('#fiscalYearsId').append('<thead></thead>');
-    $('#fiscalYearsId').append('<tbody></tbody>');
-
-    $('#fiscalYearsId > thead').append("<tr></tr>");
-    $('#fiscalYearsId > thead > tr').append("<th></th>");
-
-    for (var key in fiscalYear) {
-        if (fiscalYear.hasOwnProperty(key)) {
-            $('#fiscalYearsId  > thead > tr').append("<th>" + fiscalYear[key] + "</th>");
-        }
-
-    }
-
-    for (var i = 0; i < statementColHeaders.length; i++) {
-        $("#fiscalYearsId   > tbody").append("<tr></tr>");
-        $("#fiscalYearsId   > tbody").append("<td>" + statementColHeaders[i] + "</td>");
-        $("#fiscalYearsId   > tbody").append("<td>" + "Some Col A: " + i + "</td>");
-        $("#fiscalYearsId   > tbody").append("<td>" + "Some Col B: " + i + "</td>");
-        $("#fiscalYearsId   > tbody").append("<td>" + "Some Col C: " + i + "</td>");
-
-    }
-
-    loadStatementTable();
-
-}
+ 
 
 
 
 function loadStatementTable() {
 
-   // $('#statementTableId').empty();
+    var firstArray = JsonStatementTable[0];
+
+    $('#statementTableId').empty();
+
     $('#statementTableId').append('<thead></thead>');
     $('#statementTableId').append('<tbody></tbody>');
 
     $('#statementTableId > thead').append('<tr></tr>');
-
-   
-
-    var firstArray = JsonStatementTable[0];
-    // JsonStatementTable;
+     
     for (var i = 0; i < firstArray.length; i++) {
         var tableHeaderColVal = firstArray[i];
-        $('#statementTableId > thead:last').append('<th>' + tableHeaderColVal + '</th>');
+        $('#statementTableId > thead > tr:last').append('<th>' + tableHeaderColVal + '</th>');
     }
     for (var j = 0; j < JsonStatementTable.length - 1; j++) {
-        $('#statementTableId > tbody:last').append('<tr></tr>');
+
+        $('#statementTableId > tbody').append('<tr></tr>');
+
         var nextArray = JsonStatementTable[j + 1];
         for (var k = 0; k < nextArray.length; k++) {
             var nextId = nextArray[0] + k;
             var colVal = nextArray[k];
-            $('#statementTableId > tbody:last').append('<td id=' + nextId + '>' + colVal + '</td>');
+            $('#statementTableId tr:last').append('<td id=' + nextId + '>' + colVal + '</td>');
         }
+
+
     }
 
     CalculateBuyPrice();
