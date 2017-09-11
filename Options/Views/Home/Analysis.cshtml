@@ -1,26 +1,19 @@
 ﻿@model Options.Models.ViewModel
 <div class="container">
-    <div class="row">
-        <form class="form-horizontal">
-            <div class="col-md-4">
+    <div class="form-group row">
+        <div class="col-md-4">
+            <div>
+                <p></p>
                 <input id="ticker" placeholder="enter ticker" />
                 <button id="searchTickerBtn" onclick="searchTicker()">Search <span class="glyphicon glyphicon-search"></span></button>
             </div>
-            <div class="col-md-8">
-                <div class="form-group">
-                    <label id="shortNameId" class="col-md-2"></label>
-                    <label id="pricesId" class="col-md-2 currency"></label>
-                    <label id="bidId" class="col-md-2 currency"></label>
-                    <label id="askId" class="col-md-2 currency"></label>
-                </div>
-                <div>
-                    <a href="@Model.Report10KUrl" target="_blank" class="btn btn-primary">10-K</a>
-                </div>
-            </div>
-        </form>
-    </div>
+        </div>
 
-    <br />
+        <div class="col-md-8">
+            <p id="headerId" class="form-control-static"> </p>
+            <input id="askId" type="hidden" />
+        </div>
+    </div>
 
     <div>
         <label>Expiration Date:</label>
@@ -56,7 +49,10 @@
         <div class="col-md-6">
             <form class="form-horizontal">
                 <div class="form-group form-group-sm">
-                    <label class="col-md-5  text-right">Projected Ebitda: </label><input class="col-md-3" id="projectedEbitdaId" /><label class=" col-md-2 text-right"><input type="checkbox" value="">     Freeze</label>
+                    <label class="col-md-5  text-right">Projected Ebitda Growth: </label><input class="col-md-3" id="projectedEbitdaGrowthId" /><label class=" col-md-2 text-right"><input name="ebitda" type="radio" value="">     Freeze</label>
+                </div>
+                <div class="form-group form-group-sm">
+                    <label class="col-md-5  text-right">Projected Ebitda: </label><input class="col-md-3" id="projectedEbitdaId" /><label class=" col-md-2 text-right"><input name="ebitda" type="radio" value="">     Freeze</label>
                 </div>
                 <div class="form-group">
                     <label class="col-md-5   text-right">Projected # of shares: </label><input class="col-md-3" id="projectedNumOfSharesId" /><label class="  col-md-2 text-right"><input type="checkbox" value="">     Freeze</label>
@@ -68,18 +64,18 @@
                     <label class="col-md-5  text-right">Call Premium: </label><input class="col-md-3" id="callPremiumId" /><label class="  col-md-2 text-right"><input type="checkbox" value="">     Freeze</label>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-5  text-right">Liab minu Crnt Assets: </label><input class="col-md-3" id="lblMinusCurrAssId" /><label class="  col-md-2 text-right"><input type="checkbox" value="">     Freeze</label>
+                    <label class="col-md-5  text-right">Liab minus Crnt Assets: </label><input class="col-md-3" id="lblMinusCurrAssId" /><label class="  col-md-2 text-right"><input type="checkbox" value="">     Freeze</label>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-5   text-right" title="Share Price - Bying price">Buying Price: </label><input class="col-md-3" id="buyingPriceId" /> 
+                    <label class="col-md-5   text-right" title="Share Price - Bying price">Buying Price: </label><input class="col-md-3" id="buyingPriceId" />
                 </div>
                 <div class="form-group">
-                    <label class="col-md-5   text-right">Cash Flow Multiple: </label><input class="col-md-3" id="cashFlowMultipleId" /> <button id="calculateId" style="max-height" onclick="CalculateBuyPrice()" class="col-md-offset-1 col-md-2 btn btn-primary">Caculate</button>
+                    <label class="col-md-5   text-right">Cash Flow Multiple: </label><input class="col-md-3" id="cashFlowMultipleId" /> <button id="calculateId" onclick="CalculateBuyPrice()" class="col-md-offset-1 col-md-2 btn btn-primary">Caculate</button>
                 </div>
                 @*<div class="form-group">
 
-                    <button id="calculateId" onclick="CalculateBuyPrice()" class="col-md-offset-10  col-md-2 btn btn-primary pull-right">Caculate</button>
-                </div>*@
+                        <button id="calculateId" onclick="CalculateBuyPrice()" class="col-md-offset-10  col-md-2 btn btn-primary pull-right">Caculate</button>
+                    </div>*@
             </form>
         </div>
     </div>
@@ -92,15 +88,11 @@
     var jsonStrikes = @Html.Raw(Model.TickerContainer.JsonStrikesDictionary)
     var jsonContainer =  @Html.Raw(Model.TickerContainer.JsonCallDictionary)
     var jsonQuoteObject =  @Html.Raw(Model.TickerContainer.JsonQuoteObject)
-
     var historicalPrices = @Html.Raw(Model.JsonHistoricalPrices)
-
     var jsonFiscalYears = @Html.Raw(Model.JsonFiscalYears)
     var jsonStatements = @Html.Raw(Model.JsonStatements)
-
-    var JsonStatementColoumnHeaders = @Html.Raw(Model.JsonStatementColoumnHeaders)
-
     var JsonStatementTable = @Html.Raw(Model.JsonStatementTable)
+     var ReportUrl =  "@Html.UrlEncoder.Encode(Model.Report10KUrl)"
 </script>
 
 

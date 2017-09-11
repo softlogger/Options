@@ -190,5 +190,15 @@ namespace Options.Test
 
         }
 
+        [TestMethod]
+        public void CalculateGrowthRate()
+        {
+            var finalValue = 19500D;
+            var initialValue = 10000D;
+            var power = 1.0 / 3.0;
+
+            var growthRate = Math.Pow((finalValue / initialValue), power) - 1;
+        }
+
     }
 }

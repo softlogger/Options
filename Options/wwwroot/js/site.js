@@ -18,14 +18,28 @@ $(document).ready(function () {
     var regPrice = jsonQuoteObject["regularMarketPreviousClose"];
     var postMktPrice = jsonQuoteObject["postMarketPrice"];
 
+    //ReportUrl
 
 
+    var headerName = "<h4><strong>" + shorty + "</strong><h4>";
+    var headerLastClose = "Last Close:<strong> " + postMktPrice + "</strong>";
+    var headerReg = "Regular:<strong> " + regPrice + "</strong>";
+    var headerBid = "Bid:<strong> " + bid + "</strong>";
+    var headerAsk = "Ask:<strong> " + ask + "</strong>";
+
+
+    var headerReport = "<a href=" + decodeURIComponent(ReportUrl) + " target=_blank>10-K</a>"
+
+    var headerString = headerName + " " + headerLastClose + " " + headerReg + " " + headerBid + " " + headerAsk + " " + headerReport;
+
+    $('#headerId').html(headerString);
 
     //  alert(shorty);
-    $("#shortNameId").html("<h4>" + shorty + "</h4>");
-    $('#pricesId').html("<h6>Last Close: " + regPrice + "        Post Market: " + postMktPrice + " </h6>");
-    $("#bidId").html("<h6>" + bid + "</h6>");
-    $("#askId").html("<h6>" + ask + "</h6>");
+    //$("#shortNameId").html("<h4>" + shorty  + "</h4>");
+    $('#regPriceId').val(regPrice);
+    $('#previousClosePriceId').val(postMktPrice);
+    $("#bidId").val(bid);
+    $("#askId").val(ask);
 
 
 
@@ -149,27 +163,35 @@ function loadOptionQuotes() {
     $('#quoteTableId').empty();
     $('#quoteTableId').append('<thead><tr></thead></tr>');
     $('#quoteTableId').append('<tbody><tr></tbody></tr>');
-    $('#quoteTableId > thead > tr').append("<td>" + "Last Trade" + "</td>");
-    $('#quoteTableId > thead > tr').append("<td>" + "Last Price" + "</td>");
-    $('#quoteTableId > thead > tr').append("<td>" + "Bid" + "</td>");
-    $('#quoteTableId > thead > tr').append("<td>" + "Ask" + "</td>");
-    $('#quoteTableId > thead > tr').append("<td>" + "Change" + "</td>");
-    $('#quoteTableId > thead > tr').append("<td>" + "Volume" + "</td>");
-    $('#quoteTableId > thead > tr').append("<td>" + "Open Int" + "</td>");
-    $('#quoteTableId > thead > tr').append("<td>" + "Imp Volatility" + "</td>");
+    $('#quoteTableId > thead > tr').append("<th>" + "Last Trade" + "</th>");
+    $('#quoteTableId > thead > tr').append("<th>" + "Last Price" + "</th>");
+    $('#quoteTableId > thead > tr').append("<th>" + "Bid" + "</th>");
+    $('#quoteTableId > thead > tr').append("<th>" + "Ask" + "</th>");
+    $('#quoteTableId > thead > tr').append("<th>" + "Change" + "</th>");
+    $('#quoteTableId > thead > tr').append("<th>" + "% Change" + "</th>");
+    $('#quoteTableId > thead > tr').append("<th>" + "Volume" + "</th>");
+    $('#quoteTableId > thead > tr').append("<th>" + "Open Int" + "</th>");
+    $('#quoteTableId > thead > tr').append("<th>" + "Imp Volatility" + "</th>");
 
-    $('#quoteTableId > tbody > tr').append("<td>" + EpochToDate(strikeDict['lastTradeDate']) + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td>" + EpoctoLocaleString(strikeDict['lastTradeDate']) + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['lastPrice'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td id='optionBid'>" + strikeDict['bid'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['ask'] + "</td>");
-    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['change'] + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td>" + Number(strikeDict['change']).toFixed(2) + "</td>"); //percentChange
+    $('#quoteTableId > tbody > tr').append("<td>" + (Number(strikeDict['percentChange']) / 100).toFixed(2) + "%</td>")
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['volume'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['openInterest'] + "</td>");
-    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['impliedVolatility'] + "</td>");
+    var impVolatility = ((Number(strikeDict['impliedVolatility']) * 100).toFixed(2)) + '%';
+    $('#quoteTableId > tbody > tr').append("<td>" + impVolatility + "</td>");
 
     console.log('outta option quotes');
 
     loadHistoricalLowPrices();
+}
+
+function EpoctoLocaleString(date) {
+    var date = new Date(date * 1000);
+    return date.toLocaleString();
 }
 
 function loadHistoricalLowPrices() {
@@ -182,10 +204,26 @@ function loadHistoricalLowPrices() {
 
     for (var key in historicalPrices) {
         if (historicalPrices.hasOwnProperty(key)) {
-            $('#historicalPricessId > thead > tr').append("<td>" + key + "</td>");
 
-            $('#historicalPricessId > tbody > tr').append("<td>" + historicalPrices[key] + "</td>");
-           
+            //2014
+            //54.96 2014-06-30
+
+            var priceAndDate = historicalPrices[key];
+            var priceAndDateArray = priceAndDate.split(" ");
+            var theDate = priceAndDateArray[1];
+            var Price = Number(priceAndDateArray[0]);
+
+            var date = new Date(theDate);
+            var month = date.getMonth() + 1;
+
+            //$('#historicalPricessId > thead > tr').append("<th>" + key + "</th>");
+
+            //$('#historicalPricessId > tbody > tr').append("<td>" + historicalPrices[key] + "</td>");
+
+            $('#historicalPricessId > thead > tr').append("<th>" + month + " / " + key + "</th>");
+
+            $('#historicalPricessId > tbody > tr').append("<td>" + Price.toFixed(2) + "</td>");
+
         }
 
     }
@@ -194,7 +232,7 @@ function loadHistoricalLowPrices() {
     loadStatementTable();
 }
 
- 
+
 
 
 
@@ -208,7 +246,7 @@ function loadStatementTable() {
     $('#statementTableId').append('<tbody></tbody>');
 
     $('#statementTableId > thead').append('<tr></tr>');
-     
+
     for (var i = 0; i < firstArray.length; i++) {
         var tableHeaderColVal = firstArray[i];
         $('#statementTableId > thead > tr:last').append('<th>' + tableHeaderColVal + '</th>');
@@ -221,7 +259,8 @@ function loadStatementTable() {
         for (var k = 0; k < nextArray.length; k++) {
             var nextId = nextArray[0] + k;
             var colVal = nextArray[k];
-            $('#statementTableId tr:last').append('<td id=' + nextId + '>' + colVal + '</td>');
+            var formattedVal = FormattedValue(colVal);
+            $('#statementTableId tr:last').append('<td id=' + nextId + '>' + formattedVal + '</td>');
         }
 
 
@@ -230,33 +269,94 @@ function loadStatementTable() {
     CalculateBuyPrice();
 }
 
+function FormattedValue(colVal) {
+
+    if (typeof Number(colVal) === 'number' && isFinite(colVal)) {
+        return (Number(colVal)).toLocaleString();
+    }
+
+
+    else return colVal;
+}
+
+function numOfCols()
+{
+    return $('#statementTableId').find('tr')[0].cells.length;
+}
+
 function CalculateBuyPrice() {
 
-    $("#projectedEbitdaId").val(ProjectEbitda());
-    $("#projectedNumOfSharesId").val(ProjectNumOfShares());
+    var ColCount = numOfCols();
+    var finalEbitdaId = "#Ebitda";
+
+    if (ColCount > 1)
+    {
+        finalEbitdaId = finalEbitdaId + (ColCount - 1).toString();
+    }
+    else {
+        finalEbitdaId = "#Ebitda1";
+    }
+
+    var finalEbitdaSearchText = "#statementTableId " + finalEbitdaId;
+    //var finalEbitda = Number($(finalEbitdaSearchText).text().replace(/,/g, ''));
+    var finalEbitda = Number($(finalEbitdaSearchText).text().replace(/,/g, ''));
+    var initialEbitda = Number($("#statementTableId #Ebitda1").text().replace(/,/g, ''));
+    var result = CalculateGrowthRate(initialEbitda, finalEbitda, ColCount - 1);
+    $('#projectedEbitdaGrowthId').val((result * 100).toFixed(2) + " %");
+
+    var projectedEbita = finalEbitda * (1 + result);
+
+    $("#projectedEbitdaId").val(FormattedValue(projectedEbita.toFixed(0)));
+
+    //Weighted_Avg_Diluted Shares
+
+    var finalShareCount = "#statementTableId #Weighted_Avg_Diluted_Shares";
+
+    if (ColCount > 1) {
+        finalShareCount = finalShareCount + (ColCount - 1).toString();
+    }
+    else {
+        finalShareCount = finalShareCount + (1).toString();
+    }
+
+    var finalWtdShareCount = Number($(finalShareCount).text().replace(/,/g, ''));
+    var initialWtdShareCount = Number($('#statementTableId #Weighted_Avg_Diluted_Shares1').text().replace(/,/g, ''));
+
+    var shareCountGrowthRate = CalculateGrowthRate(initialWtdShareCount, finalWtdShareCount, ColCount - 1);
+
+    var projectedShareCount = finalWtdShareCount * (1 + shareCountGrowthRate);
+
+    //var shareGrowthRate = 
+    $("#projectedNumOfSharesId").val(FormattedValue(projectedShareCount.toFixed(0)));
     $("#sharePriceId").val(SharePrice());
-    $("#callPremiumId").val(CallPremiumId());
+    $("#callPremiumId").val($('#optionBid').text());
     $("#lblMinusCurrAssId").val(TotalLblMinusCurrentAssets());
     $("#buyingPriceId").val(BuyingPrice());
     $("#cashFlowMultipleId").val(CashFlowMultiple());
-    
-         // id="calculateId" 
 }
 
+function CalculateGrowthRate(initial, final, periods) {
+    var exp = 1 / periods;
+    var fraction = final / initial;
+    var result = (Math.pow(fraction, exp)) - 1;
+    return result;
+}
+
+
 function ProjectEbitda() {
-    return 960000000;
+    return $("#projectedEbitdaId").val();
 }
 
 function ProjectNumOfShares() {
-    return 140000000;
+    return $('#projectedNumOfSharesId').val();
 }
 
 function SharePrice() {
-    return Number($('#bidId').text());
+    return $('#askId').val();
 }
 
 function CallPremiumId() {
-    return Number($('#optionBid').text());
+    return Number($('#callPremiumId').text());
 }
 
 function TotalLiabiliy() {
@@ -268,15 +368,34 @@ function CurrentAssets() {
 }
 
 function TotalLblMinusCurrentAssets() {
-   return 511477000.0
+
+    var colCount = numOfCols();
+    var LblMinusAssId = '#statementTableId #Weighted_Avg_Diluted_Shares' + (colCount - 1).toString();
+    return (Number($(LblMinusAssId).text().replace(/,/g, ''))).toLocaleString();
+   
 }
 
 function BuyingPrice() {
-    return ((SharePrice() - CallPremiumId()) + ((TotalLblMinusCurrentAssets()) / ProjectNumOfShares()));
+    var sp = Number($('#sharePriceId').val()); 
+    var cp = Number($('#callPremiumId').val());
+    var lblminusass = Number($('#lblMinusCurrAssId').val().replace(/,/g, ''));
+    var numOfShares = Number($('#projectedNumOfSharesId').val().replace(/,/g, ''));
+
+    return (((sp - cp) + ((lblminusass) / numOfShares))).toFixed(2);
 }
 
 function CashFlowMultiple() {
-    return (BuyingPrice() / (ProjectEbitda() / ProjectNumOfShares()));
+    var bprice = BuyingPrice();
+    var projEbitda = Number($("#projectedEbitdaId").val().replace(/,/g, ''));
+    var projNumOfShares = Number($('#projectedNumOfSharesId').val().replace(/,/g, ''));
+
+    var result =  Number(bprice) / (projEbitda / ProjectNumOfShares);
+
+    return result.toFixed(2);
+
+    //var cfm = ((BuyingPrice() / Number($("#projectedEbitdaId").val().replace(/,/g, ''))) / (Number($('#projectedNumOfSharesId').val().replace(/,/g, ''))));
+    //return cfm.toFixed(2);
+    
 }
 
 
@@ -332,7 +451,22 @@ function Epoch(date) {
 }
 
 function EpochToDate(epoch) {
-    return new Date(epoch * 1000).toLocaleString();
+    //return new Date(epoch * 1000).toLocaleString();
+
+    //Fri, 15 Sep 2017 00:00:00 GMT
+    var dt = new Date(epoch * 1000);
+    var day = dt.getUTCDate();
+    var month = dt.getUTCMonth();
+    var year = dt.getUTCFullYear();
+
+    var monthString = months(month);
+    var fullDateString = monthString + " " + day + ", " + year;
+    return fullDateString;
+}
+
+function months(index) {
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    return months[index];
 }
 
 function UpdateStrikes() {

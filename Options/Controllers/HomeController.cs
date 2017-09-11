@@ -26,10 +26,6 @@ namespace Options.Controllers
 
             ViewModel viewModel = new ViewModel();
 
-            var colHeaders = GetStatementColumnHeaders();
-
-            viewModel.JsonStatementColoumnHeaders = colHeaders;
-
             viewModel.Report10KUrl = _intrinioService.GetReport10KUrl(tickerName);
             
             TickerContainer container = _optionService.GetNetTickerContainerFor(tickerName);
@@ -103,17 +99,7 @@ namespace Options.Controllers
             return View();
         }
 
-        public string GetStatementColumnHeaders()
-        {
-            var cols = new List<string>()
-            {
-                "Revenue", "EBIT", "EBITDA", "EBITDA/Revenue", "Total Liab", "Current Assets", "Wt Avg Diluted Shares", "(TLbl - Curr Ass)/Num. of Shares"
-            };
-
-            return JsonConvert.SerializeObject(cols);
-
-        }
-
+        
       
 
         

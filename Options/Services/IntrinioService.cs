@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Options.Models;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Options.Services
 {
@@ -56,7 +57,9 @@ namespace Options.Services
 
                 var leastPriceDate = historicalData.Where(h => DateTime.Parse(h.date).Year == y).Where(p => p.low == leastPrice).First();
 
-                leastPricePerYear.Add(y, leastPrice + "  " + leastPriceDate.date);
+
+
+                leastPricePerYear.Add(y, leastPrice + " " + leastPriceDate.date);
             }
 
             // var dictSTring = JsonConvert.SerializeObject(leastPricePerYear);
@@ -69,13 +72,14 @@ namespace Options.Services
         public string GetReport10KUrl(string ticker)
         {
             string urlString = _urlService.Report10KUrl(ticker);
+
             string responseString = _netService.GetResponseFor(urlString);
 
             Report10K report10K = JsonConvert.DeserializeObject<Report10K>(responseString);
 
-
-
             string report10KUrlString = report10K.data.First().report_url;
+
+           // var encodedUrl = WebUtility.HtmlEncode(report10KUrlString);
 
             return report10KUrlString;
         }
@@ -90,9 +94,21 @@ namespace Options.Services
 
             StandardizedFinancial standardizedFinancial = JsonConvert.DeserializeObject<StandardizedFinancial>(responseString);
 
-            Dictionary<int, string> fiscalYears = standardizedFinancial.data.Take(3).Select(d => new { d.fiscal_year, d.end_date }).ToDictionary(t => t.fiscal_year, t => t.end_date);
+            Func<int> numOfYears = () =>
+            {
+                if (standardizedFinancial.data.Count() >= 3) return 3;
+                if (standardizedFinancial.data.Count() >= 2) return 2;
+                return 1;
+            };
 
-            return fiscalYears;
+            
+
+            Dictionary<int, string> fiscalYears = standardizedFinancial.data.Take(numOfYears()).Select(d => new { d.fiscal_year, d.end_date }).ToDictionary(t => t.fiscal_year, t => t.end_date);
+
+            //Sorted dictionary
+            Dictionary<int, string> fiscalYearsSorted = fiscalYears.OrderBy(d => d.Key).ToDictionary(d => d.Key, d => d.Value);
+
+            return fiscalYearsSorted;
         }
 
         public Dictionary<int, Dictionary<string, Dictionary<string, string>>> GetStatements(string ticker, Dictionary<int, string> fiscalYears)
@@ -246,7 +262,7 @@ namespace Options.Services
             //weightedavedilutedsharesos
 
             List<string> WeightedAvgDilutedShares = new List<string>();
-            WeightedAvgDilutedShares.Add("Weighted_Avg_Diluted Shares");
+            WeightedAvgDilutedShares.Add("Weighted_Avg_Diluted_Shares");
             foreach (var key in statements.Keys)
             {
                 var row = statements[key]["income_statement"]["weightedavedilutedsharesos"];
