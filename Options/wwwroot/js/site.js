@@ -256,7 +256,7 @@ function loadHistoricalLowPrices() {
 
 function loadStatementTable() {
 
-    var firstArray = JsonStatementTable[0];
+    var firstArray = JsonStatementTable[JsonStatementTable.length - 1];
 
     $('#statementTableId').empty();
 
@@ -269,7 +269,7 @@ function loadStatementTable() {
         var tableHeaderColVal = firstArray[i];
         $('#statementTableId > thead > tr:last').append('<th>' + tableHeaderColVal + '</th>');
     }
-    for (var j = 0; j < JsonStatementTable.length - 1; j++) {
+    for (var j = 0; j < JsonStatementTable.length - 2; j++) {
 
         $('#statementTableId > tbody').append('<tr></tr>');
 
@@ -385,9 +385,9 @@ function CurrentAssets() {
 }
 
 function TotalLblMinusCurrentAssets() {
-
+    
     var colCount = numOfCols();
-    var LblMinusAssId = '#statementTableId #Weighted_Avg_Diluted_Shares' + (colCount - 1).toString();
+    var LblMinusAssId = '#statementTableId #Total_Lbs_Minus_Assets' + (colCount - 1).toString();
     return (Number($(LblMinusAssId).text().replace(/,/g, ''))).toLocaleString();
 
 }

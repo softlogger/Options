@@ -277,6 +277,14 @@ namespace Options.Services
                 FreeCashFlow.Add(rowWithoutDecimal);
             }
 
+            List<string> EndDates = new List<string>();
+            EndDates.Add("");
+            foreach(var key in statements.Keys)
+            {
+                var row = statements[key]["income_statement"]["end_date"];
+                EndDates.Add(row);
+            }
+
 
             statementTable.Add(colHeader);
             statementTable.Add(Revenues);
@@ -288,6 +296,7 @@ namespace Options.Services
             statementTable.Add(TotalLiabilitesMinusCurrentAssets);
             statementTable.Add(WeightedAvgDilutedShares);
             statementTable.Add(FreeCashFlow);
+            statementTable.Add(EndDates);
 
             /*
 Inc State "income_statement"
