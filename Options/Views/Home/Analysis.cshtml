@@ -1,86 +1,88 @@
 ﻿@model Options.Models.ViewModel
-<div class="container">
-    <div class="form-group row">
-        <div class="col-md-4">
-            <div>
-                <p></p>
-                <input id="ticker" placeholder="enter ticker" />
-                <button id="searchTickerBtn" onclick="searchTicker()">Search <span class="glyphicon glyphicon-search"></span></button>
-            </div>
-        </div>
 
-        <div class="col-md-8">
-            <p id="headerId" class="form-control-static"> </p>
-            <input id="askId" type="hidden" />
+<div class="form-group row">
+    <div class="col-md-4">
+        <div>
+            <p></p>
+            <input id="ticker" placeholder="enter ticker" />
+            <button id="searchTickerBtn" onclick="searchTicker()">Search <span class="glyphicon glyphicon-search"></span></button>
         </div>
     </div>
 
-    <div>
-        <label>Expiration Date:</label>
-        <select id="expDateId" onchange="loadStrikes()"></select>
-
-        <label>Strike:</label>
-        <select id="strikeId" onchange="loadOptionQuotes()"></select>
+    <div class="col-md-8">
+        <p id="headerId" class="form-control-static"> </p>
+        <input id="askId" type="hidden" />
     </div>
-
-
-    <div>
-        <table id="quoteTableId" class="table table-bordered table-condensed table-hover"></table>
-    </div>
-
-
-    <div>
-        <label><strong>Low Prices</strong></label>
-        <table id="historicalPricessId" class="table table-bordered table-condensed table-hover col-sm-push-6"></table>
-    </div>
-
-    <div>
-
-        <table id="fiscalYearsId" class="table table-bordered table-hover table-condensed col-sm-push-6"></table>
-    </div>
-
-
-
-    <div class="row">
-        <div class="col-md-6">
-            <table id="statementTableId" class="table table-bordered table-condensed table-striped table-hover"></table>
-        </div>
-
-        <div class="col-md-6">
-            <form class="form-horizontal">
-                <div class="form-group form-group-sm">
-                    <label class="col-md-5  text-right">Projected Ebitda Growth: </label><input class="col-md-3" id="projectedEbitdaGrowthId" /><label class=" col-md-2 text-right"><input name="ebitda" type="radio" value="">     Freeze</label>
-                </div>
-                <div class="form-group form-group-sm">
-                    <label class="col-md-5  text-right">Projected Ebitda: </label><input class="col-md-3" id="projectedEbitdaId" /><label class=" col-md-2 text-right"><input name="ebitda" type="radio" value="">     Freeze</label>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-5   text-right">Projected # of shares: </label><input class="col-md-3" id="projectedNumOfSharesId" /><label class="  col-md-2 text-right"><input type="checkbox" value="">     Freeze</label>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-5   text-right">Share Price: </label><input class="col-md-3" id="sharePriceId" /><label class="  col-md-2 text-right"><input type="checkbox" value="">     Freeze</label>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-5  text-right">Call Premium: </label><input class="col-md-3" id="callPremiumId" /><label class="  col-md-2 text-right"><input type="checkbox" value="">     Freeze</label>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-5  text-right">Liab minus Crnt Assets: </label><input class="col-md-3" id="lblMinusCurrAssId" /><label class="  col-md-2 text-right"><input type="checkbox" value="">     Freeze</label>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-5   text-right" title="Share Price - Bying price">Buying Price: </label><input class="col-md-3" id="buyingPriceId" />
-                </div>
-                <div class="form-group">
-                    <label class="col-md-5   text-right">Cash Flow Multiple: </label><input class="col-md-3" id="cashFlowMultipleId" /> <button id="calculateId" onclick="CalculateBuyPrice()" class="col-md-offset-1 col-md-2 btn btn-primary">Caculate</button>
-                </div>
-                @*<div class="form-group">
-
-                        <button id="calculateId" onclick="CalculateBuyPrice()" class="col-md-offset-10  col-md-2 btn btn-primary pull-right">Caculate</button>
-                    </div>*@
-            </form>
-        </div>
-    </div>
-
 </div>
+
+<div>
+    <label>Expiration Date:</label>
+    <select id="expDateId" onchange="loadStrikes()"></select>
+
+    <label>Strike:</label>
+    <select id="strikeId" onchange="loadOptionQuotes()"></select>
+</div>
+
+
+<div>
+    <table id="quoteTableId" class="table table-bordered table-condensed table-hover"></table>
+</div>
+
+
+<div>
+    <label><strong>Low Prices</strong></label>
+    <table id="historicalPricessId" class="table table-bordered table-condensed table-hover col-sm-push-6"></table>
+</div>
+
+<div>
+
+    <table id="fiscalYearsId" class="table table-bordered table-hover table-condensed col-sm-push-6"></table>
+</div>
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <table id="statementTableId" class="table table-bordered table-condensed table-striped table-hover"></table>
+    </div>
+
+    <div class="col-md-6">
+        <form class="form-horizontal">
+            <div class="form-group form-group-sm">
+                <label id="growthRateId" class="col-md-5  text-right">Projected Ebitda Growth: </label><input class="col-md-3" id="projectedEbitdaGrowthId" /><label class=" col-md-2 text-right"><input id="projectedEbitdaGrowthCheckId" type="checkbox" value="">     Freeze</label>
+            </div>
+            <div class="form-group form-group-sm">
+                <label id="projectedEbitdaFormulaId" class="col-md-5  text-right">Projected Ebitda: </label><input class="col-md-3" id="projectedEbitdaId" /><label class=" col-md-2 text-right"><input id="projectedEbitdaCheckId" type="checkbox" value="">     Freeze</label>
+            </div>
+            <div class="form-group">
+                <label id="projectedNumOfSharesFormulaId"  class="col-md-5   text-right">Projected # of shares: </label><input class="col-md-3" id="projectedNumOfSharesId" /><label class="  col-md-2 text-right"><input id="projectedNumOfSharesCheck" type="checkbox" value="">     Freeze</label>
+            </div>
+            <div class="form-group">
+                <label class="col-md-5   text-right">Share Price: </label><input class="col-md-3" id="sharePriceId" /><label class="  col-md-2 text-right"><input id="sharePriceCheck" type="checkbox" value="">     Freeze</label>
+            </div>
+            <div class="form-group">
+                <label class="col-md-5  text-right">Call Premium: </label><input class="col-md-3" id="callPremiumId" /><label class="  col-md-2 text-right"><input id='callPremiumCheck' type="checkbox" value="">     Freeze</label>
+            </div>
+            <div class="form-group">
+                <label class="col-md-5  text-right">Liab minus Crnt Assets: </label><input class="col-md-3" id="lblMinusCurrAssId" /><label class="  col-md-2 text-right"><input id="lblMinusCurrAssCheck" type="checkbox" value="">     Freeze</label>
+            </div>
+            <div class="form-group">
+              
+                <label id="buyingPriceFormulaId"  class="col-md-5   text-right">Buying Price: </label><input class="col-md-3" id="buyingPriceId" />
+            </div>
+            <div class="form-group">
+                
+                <label id="cashFlowFormulaId"  class="col-md-5  text-right">Cash Flow Multiple: </label><input class="col-md-3" id="cashFlowMultipleId" /> <button id="calculateId" onclick="CalculateBuyPrice()" class="col-md-offset-1 col-md-2 btn btn-primary">Caculate</button>
+            </div>
+            @*<div class="form-group">
+
+                    <button id="calculateId" onclick="CalculateBuyPrice()" class="col-md-offset-10  col-md-2 btn btn-primary pull-right">Caculate</button>
+                </div>*@
+        </form>
+    </div>
+</div>
+
+
 
 
 <script>

@@ -189,10 +189,7 @@ namespace Options.Services
 
         public List<List<string>> GetStatementsTable(Dictionary<int, Dictionary<string, Dictionary<string, string>>> statements)
         {
-            var cols = new List<string>()
-            {
-                "Revenue", "EBIT", "EBITDA", "EBITDA_Per_Revenue", "Total Liab", "Current Assets", "Wt Avg Diluted Shares", "(TLbl - Curr Ass)/Num. of Shares"
-            };
+           
 
             List<List<string>> statementTable = new List<List<string>>();
 
@@ -276,9 +273,11 @@ namespace Options.Services
             foreach (var key in statements.Keys)
             {
                 var row = statements[key]["calculations"]["freecashflow"];
-                FreeCashFlow.Add(row);
+                var rowWithoutDecimal = row.Remove(row.IndexOf('.'));
+                FreeCashFlow.Add(rowWithoutDecimal);
             }
-            
+
+
             statementTable.Add(colHeader);
             statementTable.Add(Revenues);
             statementTable.Add(Ebit);
