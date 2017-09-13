@@ -5,7 +5,7 @@
         <div>
             <p></p>
             <input id="ticker" placeholder="enter ticker" />
-            <button id="searchTickerBtn" onclick="searchTicker()">Search <span class="glyphicon glyphicon-search"></span></button>
+            <button id="searchTickerBtn" class="btn btn-primary" onclick="searchTicker()">Search <span class="glyphicon glyphicon-search"></span></button>
         </div>
     </div>
 
@@ -15,12 +15,17 @@
     </div>
 </div>
 
+@{ 
+    if (Model == null)
+    { return; }
+}
+
 <div>
     <label>Expiration Date:</label>
     <select id="expDateId" onchange="loadStrikes()"></select>
 
     <label>Strike:</label>
-    <select id="strikeId" onchange="loadOptionQuotes()"></select>
+    <select id="strikeId" onchange="loadOptionQuotes();callPremiumChanged()"></select>
 </div>
 
 
@@ -33,12 +38,6 @@
     <label><strong>Low Prices</strong></label>
     <table id="historicalPricessId" class="table table-bordered table-condensed table-hover col-sm-push-6"></table>
 </div>
-
-<div>
-
-    <table id="fiscalYearsId" class="table table-bordered table-hover table-condensed col-sm-push-6"></table>
-</div>
-
 
 
 <div class="row">
@@ -55,29 +54,26 @@
                 <label id="projectedEbitdaFormulaId" class="col-md-5  text-right">Projected Ebitda: </label><input class="col-md-3" id="projectedEbitdaId" /><label class=" col-md-2 text-right"><input id="projectedEbitdaCheckId" type="checkbox" value="">     Freeze</label>
             </div>
             <div class="form-group">
-                <label id="projectedNumOfSharesFormulaId"  class="col-md-5   text-right">Projected # of shares: </label><input class="col-md-3" id="projectedNumOfSharesId" /><label class="  col-md-2 text-right"><input id="projectedNumOfSharesCheck" type="checkbox" value="">     Freeze</label>
+                <label id="projectedNumOfSharesFormulaId"  class="col-md-5   text-right">Projected # of shares: </label><input class="col-md-3" id="projectedNumOfSharesId" /><label class="  col-md-2 text-right"><input id="projectedNumOfSharesCheckId" type="checkbox" value="">     Freeze</label>
             </div>
             <div class="form-group">
-                <label class="col-md-5   text-right">Share Price: </label><input class="col-md-3" id="sharePriceId" /><label class="  col-md-2 text-right"><input id="sharePriceCheck" type="checkbox" value="">     Freeze</label>
+                <label class="col-md-5   text-right">Share Price: </label><input class="col-md-3" id="sharePriceId" /><label class="  col-md-2 text-right"><input id="sharePriceCheckId" type="checkbox" value="">     Freeze</label>
             </div>
             <div class="form-group">
-                <label class="col-md-5  text-right">Call Premium: </label><input class="col-md-3" id="callPremiumId" /><label class="  col-md-2 text-right"><input id='callPremiumCheck' type="checkbox" value="">     Freeze</label>
+                <label class="col-md-5  text-right">Call Premium: </label><input class="col-md-3" id="callPremiumId" /><label class="  col-md-2 text-right"><input id='callPremiumCheckId' type="checkbox" value="">     Freeze</label>
             </div>
             <div class="form-group">
-                <label class="col-md-5  text-right">Liab minus Crnt Assets: </label><input class="col-md-3" id="lblMinusCurrAssId" /><label class="  col-md-2 text-right"><input id="lblMinusCurrAssCheck" type="checkbox" value="">     Freeze</label>
+                <label class="col-md-5  text-right">Liab minus Crnt Assets: </label><input class="col-md-3" id="lblMinusCurrAssId" /><label class="  col-md-2 text-right"><input id="lblMinusCurrAssCheckId" type="checkbox" value="">     Freeze</label>
             </div>
             <div class="form-group">
               
-                <label id="buyingPriceFormulaId"  class="col-md-5   text-right">Buying Price: </label><input class="col-md-3" id="buyingPriceId" />
+                <label id="buyingPriceFormulaId"  class="col-md-5   text-right">Buying Price: </label><input class="col-md-3" id="buyingPriceId" /><button id="resetId" type="button" class="col-xs-offset-1 col-xs-2 btn btn-primary btn-sm">Reset</button>
             </div>
             <div class="form-group">
                 
-                <label id="cashFlowFormulaId"  class="col-md-5  text-right">Cash Flow Multiple: </label><input class="col-md-3" id="cashFlowMultipleId" /> <button id="calculateId" onclick="CalculateBuyPrice()" class="col-md-offset-1 col-md-2 btn btn-primary">Caculate</button>
+                <label id="cashFlowFormulaId"  class="col-md-5  text-right">Cash Flow Multiple: </label><input class="col-md-3" id="cashFlowMultipleId" /> <button id="recalculateId"  type="button" class="col-xs-offset-1 col-md-2 btn btn-primary btn-sm">Re-Caculate</button>
             </div>
-            @*<div class="form-group">
-
-                    <button id="calculateId" onclick="CalculateBuyPrice()" class="col-md-offset-10  col-md-2 btn btn-primary pull-right">Caculate</button>
-                </div>*@
+           
         </form>
     </div>
 </div>
@@ -98,24 +94,3 @@
 </script>
 
 
-
-<!--
-    PANEL EXAMPLE
-
-<div class="container">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="row">
-                <input id="ticker" placeholder="enter ticker" />
-                <button class="btn btn-link col-lg-pull-2" id="searchButton" type="button">Search  <span class="glyphicon glyphicon-search"></span></button>
-            </div>
-        </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div id="expirationWidget" class="row"></div>
-        </div>
-    </div>
-</div>
-
--->

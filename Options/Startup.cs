@@ -59,7 +59,7 @@ namespace Options
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Search}/{id?}");
+                    template: "{controller=Home}/{action=Analysis}/{id?}");
             });
         }
     }

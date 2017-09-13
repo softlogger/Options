@@ -71,15 +71,18 @@ namespace Options.Services
 
         public string GetReport10KUrl(string ticker)
         {
+            string report10KUrlString = "Error";
+
             string urlString = _urlService.Report10KUrl(ticker);
 
             string responseString = _netService.GetResponseFor(urlString);
 
             Report10K report10K = JsonConvert.DeserializeObject<Report10K>(responseString);
 
-            string report10KUrlString = report10K.data.First().report_url;
+            if (report10K.result_count > 0)
+                report10KUrlString = report10K.data.First().report_url;
 
-           // var encodedUrl = WebUtility.HtmlEncode(report10KUrlString);
+            // var encodedUrl = WebUtility.HtmlEncode(report10KUrlString);
 
             return report10KUrlString;
         }
@@ -101,7 +104,7 @@ namespace Options.Services
                 return 1;
             };
 
-            
+
 
             Dictionary<int, string> fiscalYears = standardizedFinancial.data.Take(numOfYears()).Select(d => new { d.fiscal_year, d.end_date }).ToDictionary(t => t.fiscal_year, t => t.end_date);
 
@@ -189,14 +192,14 @@ namespace Options.Services
 
         public List<List<string>> GetStatementsTable(Dictionary<int, Dictionary<string, Dictionary<string, string>>> statements)
         {
-           
+
 
             List<List<string>> statementTable = new List<List<string>>();
 
             List<string> colHeader = statements.Keys.Select(k => k.ToString()).ToList();
-            
+
             colHeader.Insert(0, string.Empty);
-            
+
 
             List<string> Revenues = new List<string>();
             Revenues.Add("Total_Revenue");
@@ -205,7 +208,7 @@ namespace Options.Services
                 var row = statements[key]["income_statement"]["totalrevenue"];
                 Revenues.Add(row);
             }
-            
+
 
             List<string> Ebit = new List<string>();
             Ebit.Add("Ebit");
@@ -214,7 +217,7 @@ namespace Options.Services
                 var row = statements[key]["calculations"]["ebit"];
                 Ebit.Add(row);
             }
-            
+
 
             List<string> Ebitda = new List<string>();
             Ebitda.Add("Ebitda");
@@ -223,7 +226,7 @@ namespace Options.Services
                 var row = statements[key]["calculations"]["ebitda"];
                 Ebitda.Add(row);
             }
-            
+
 
             List<string> EbitdaPerRev = new List<string>();
             EbitdaPerRev.Add("Ebitda_Per_Revenue");
@@ -232,7 +235,7 @@ namespace Options.Services
                 var row = statements[key]["calculations"]["ebitdamargin"];
                 EbitdaPerRev.Add(row);
             }
-           
+
 
             List<string> TotalLiabilities = new List<string>();
             TotalLiabilities.Add("Total_Liabilities");
@@ -255,7 +258,7 @@ namespace Options.Services
             }
 
 
-         
+
             //weightedavedilutedsharesos
 
             List<string> WeightedAvgDilutedShares = new List<string>();
@@ -279,7 +282,7 @@ namespace Options.Services
 
             List<string> EndDates = new List<string>();
             EndDates.Add("");
-            foreach(var key in statements.Keys)
+            foreach (var key in statements.Keys)
             {
                 var row = statements[key]["income_statement"]["end_date"];
                 EndDates.Add(row);

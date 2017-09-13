@@ -22,6 +22,8 @@ namespace Options.Controllers
 
         public IActionResult Analysis(string tickerName)
         {
+            if (string.IsNullOrEmpty(tickerName)) return View(null);
+
             tickerName = tickerName.ToUpper();
 
             ViewModel viewModel = new ViewModel();

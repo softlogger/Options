@@ -33,7 +33,16 @@ namespace Options.Services
             foreach(var xDate in expDates)
             {
                 responseString = _netService.GetResponseFor(GetURLFor(ticker, xDate));
-                containers.Add(JsonConvert.DeserializeObject<OptionContainer>(responseString));
+                var cntr = JsonConvert.DeserializeObject<OptionContainer>(responseString);
+                if (cntr.optionChain.error == null && cntr.optionChain.result.FirstOrDefault().options.FirstOrDefault().calls.Count() > 0)
+                {
+                    containers.Add(cntr);
+                }
+                else
+                {
+                    container.optionChain.result.FirstOrDefault().expirationDates = container.optionChain.result.FirstOrDefault().expirationDates.Where(e => e != xDate).ToArray();
+                   
+                }
             }
 
             TickerContainer tickerContainer = new TickerContainer();

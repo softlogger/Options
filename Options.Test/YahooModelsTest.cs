@@ -35,9 +35,9 @@ namespace Options.Test
             }
         }
 
-        [DataRow("MSFT", "1547769600")]
-        [DataRow("MSFT", "1518739200")]
-        [DataRow("MSFT", "")]
+        //[DataRow("MSFT", "1547769600")]
+        //[DataRow("MSFT", "1518739200")]
+        [DataRow("GPRO", "")]
         [TestMethod]
         public void VerifyOptionContainer_Net(string ticker, string expirationDate)
         {
@@ -65,7 +65,22 @@ namespace Options.Test
             OptionContainer containerFromNet = JsonConvert.DeserializeObject<OptionContainer>(responseStringFromNet);
             Assert.IsNull(containerFromNet.optionChain.error);
 
+            List<string> expDates = containerFromNet.optionChain.result.First().expirationDates.Select(e => e.ToString()).ToList();
 
+
+
+            foreach(var date in expDates)
+            {
+                string url = @"https://query1.finance.yahoo.com/v7/finance/options/" + ticker + "?&date=" + date;
+
+                string responseString = ResponseStringFromNet(url);
+
+                OptionContainer optionContainer = JsonConvert.DeserializeObject<OptionContainer>(responseString);
+
+                Assert.IsNotNull(optionContainer);
+                Assert.IsTrue(optionContainer.optionChain.result.First().options.Count() > 0);
+
+            }
         }
 
         [DataRow(@"C:\Users\Paresh\Documents\FileTransfer\Intrinio\BBBY_OptionChain.txt")]
