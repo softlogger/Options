@@ -13,14 +13,14 @@
 
 function loadInitial() {
     loadHeader();
-    bindEvents(); //freeze, unfreeze, ToDo: search, reset, recalculate
+    bindEvents();
     loadHistoricalLowPrices();
     loadExpDates();
     loadStrikes();
     loadOptionQuotes();
     loadStatementTable();
     loadToolTips();
-    
+
     setEbitdaGrowthRate();
     setprojectedEbitda();
     setProjectedNumberOfShares();
@@ -42,7 +42,7 @@ function loadHeader() {
     var headerReg = "Regular:<strong> " + regPrice + "</strong>";
     var headerBid = "Bid:<strong> " + bid + "</strong>";
     var headerAsk = "Ask:<strong> " + ask + "</strong>";
-    var headerReport = "<a href=" + decodeURIComponent(ReportUrl) + " target=_blank type=button class='btn btn-primary btn-small'>10-K</a>"
+    var headerReport = "<a href=" + decodeURIComponent(ReportUrl) + " target=_blank type=button class='btn'>10-K</a>"
 
     var headerString = headerName + " " + headerLastClose + " " + headerReg + " " + headerBid + " " + headerAsk + " " + headerReport;
 
@@ -58,6 +58,8 @@ function bindEvents() {
     $('#projectedEbitdaCheckId').on('click', EbitdaChanged);
     $('#resetId').on('click', Reset);
     $('#recalculateId').on('click', Recalculate);
+    $('#expDateId').on('change', expirationChanged);
+    $('#strikeId').on('change', strikesChanged);
 }
 
 function loadHistoricalLowPrices() {
@@ -99,6 +101,18 @@ function loadExpDates() {
     var finalDateValue = jsonDates[jsonDates.length - 1];
     console.log(finalDateValue);
     $('#expDateId option[value=' + finalDateValue + ']').prop('selected', 'selected');
+
+}
+
+function expirationChanged() {
+    loadStrikes();
+    loadOptionQuotes();
+    callPremiumChanged();
+}
+
+function strikesChanged() {
+    loadOptionQuotes();
+    callPremiumChanged();
 }
 
 function loadStrikes() {
@@ -122,8 +136,7 @@ function loadStrikes() {
     if (highStrike == 0) {
         $('#strikeId').val(strikes[strikes.length - 1]);
     }
-    else
-    {
+    else {
         $('#strikeId').val(highStrike);
     }
 
@@ -155,7 +168,7 @@ function loadOptionQuotes() {
     $('#quoteTableId > tbody > tr').append("<td id='optionBid'>" + strikeDict['bid'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['ask'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + Number(strikeDict['change']).toFixed(2) + "</td>"); //percentChange
-    $('#quoteTableId > tbody > tr').append("<td>" + (Number(strikeDict['percentChange']) / 100).toFixed(2) + "%</td>")
+    $('#quoteTableId > tbody > tr').append("<td>" + (Number(strikeDict['percentChange'])).toFixed(2) + "%</td>")
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['volume'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['openInterest'] + "</td>");
     var impVolatility = ((Number(strikeDict['impliedVolatility']) * 100).toFixed(2)) + '%';
@@ -306,7 +319,14 @@ function EpoctoLocaleString(date) {
 
 function Reset() {
     Unfreeze();
-
+    setEbitdaGrowthRate();
+    setprojectedEbitda();
+    setProjectedNumberOfShares();
+    setSharePrice();
+    setCallPremium();
+    setLiabilityMinusCurrentAsset();
+    setBuyingPrice();
+    setCashFlowMultiple();
 }
 
 function Unfreeze() {
@@ -378,7 +398,7 @@ function CashFlowMultiple() {
 
     var result = bprice / (projEbitda / projNumOfShares);
 
-    return result.toFixed(2);
+    return result.toFixed(3);
 
 }
 
@@ -461,19 +481,17 @@ function buyingPriceFormula() {
 
 function cashFlowFormula() {
 
-    return "(Projected EBITDA/Projected Num of Shares) / Buying Price)";
+    return "Buying Price / (Projected EBITDA/Projected Num of Shares)";
 }
 
 
-function callPremiumChanged()
-{
+function callPremiumChanged() {
     setCallPremium();
     setBuyingPrice();
     setCashFlowMultiple();
 }
 
-function Recalculate()
-{
+function Recalculate() {
     alert("recalcualte");
 }
 
