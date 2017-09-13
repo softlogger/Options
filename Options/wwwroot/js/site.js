@@ -60,7 +60,11 @@ function bindEvents() {
     $('#recalculateId').on('click', Recalculate);
     $('#expDateId').on('change', expirationChanged);
     $('#strikeId').on('change', strikesChanged);
+    
+   
 }
+
+
 
 function loadHistoricalLowPrices() {
 
@@ -327,6 +331,7 @@ function Reset() {
     setLiabilityMinusCurrentAsset();
     setBuyingPrice();
     setCashFlowMultiple();
+   
 }
 
 function Unfreeze() {
@@ -492,7 +497,8 @@ function callPremiumChanged() {
 }
 
 function Recalculate() {
-    alert("recalcualte");
+    setBuyingPrice();
+    setCashFlowMultiple();
 }
 
 function backup() {
