@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Options.Services;
+using Serilog;
+using System.IO;
 
 namespace Options
 {
@@ -21,6 +23,14 @@ namespace Options
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            if (env.IsDevelopment())
+            {
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Information()
+                    .WriteTo.RollingFile(Path.Combine(env.ContentRootPath, "log-{ Date}.txt"))
+                    .CreateLogger();
+            }
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -34,7 +44,7 @@ namespace Options
             services.AddScoped<IUrlService, UrlService>();
             services.AddScoped<IOptionService, OptionService>();
             services.AddScoped<IIntrinioService, IntrinioService>();
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +52,8 @@ namespace Options
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+            loggerFactory.AddAzureWebAppDiagnostics();
+            loggerFactory.AddSerilog();
 
             if (env.IsDevelopment())
             {

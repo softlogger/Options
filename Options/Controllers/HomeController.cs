@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Options.Services;
 using Options.Models;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace Options.Controllers
 {
@@ -13,15 +14,19 @@ namespace Options.Controllers
     {
         IOptionService _optionService;
         IIntrinioService _intrinioService;
+        ILogger<HomeController> _logger;
 
-        public HomeController(IOptionService optionService, IIntrinioService intrinioService)
+        public HomeController(IOptionService optionService, IIntrinioService intrinioService, ILogger<HomeController> logger)
         {
             _optionService = optionService;
             _intrinioService = intrinioService;
+            _logger = logger;
         }
 
         public IActionResult Analysis(string tickerName)
         {
+            _logger.LogInformation($"**** {this.ControllerContext.ActionDescriptor.ControllerName} {this.ControllerContext.ActionDescriptor.ActionName} for ticker {tickerName}");
+
             if (string.IsNullOrEmpty(tickerName)) return View(null);
 
             tickerName = tickerName.ToUpper();
