@@ -1,5 +1,7 @@
 ﻿$(document).ready(function () {
 
+    alert("WFT is going on");
+
     $('#ticker').focus();
 
     $(document).bind('keypress', function (e) {

@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /Options/log-{ Date}-20170915.txt
+/Options/Properties/PublishProfiles/coveredcalls - Web Deploy.pubxml
