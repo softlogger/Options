@@ -29,7 +29,7 @@ namespace Options.Controllers
 
             if (string.IsNullOrEmpty(tickerName)) return View(null);
 
-            tickerName = tickerName.ToUpper();
+            tickerName = tickerName.ToUpper().Trim();
 
             ViewModel viewModel = new ViewModel();
 
