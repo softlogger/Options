@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /Options/log-{ Date}-20170915.txt
 /Options/Properties/PublishProfiles/coveredcalls - Web Deploy.pubxml
+/Options/log-20170915.txt

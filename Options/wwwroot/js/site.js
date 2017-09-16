@@ -39,6 +39,10 @@ function loadHeader() {
     var regPrice = jsonQuoteObject["regularMarketPreviousClose"];
     var postMktPrice = jsonQuoteObject["postMarketPrice"];
 
+    if (typeof postMktPrice === 'number') {
+        postMktPrice = Number(postMktPrice).toFixed(2);
+    }
+
     var headerName = "<h4><strong>" + shorty + "</strong><h4>";
     var headerLastClose = "Last Close:<strong> " + postMktPrice + "</strong>";
     var headerReg = "Regular:<strong> " + regPrice + "</strong>";

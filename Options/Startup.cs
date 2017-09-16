@@ -28,7 +28,7 @@ namespace Options
             {
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Information()
-                    .WriteTo.RollingFile(Path.Combine(env.ContentRootPath, "log-{ Date}.txt"))
+                    .WriteTo.RollingFile(Path.Combine(env.ContentRootPath, "log-{Date}.txt"))
                     .CreateLogger();
             }
         }

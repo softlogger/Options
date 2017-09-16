@@ -25,7 +25,11 @@ namespace Options.Controllers
 
         public IActionResult Analysis(string tickerName)
         {
-            _logger.LogInformation($"**** {this.ControllerContext.ActionDescriptor.ControllerName} {this.ControllerContext.ActionDescriptor.ActionName} for ticker {tickerName}");
+            var ipAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+
+            _logger.LogInformation($"**** {this.ControllerContext.ActionDescriptor.ControllerName} {this.ControllerContext.ActionDescriptor.ActionName} for ticker {tickerName} connection from {ipAddress}");
+
+            
 
             if (string.IsNullOrEmpty(tickerName)) return View(null);
 
