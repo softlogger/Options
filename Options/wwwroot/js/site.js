@@ -102,6 +102,7 @@ function loadHistoricalLowPrices() {
 
 }
 
+
 function loadExpDates() {
     var ele = '#expDateId';
     $(ele).empty();
@@ -149,7 +150,7 @@ function loadStrikes() {
     else {
         $('#strikeId').val(highStrike);
     }
-
+    
 }
 
 function loadOptionQuotes() {

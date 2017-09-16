@@ -29,8 +29,6 @@ namespace Options.Controllers
 
             _logger.LogInformation($"**** {this.ControllerContext.ActionDescriptor.ControllerName} {this.ControllerContext.ActionDescriptor.ActionName} for ticker {tickerName} connection from {ipAddress}");
 
-            
-
             if (string.IsNullOrEmpty(tickerName)) return View(null);
 
             tickerName = tickerName.ToUpper().Trim();
@@ -55,7 +53,9 @@ namespace Options.Controllers
 
             viewModel.Statements = Statements;
 
-            List<List<string>> statementTable = _intrinioService.GetStatementsTable(Statements);
+            List<List<string>> statementTable = _intrinioService.GetStatementsTable(Statements, HistoricalLowPrices);
+
+           // List<List<String>> projectedStatementTable = _intrinioService.GetProjectedStatementTable(statementTable);
 
             viewModel.StatementTable = statementTable;
 

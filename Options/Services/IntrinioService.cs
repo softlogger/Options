@@ -190,7 +190,7 @@ namespace Options.Services
             return tagValueDictionary;
         }
 
-        public List<List<string>> GetStatementsTable(Dictionary<int, Dictionary<string, Dictionary<string, string>>> statements)
+        public List<List<string>> GetStatementsTable(Dictionary<int, Dictionary<string, Dictionary<string, string>>> statements, Dictionary<int, string> historicalLowPrices)
         {
 
 
@@ -198,8 +198,7 @@ namespace Options.Services
 
             List<string> colHeader = statements.Keys.Select(k => k.ToString()).ToList();
 
-            colHeader.Insert(0, string.Empty);
-
+            colHeader.Insert(0, "");
 
             List<string> Revenues = new List<string>();
             Revenues.Add("Total_Revenue");
@@ -269,19 +268,38 @@ namespace Options.Services
                 WeightedAvgDilutedShares.Add(row);
             }
 
-            //freecashflow
-
-            List<string> FreeCashFlow = new List<string>();
-            FreeCashFlow.Add("Free_Cash_Flow");
-            foreach (var key in statements.Keys)
+            List<string> BuyingPrice = new List<string>();
+            BuyingPrice.Add("Buying_Price");
+            int index = 1;
+            foreach( var key in statements.Keys)
             {
-                var row = statements[key]["calculations"]["freecashflow"];
-                var rowWithoutDecimal = row.Remove(row.IndexOf('.'));
-                FreeCashFlow.Add(rowWithoutDecimal);
+                var lowestStock = historicalLowPrices[key];
+                var lowestStockPrice = decimal.Parse(lowestStock.Split(' ')[0]);
+                var LiabMinusAssets = decimal.Parse(TotalLiabilitesMinusCurrentAssets[index]);
+                var numOfShares = decimal.Parse(WeightedAvgDilutedShares[index]);
+
+                var buyingPriceRow = lowestStockPrice + (LiabMinusAssets / numOfShares);
+                BuyingPrice.Add(buyingPriceRow.ToString("0.##"));
+                index++;
             }
 
+            List<string> CashFlowMultiple = new List<string>();
+            CashFlowMultiple.Add("Cash_Flow_Multiple");
+            int cfmIndex = 1;
+            foreach(var key in statements.Keys)
+            {
+                var buyingPrice = decimal.Parse(BuyingPrice[cfmIndex]);
+                var ebidta = decimal.Parse(Ebitda[cfmIndex]);
+                var numOfShares = decimal.Parse(WeightedAvgDilutedShares[cfmIndex]);
+
+                var cfm = buyingPrice / (ebidta / numOfShares);
+                CashFlowMultiple.Add(cfm.ToString("0.##"));
+                cfmIndex++;
+            }
+
+
             List<string> EndDates = new List<string>();
-            EndDates.Add("");
+            EndDates.Add("Fiscal_Year_End_Date");
             foreach (var key in statements.Keys)
             {
                 var row = statements[key]["income_statement"]["end_date"];
@@ -298,8 +316,12 @@ namespace Options.Services
             statementTable.Add(CurrentAssets);
             statementTable.Add(TotalLiabilitesMinusCurrentAssets);
             statementTable.Add(WeightedAvgDilutedShares);
-            statementTable.Add(FreeCashFlow);
-            statementTable.Add(EndDates);
+            
+
+            statementTable.Add(BuyingPrice);
+            statementTable.Add(CashFlowMultiple);
+
+             statementTable.Add(EndDates);
 
             /*
 Inc State "income_statement"
@@ -346,6 +368,11 @@ ebitda/revenue
 
 
             return statementTable;
+        }
+
+        public List<List<string>> GetProjectedStatementTable(List<List<string>> statementTable)
+        {
+            throw new NotImplementedException();
         }
     }
 }

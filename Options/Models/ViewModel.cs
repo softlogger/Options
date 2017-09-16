@@ -12,10 +12,12 @@ namespace Options.Models
 
         public string Report10KUrl { get; set; }
 
-        public Dictionary<int, string> HistoricalLowPrices { get; set; }
+     //   public Dictionary<int, string> HistoricalLowPrices { get; set; }
         public Dictionary<int, Dictionary<string, Dictionary<string, string>>> Statements { get; set; }
 
         public Dictionary<int, string> FiscalYears { get; set; }
+
+        public Dictionary<int, string> HistoricalLowPrices { get; set; }
 
         public string JsonHistoricalPrices { get; set; }
 
@@ -30,10 +32,9 @@ namespace Options.Models
         public string JsonStatementTable { get; set; }
         public void SetJsonStrings()
         {
-            JsonHistoricalPrices = JsonConvert.SerializeObject(HistoricalLowPrices);
-            JsonStatements = JsonConvert.SerializeObject(Statements);
             JsonFiscalYears = JsonConvert.SerializeObject(FiscalYears);
             JsonStatementTable = JsonConvert.SerializeObject(StatementTable);
+            JsonHistoricalPrices = JsonConvert.SerializeObject(HistoricalLowPrices);
         }
     }
 }
