@@ -48,7 +48,7 @@ function loadHeader() {
     var headerReg = "Regular:<strong> " + regPrice + "</strong>";
     var headerBid = "Bid:<strong> " + bid + "</strong>";
     var headerAsk = "Ask:<strong> " + ask + "</strong>";
-    var headerReport = "<a href=" + decodeURIComponent(ReportUrl) + " target=_blank type=button class='btn'>10-K</a>"
+    var headerReport = "<a href=" + decodeURIComponent(ReportUrl) + " target=_blank type=button class='btn btn-primary'>10-K</a>"
 
     var headerString = headerName + " " + headerLastClose + " " + headerReg + " " + headerBid + " " + headerAsk + " " + headerReport;
 
@@ -190,7 +190,7 @@ function loadOptionQuotes() {
 
 function loadStatementTable() {
 
-    var firstArray = JsonStatementTable[JsonStatementTable.length - 1];
+    var headerDates = JsonStatementTable[JsonStatementTable.length - 1];
 
     $('#statementTableId').empty();
 
@@ -199,15 +199,22 @@ function loadStatementTable() {
 
     $('#statementTableId > thead').append('<tr></tr>');
 
-    for (var i = 0; i < firstArray.length; i++) {
-        var tableHeaderColVal = firstArray[i];
+    for (var i = 0; i < headerDates.length; i++) {
+        var tableHeaderColVal = headerDates[i];
         $('#statementTableId > thead > tr:last').append('<th>' + tableHeaderColVal + '</th>');
     }
-    for (var j = 0; j < JsonStatementTable.length - 2; j++) {
+
+    ////var nextYear = GetNextYearFor(firstArray[firstArray.length - 1]); //append projected header date
+    ////var nextToNextYear = GetNextYearFor(nextYear); //append projected header date
+
+    ////$('#statementTableId > thead > tr:last').append('<th>' + nextYear + '</th>');
+    ////$('#statementTableId > thead > tr:last').append('<th>' + nextToNextYear + '</th>');
+
+    for (var j = 1; j < JsonStatementTable.length - 1; j++) {
 
         $('#statementTableId > tbody').append('<tr></tr>');
 
-        var nextArray = JsonStatementTable[j + 1];
+        var nextArray = JsonStatementTable[j];
         for (var k = 0; k < nextArray.length; k++) {
             var nextId = nextArray[0] + k;
             var colVal = nextArray[k];
@@ -215,10 +222,42 @@ function loadStatementTable() {
             $('#statementTableId tr:last').append('<td id=' + nextId + '>' + formattedVal + '</td>');
         }
 
+        //var projectedValue = getProjectedValuefor(nextArray);
 
+        //if (j < 3) {
+        //    projectedValue = projectedValue.toFixed(0);
+        //}
+        //else if (j > 4 && j < 8)
+        //{
+        //    projectedValue = projectedValue.toFixed(0);
+        //}
+        //else if (j > 7)
+        //{
+        //    projectedValue = 100.66
+        //    //if j == 9 //Calcualte CFM
+        //}
+
+        //$('#statementTableId tr:last').append('<td id=' + nextId + '>' + FormattedValue(projectedValue) + '</td>');
     }
+   
+        ////$('#statementTableId td:nth-child(n+5').attr('contenteditable', 'true');
+}
 
+function GetNextYearFor(year)
+{
+    var thisYearDate = new Date(year);
+    var nextYearDate = new Date(thisYearDate.getFullYear() + 1, thisYearDate.getMonth(), thisYearDate.getDate());
+    return nextYearDate.getFullYear() + "-" + nextYearDate.getMonth() + "-" + nextYearDate.getDate()
+}
 
+function getProjectedValuefor(nextArray)
+{
+    var arrayLength = nextArray.length;
+    var initalValue = Number(nextArray[1]);
+    var finalValue = Number(nextArray[arrayLength - 1]);
+    if (initalValue === finalValue) return 1;
+    var growthRate = CalculateGrowthRate(initalValue, finalValue, arrayLength - 1);
+    return (finalValue + (growthRate * finalValue));
 }
 
 function calculateEbitdaGrowthRate() {

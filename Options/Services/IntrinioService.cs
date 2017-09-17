@@ -271,7 +271,7 @@ namespace Options.Services
             List<string> BuyingPrice = new List<string>();
             BuyingPrice.Add("Buying_Price");
             int index = 1;
-            foreach( var key in statements.Keys)
+            foreach (var key in statements.Keys)
             {
                 var lowestStock = historicalLowPrices[key];
                 var lowestStockPrice = decimal.Parse(lowestStock.Split(' ')[0]);
@@ -286,7 +286,7 @@ namespace Options.Services
             List<string> CashFlowMultiple = new List<string>();
             CashFlowMultiple.Add("Cash_Flow_Multiple");
             int cfmIndex = 1;
-            foreach(var key in statements.Keys)
+            foreach (var key in statements.Keys)
             {
                 var buyingPrice = decimal.Parse(BuyingPrice[cfmIndex]);
                 var ebidta = decimal.Parse(Ebitda[cfmIndex]);
@@ -307,7 +307,7 @@ namespace Options.Services
             }
 
 
-            statementTable.Add(colHeader);
+            statementTable.Add(colHeader); //years - where used?
             statementTable.Add(Revenues);
             statementTable.Add(Ebit);
             statementTable.Add(Ebitda);
@@ -316,12 +316,14 @@ namespace Options.Services
             statementTable.Add(CurrentAssets);
             statementTable.Add(TotalLiabilitesMinusCurrentAssets);
             statementTable.Add(WeightedAvgDilutedShares);
-            
+
 
             statementTable.Add(BuyingPrice);
             statementTable.Add(CashFlowMultiple);
 
-             statementTable.Add(EndDates);
+            statementTable.Add(EndDates);
+
+            return statementTable;
 
             /*
 Inc State "income_statement"
@@ -367,12 +369,104 @@ ebitda/revenue
 */
 
 
-            return statementTable;
+
         }
 
         public List<List<string>> GetProjectedStatementTable(List<List<string>> statementTable)
         {
-            throw new NotImplementedException();
+            if (statementTable[0].Count() < 3) return statementTable;
+
+            foreach (var statement in statementTable)
+            {
+                var rowIdentifier = statement[0];
+                ProjectStatement(statement);
+            }
+
+            ProjectLiabMinusAssetsFor(statementTable);
+
+            var fiscalYearEndDatesStatement = statementTable.Where(s => s.First() == "Fiscal_Year_End_Date").First();
+
+            ProjectFiscalYearEndDates(fiscalYearEndDatesStatement);
+
+            return statementTable;
         }
+
+        public void ProjectLiabMinusAssetsFor(List<List<string>> statements)
+        {
+            var totLiability = statements.Where(s => s.First() == "Total_Liabilities").First();
+            var currentAssets = statements.Where(s => s.First() == "Current_Assets").First();
+            var totLibMinuCurrAssets = statements.Where(s => s.First() == "Total_Lbs_Minus_Assets").First();
+
+            int index = totLibMinuCurrAssets.Count();
+            totLibMinuCurrAssets.Add((Convert.ToDouble(totLiability[index]) - Convert.ToDouble(currentAssets[index])).ToString());
+            totLibMinuCurrAssets.Add((Convert.ToDouble(totLiability[index + 1]) - Convert.ToDouble(currentAssets[index + 1])).ToString());
+
+        }
+
+        public void ProjectFiscalYearEndDates(List<string> statement)
+        {
+            var lastDate = DateTime.Parse(statement.Last());
+            lastDate = lastDate.AddYears(1);
+            statement.Add(lastDate.ToString("yyyy-MM-dd"));
+            lastDate = lastDate.AddYears(1);
+            statement.Add(lastDate.ToString("yyyy-MM-dd"));
+        }
+
+        public void ProjectStatement(List<string> statement)
+        {
+            if (statement.Count < 3) return;
+
+            var rowIdentifier = statement[0];
+           
+
+            switch (rowIdentifier)
+            {
+                case "Total_Revenue":
+                case "Ebit":
+                case "Ebitda":
+                case "Ebitda_Per_Revenue":
+                case "Total_Liabilities":
+                case "Current_Assets":
+                case "Weighted_Avg_Diluted_Shares":
+
+                    var initialValue = double.Parse(statement[1]);
+                    var finalValue = double.Parse(statement[statement.Count - 1]);
+                    var period = statement.Count - 1;
+
+                    var growthRate = GetGrowthRate(initialValue, finalValue, period);
+                    var nextValue = finalValue + (growthRate * finalValue);
+
+                    var nextGrowthRate = GetGrowthRate(initialValue, nextValue, period + 1);
+                    var nextTonextValue = nextValue + (nextValue * nextGrowthRate);
+
+                    statement.Add(nextValue.ToString());
+                    statement.Add(nextTonextValue.ToString());
+                    break;
+                case "Total_Lbs_Minus_Assets":
+                    break;
+                case "Buying_Price":
+                case "Cash_Flow_Multiple":
+                    statement.Add(string.Empty);
+                    statement.Add(string.Empty);
+                    break;
+                case "Fiscal_Year_End_Date":
+                    break;
+                case "":
+                    break;
+
+                default:
+                    throw new ArgumentException("Invalid Statement Type");
+
+            }
+        }
+
+        private double GetGrowthRate(double initial, double final, int period)
+        {
+            var fraction = final / initial;
+            var growthRate = Math.Pow(fraction, (1.0 / Convert.ToDouble(period))) - 1;
+            return growthRate;
+        }
+
+
     }
 }

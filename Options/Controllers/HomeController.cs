@@ -51,15 +51,21 @@ namespace Options.Controllers
 
             Dictionary<int, Dictionary<string, Dictionary<string, string>>> Statements = _intrinioService.GetStatements(tickerName, fiscalYears);
 
+           
+
             viewModel.Statements = Statements;
 
             List<List<string>> statementTable = _intrinioService.GetStatementsTable(Statements, HistoricalLowPrices);
 
-           // List<List<String>> projectedStatementTable = _intrinioService.GetProjectedStatementTable(statementTable);
+            List<List<string>> projectedStatementTable = _intrinioService.GetProjectedStatementTable(statementTable);
 
-            viewModel.StatementTable = statementTable;
+            // viewModel.StatementTable = statementTable;
+            viewModel.StatementTable = projectedStatementTable;
 
             viewModel.SetJsonStrings();
+
+
+
 
             return View("Analysis", viewModel);
         }
