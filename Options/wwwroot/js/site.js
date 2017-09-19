@@ -23,14 +23,14 @@ function loadInitial() {
     loadStatementTable();
     loadToolTips();
 
-    setEbitdaGrowthRate();
-    setprojectedEbitda();
-    setProjectedNumberOfShares();
-    setSharePrice();
-    setCallPremium();
-    setLiabilityMinusCurrentAsset();
-    setBuyingPrice();
-    setCashFlowMultiple();
+    //setEbitdaGrowthRate();
+    //setprojectedEbitda();
+    //setProjectedNumberOfShares();
+    //setSharePrice();
+    //setCallPremium();
+   // setLiabilityMinusCurrentAsset();
+    setBuyingPrice('4');
+    setCashFlowMultiple('4');
 }
 function loadHeader() {
     var shorty = jsonQuoteObject["shortName"];
@@ -57,17 +57,14 @@ function loadHeader() {
     $('#previousClosePriceId').val(postMktPrice);
     $("#bidId").val(bid);
     $("#askId").val(ask);
+    $("#lastPriceId").val(postMktPrice);
 }
 
 function bindEvents() {
-    $('#projectedEbitdaGrowthCheckId').on('click', GrowthChanged);
-    $('#projectedEbitdaCheckId').on('click', EbitdaChanged);
     $('#resetId').on('click', Reset);
     $('#recalculateId').on('click', Recalculate);
     $('#expDateId').on('change', expirationChanged);
     $('#strikeId').on('change', strikesChanged);
-    
-   
 }
 
 
@@ -132,7 +129,8 @@ function loadStrikes() {
     var selectedDate = $("#expDateId").find(":selected").val();
     var strikes = jsonStrikes[selectedDate];
     $(ele).empty();
-    var quote = jsonQuoteObject['bid'];
+    //var quote = jsonQuoteObject['bid'];
+    var quote = SharePrice();
     for (var i = 0; i < strikes.length; i++) {
         $(ele).append("<option value='" + strikes[i] + "'>" + strikes[i] + "</option>");
     }
@@ -202,13 +200,10 @@ function loadStatementTable() {
     for (var i = 0; i < headerDates.length; i++) {
         var tableHeaderColVal = headerDates[i];
         $('#statementTableId > thead > tr:last').append('<th>' + tableHeaderColVal + '</th>');
+        
     }
 
-    ////var nextYear = GetNextYearFor(firstArray[firstArray.length - 1]); //append projected header date
-    ////var nextToNextYear = GetNextYearFor(nextYear); //append projected header date
-
-    ////$('#statementTableId > thead > tr:last').append('<th>' + nextYear + '</th>');
-    ////$('#statementTableId > thead > tr:last').append('<th>' + nextToNextYear + '</th>');
+  
 
     for (var j = 1; j < JsonStatementTable.length - 1; j++) {
 
@@ -219,28 +214,23 @@ function loadStatementTable() {
             var nextId = nextArray[0] + k;
             var colVal = nextArray[k];
             var formattedVal = FormattedValue(colVal);
-            $('#statementTableId tr:last').append('<td id=' + nextId + '>' + formattedVal + '</td>');
+           // $('#statementTableId tr:last').append('<td id=' + nextId + '>' + formattedVal + '</td>');
+
+            $('#statementTableId tr:last').append('<td id=' + nextId + ' data-val=' + formattedVal + '>' + formattedVal + '</td>');
+
+            if (colVal == "Buying_Price") {
+                $('#statementTableId  tr:last').attr('title', buyingPriceFormula());
+            }
+            if (colVal == "Cash_Flow_Multiple") {
+                $('#statementTableId  tr:last').attr('title', cashFlowFormula());
+            }
         }
 
-        //var projectedValue = getProjectedValuefor(nextArray);
-
-        //if (j < 3) {
-        //    projectedValue = projectedValue.toFixed(0);
-        //}
-        //else if (j > 4 && j < 8)
-        //{
-        //    projectedValue = projectedValue.toFixed(0);
-        //}
-        //else if (j > 7)
-        //{
-        //    projectedValue = 100.66
-        //    //if j == 9 //Calcualte CFM
-        //}
-
-        //$('#statementTableId tr:last').append('<td id=' + nextId + '>' + FormattedValue(projectedValue) + '</td>');
+        
     }
    
-        ////$('#statementTableId td:nth-child(n+5').attr('contenteditable', 'true');
+      //  $('#statementTableId td:nth-child(n+5').attr('contenteditable', 'true');
+    $('#statementTableId td:nth-child(5)').attr('contenteditable', 'true');
 }
 
 function GetNextYearFor(year)
@@ -338,16 +328,13 @@ function setCallPremium() {
     $("#callPremiumId").val($('#optionBid').text());
 }
 
-function setLiabilityMinusCurrentAsset() {
-    $("#lblMinusCurrAssId").val(TotalLblMinusCurrentAssets());
+
+function setBuyingPrice(num) {
+    $("#statementTableId #Buying_Price4").text(BuyingPrice(num));
 }
 
-function setBuyingPrice() {
-    $("#buyingPriceId").val(BuyingPrice());
-}
-
-function setCashFlowMultiple() {
-    $("#cashFlowMultipleId").val(CashFlowMultiple());
+function setCashFlowMultiple(num) {
+    $("#statementTableId #Cash_Flow_Multiple4").text(CashFlowMultiple(num));
 }
 
 function loadToolTips() {
@@ -368,15 +355,25 @@ function EpoctoLocaleString(date) {
 }
 
 function Reset() {
-    Unfreeze();
-    setEbitdaGrowthRate();
-    setprojectedEbitda();
-    setProjectedNumberOfShares();
-    setSharePrice();
-    setCallPremium();
-    setLiabilityMinusCurrentAsset();
-    setBuyingPrice();
-    setCashFlowMultiple();
+     
+    //Unfreeze();
+    //setEbitdaGrowthRate();
+    //setprojectedEbitda();
+    //setProjectedNumberOfShares();
+    //setSharePrice();
+    //setCallPremium();
+    //setLiabilityMinusCurrentAsset();
+
+
+    for (var i = 1; i < 10; i++)
+    {
+        var tdObject = '#statementTableId tr:eq(' + i + ') td:eq(4)';
+        var td = $(tdObject)
+        var tdVal = td.attr('data-val');
+        td.text(tdVal);
+    }
+    setBuyingPrice(4);
+    setCashFlowMultiple(4);
    
 }
 
@@ -416,42 +413,88 @@ function CalculateGrowthRate(initial, final, periods) {
 
 
 function SharePrice() {
-    return $('#askId').val();
+    //return $('#askId').val();
+    var sharePrice = Number($('#askId').val());
+    var lastPrice = Number($("#lastPriceId").val());
+
+    var sp = sharePrice === 0 ? lastPrice : sharePrice;
+    return sp;
 }
-
-
-
-
-
 
 
 function TotalLblMinusCurrentAssets() {
 
-    var colCount = numOfCols();
-    var LblMinusAssId = '#statementTableId #Total_Lbs_Minus_Assets' + (colCount - 1).toString();
-    return (Number($(LblMinusAssId).text().replace(/,/g, ''))).toLocaleString();
+    //var colCount = numOfCols();
+    //var LblMinusAssId = '#statementTableId #Total_Lbs_Minus_Assets' + (colCount - 2).toString();
+    //return (Number($(LblMinusAssId).text().replace(/,/g, ''))).toLocaleString();
+
+
+    var totalLib = Number($('#statementTableId #Total_Liabilities4').text().replace(/,/g, ''));
+    var currentAssets = Number($('#statementTableId #Current_Assets4').text().replace(/,/g, ''));
+
+    var totalLibMinusCurrAssets = (totalLib - currentAssets).toLocaleString();
+
+    return totalLibMinusCurrAssets;
+
+   
 
 }
 
-function BuyingPrice() {
-    var sp = Number($('#sharePriceId').val());
-    var cp = Number($('#callPremiumId').val());
-    var lblminusass = Number($('#lblMinusCurrAssId').val().replace(/,/g, ''));
-    var numOfShares = Number($('#projectedNumOfSharesId').val().replace(/,/g, ''));
+function BuyingPrice(colNumber) {
+    //colNumber = colNumber.toString();
+    //var sp = Number($('#sharePriceId').val());
+    //var sharePrice = Number($('#askId').val());
+    //var lastPrice = Number($("#lastPriceId").val());
 
-    return (((sp - cp) + ((lblminusass) / numOfShares))).toFixed(2);
+    //var sp = sharePrice === 0 ? lastPrice : sharePrice;
+
+    var sp = SharePrice();
+
+    var cp = Number($('#optionBid').text());
+     
+
+    var result = sp - cp;
+
+    //var lblminusass = Number($('#statementTableId #Total_Lbs_Minus_Assets' + colNumber).text().replace(/,/g, ''));
+    //var numOfShares = Number($('#statementTableId #Weighted_Avg_Diluted_Shares' + colNumber).text().replace(/,/g, ''));
+
+    //var result = (((sp - cp) + ((lblminusass) / numOfShares))).toFixed(2);
+    return result.toFixed(2);
 }
 
-function CashFlowMultiple() {
-    var bprice = Number(BuyingPrice());
-    var projEbitda = Number($("#projectedEbitdaId").val().replace(/,/g, ''));
-    var projNumOfShares = Number($('#projectedNumOfSharesId').val().replace(/,/g, ''));
-
-    var result = bprice / (projEbitda / projNumOfShares);
+function CashFlowMultiple(colNumber) {
+    //colNumber = colNumber.toString();
+    //var bprice = Number(BuyingPrice());
+    var bprice = Number($('#statementTableId #Buying_Price' + colNumber).text().replace(/,/g, ''));
+    var projEbitda = Number($('#statementTableId #Ebitda' + colNumber).text().replace(/,/g, ''));
+    var projNumOfShares = Number($('#statementTableId #Weighted_Avg_Diluted_Shares' + colNumber).text().replace(/,/g, ''));
+    var crntAssetsMinusLbl = Number($('#statementTableId #Total_Lbs_Minus_Assets' + colNumber).text().replace(/,/g, ''));
+    var crntAssetsMinusLblOverNumOfShares = crntAssetsMinusLbl / projNumOfShares;
+    var result = (bprice - crntAssetsMinusLblOverNumOfShares) / (projEbitda / projNumOfShares);
 
     return result.toFixed(3);
 
 }
+
+//function BuyingPrice() {
+//    var sp = Number($('#sharePriceId').val());
+//    var cp = Number($('#callPremiumId').val());
+//    var lblminusass = Number($('#lblMinusCurrAssId').val().replace(/,/g, ''));
+//    var numOfShares = Number($('#projectedNumOfSharesId').val().replace(/,/g, ''));
+
+//    return (((sp - cp) + ((lblminusass) / numOfShares))).toFixed(2);
+//}
+
+//function CashFlowMultiple() {
+//    var bprice = Number(BuyingPrice());
+//    var projEbitda = Number($("#projectedEbitdaId").val().replace(/,/g, ''));
+//    var projNumOfShares = Number($('#projectedNumOfSharesId').val().replace(/,/g, ''));
+
+//    var result = bprice / (projEbitda / projNumOfShares);
+
+//    return result.toFixed(3);
+
+//}
 
 
 function searchTicker() {
@@ -532,19 +575,30 @@ function buyingPriceFormula() {
 
 function cashFlowFormula() {
 
-    return "Buying Price / (Projected EBITDA/Projected Num of Shares)";
+    return "(Buying Price - (Current Assets - Minus Liab / Proj Num of Shares)) / (Projected EBITDA/Proj Num of Shares)";
 }
 
 
 function callPremiumChanged() {
     setCallPremium();
-    setBuyingPrice();
-    setCashFlowMultiple();
+    //setBuyingPrice();
+    //setCashFlowMultiple();
+    setBuyingPrice('4');
+    setCashFlowMultiple('4');
 }
 
 function Recalculate() {
-    setBuyingPrice();
-    setCashFlowMultiple();
+    //setBuyingPrice();
+    //setCashFlowMultiple();
+    setTotalLibMinusCurrentAssets();
+    setBuyingPrice('4');
+    setCashFlowMultiple('4');
+}
+
+function setTotalLibMinusCurrentAssets()
+{
+    var totalLibMinuCurrentAssets = TotalLblMinusCurrentAssets();
+    $('#statementTableId #Total_Lbs_Minus_Assets4').text(totalLibMinuCurrentAssets);
 }
 
 function backup() {

@@ -73,7 +73,7 @@ namespace Options.Test
 
             IncomeStatement incomeStatement = JsonConvert.DeserializeObject<IncomeStatement>(responseString);
 
-            var EBIT = incomeStatement.EBIT;
+            //var EBIT = incomeStatement.EBIT;
 
             Assert.IsTrue(incomeStatement.result_count > 0);
             Assert.IsTrue(incomeStatement.data.Count() > 0);
@@ -297,9 +297,17 @@ namespace Options.Test
 
             if (initialValue < 0 && finalValue > 0)
             {
+                bool isOdd = period % 2 != 0;
+
                 var frac = finalValue / initialValue;
                 var gr = Math.Pow(Math.Abs(frac), 1.0 / period);
-                gr = -(gr) - 1.0;
+
+                if (isOdd)
+                {
+                    gr = -1 * gr;
+                }
+
+                gr = gr - 1.0;
                 return gr;
             }
 

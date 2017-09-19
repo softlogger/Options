@@ -217,6 +217,14 @@ namespace Options.Services
                 Ebit.Add(row);
             }
 
+            List<string> DepreciationAndAmortization = new List<string>();
+            DepreciationAndAmortization.Add("Depreciation_Amortization");
+            foreach (var key in statements.Keys)
+            {
+                var row = statements[key]["calculations"]["depreciationandamortization"];
+                DepreciationAndAmortization.Add(row);
+            }
+
 
             List<string> Ebitda = new List<string>();
             Ebitda.Add("Ebitda");
@@ -310,6 +318,7 @@ namespace Options.Services
             statementTable.Add(colHeader); //years - where used?
             statementTable.Add(Revenues);
             statementTable.Add(Ebit);
+            statementTable.Add(DepreciationAndAmortization);
             statementTable.Add(Ebitda);
             statementTable.Add(EbitdaPerRev);
             statementTable.Add(TotalLiabilities);
@@ -378,7 +387,6 @@ ebitda/revenue
 
             foreach (var statement in statementTable)
             {
-                var rowIdentifier = statement[0];
                 ProjectStatement(statement);
             }
 
@@ -417,7 +425,7 @@ ebitda/revenue
             if (statement.Count < 3) return;
 
             var rowIdentifier = statement[0];
-           
+
 
             switch (rowIdentifier)
             {
@@ -439,8 +447,20 @@ ebitda/revenue
                     var nextGrowthRate = GetGrowthRate(initialValue, nextValue, period + 1);
                     var nextTonextValue = nextValue + (nextValue * nextGrowthRate);
 
-                    statement.Add(nextValue.ToString());
-                    statement.Add(nextTonextValue.ToString());
+                    if (rowIdentifier != "Ebitda_Per_Revenue")
+                    {
+                        statement.Add(nextValue.ToString("0"));
+                        statement.Add(nextTonextValue.ToString("0"));
+                    }
+                    else
+                    {
+                        statement.Add(nextValue.ToString("#.0"));
+                        statement.Add(nextTonextValue.ToString("#.0"));
+                    }
+                    break;
+                case "Depreciation_Amortization":
+                    statement.Add("N/A");
+                    statement.Add("N/A");
                     break;
                 case "Total_Lbs_Minus_Assets":
                     break;
@@ -462,8 +482,15 @@ ebitda/revenue
 
         private double GetGrowthRate(double initial, double final, int period)
         {
+
             var fraction = final / initial;
-            var growthRate = Math.Pow(fraction, (1.0 / Convert.ToDouble(period))) - 1;
+            var growthRate = Math.Pow(Math.Abs(fraction), (1.0 / Convert.ToDouble(period))) - 1.0;
+
+            if ((initial < 0 && final > 0) || (initial > 0 && final < 0))
+            {
+                if ((period % 2) != 0) growthRate = growthRate * -1.0;
+            }
+
             return growthRate;
         }
 

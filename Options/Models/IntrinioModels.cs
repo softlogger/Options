@@ -66,13 +66,13 @@ namespace Options.Models
         public int total_pages { get; set; }
         public int api_call_credits { get; set; }
 
-        public string EBIT
-        {
-            get
-            {
-                return data.Where(d => d.tag == "totaloperatingincome").First().value;
-            }
-        }
+        //public string EBIT
+        //{
+        //    get
+        //    {
+        //        return data.Where(d => d.tag == "totaloperatingincome").First().value;
+        //    }
+        //}
     }
 
     public class IncomeStatementItem
