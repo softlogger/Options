@@ -94,7 +94,10 @@ function setLossRate() {
 
     var lossRatePercentage = (lossRate * 100).toFixed(2);
 
-    var toolTip = "Stock Price: " + sp + " Buying Price: " + bprice + " Dividends: " + totalDividendRecd;
+    
+
+    var toolTipExplanation = "At expiration Stock must have fallen below this rate to lose money on this transaction\n";
+    var toolTip = toolTipExplanation +  "Stock Price: " + sp + " Buying Price: " + bprice + " Dividends: " + totalDividendRecd;
 
     $('#lossRateId').text(lossRatePercentage + " %");
     $('#lossRateId').attr('title', toolTip);
@@ -126,7 +129,8 @@ function SetRateOfReturn() {
 
     var percentRate = (((totalReturn / sp) * (365 / totalNumberOfDays)) * 100).toFixed(2);
 
-    var toolTip = "Stock Price: " + sp + " Call Premium: " + cp + " Dividends: " + dividend + " Number of Days: " + Math.floor(totalNumberOfDays);
+    var toolTipExplanation = "This is the annualized rate of return at expiration if the Calls expire worthless\n";
+    var toolTip = toolTipExplanation + "Stock Price: " + sp + " Call Premium: " + cp + " Dividends: " + dividend + " Number of Days: " + Math.floor(totalNumberOfDays);
 
     $('#rorId').attr('title', toolTip);
     $('#rorId').text(percentRate + " %");
@@ -164,7 +168,8 @@ function setMaxRateOfReturn() {
 
     var percentRate = (((totalReturn / sp) * (365 / totalNumberOfDays)) * 100).toFixed(2);
 
-    var toolTip = "Stock Price: " + sp + " Call Premium: " + cp + " Dividends: " + dividend + " Diff in Strike and Stock Price: " + diff.toFixed(2) + " Number of Days: " + Math.floor(totalNumberOfDays);
+    var toolTipExplanation = "This is the maximum annualized rate of return at expiration if the Stock is trading above strike price and called(sold)\n";
+    var toolTip = toolTipExplanation + "Stock Price: " + sp + " Call Premium: " + cp + " Dividends: " + dividend + " Diff in Strike and Stock Price: " + diff.toFixed(2) + " Number of Days: " + Math.floor(totalNumberOfDays);
 
     $('#maxRateId').attr('title', toolTip);
     $('#maxRateId').text(percentRate + " %");
@@ -657,7 +662,7 @@ function CashFlowMultiple(colNumber) {
     var projNumOfShares = Number($('#statementTableId #Weighted_Avg_Diluted_Shares' + colNumber).text().replace(/,/g, ''));
     var crntAssetsMinusLbl = Number($('#statementTableId #Total_Lbs_Minus_Assets' + colNumber).text().replace(/,/g, ''));
     var crntAssetsMinusLblOverNumOfShares = crntAssetsMinusLbl / projNumOfShares;
-    var result = (bprice - crntAssetsMinusLblOverNumOfShares) / (projEbitda / projNumOfShares);
+    var result = (bprice + crntAssetsMinusLblOverNumOfShares) / (projEbitda / projNumOfShares);
 
     return result.toFixed(3);
 
