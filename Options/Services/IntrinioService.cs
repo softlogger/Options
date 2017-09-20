@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Options.Models;
 using Newtonsoft.Json;
 using System.Net;
+using System.Dynamic;
 
 namespace Options.Services
 {
@@ -492,6 +493,32 @@ ebitda/revenue
             }
 
             return growthRate;
+        }
+
+        public string GetDividendInfo(string ticker)
+        {
+            string dividendUrl = _urlService.GetDividend(ticker);
+
+            string dividendDataResponse = _netService.GetResponseFor(dividendUrl);
+
+            Dividend dividend = JsonConvert.DeserializeObject<Dividend>(dividendDataResponse);
+
+            dynamic dynamicDividend = new ExpandoObject();
+
+            if (dividend.result_count > 0)
+            {
+                dynamicDividend.Date = dividend.data.First().date;
+                dynamicDividend.Value = dividend.data.First().value;
+                dynamicDividend.HasValue = true;
+            }
+            else
+            {
+                dynamicDividend.HasValue = false;
+            }
+
+            var dynamicJsonString = JsonConvert.SerializeObject(dynamicDividend);
+            return dynamicJsonString;
+            
         }
 
 

@@ -46,5 +46,7 @@ namespace Options.Services
 
         List<List<string>> GetStatementsTable(Dictionary<int, Dictionary<string, Dictionary<string, string>>> statements, Dictionary<int, string> historicalLowPrices);
         List<List<string>> GetProjectedStatementTable(List<List<string>> statementTable);
+
+        string GetDividendInfo(string ticker);
     }
 }

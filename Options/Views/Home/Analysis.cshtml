@@ -27,65 +27,106 @@
 
     <label>Strike:</label>
     <select id="strikeId"></select>
+
+
 </div>
 
 
-<div>
-    <table id="quoteTableId" class="table table-bordered table-condensed table-hover"></table>
+<div class="form-group row">
+    <div class="col-md-8">
+        <table id="quoteTableId" class="table table-bordered table-condensed"></table>
+    </div>
+    <div class="col-md-4">
+        <table id="dividendTableId" class="table table-bordered table-condensed">
+
+            <thead>
+                <tr>
+                    <th>Dividend Ex Date</th>
+                    <th>Dividend</th>
+                    <th>Periods</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="divExDateId">N/A</td>
+                    <td id="divAmountId">N/A</td>
+                    <td id="divPeriodId">N/A</td>
+                    <td id="divTotalId">N/A</td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @*<div>
-    <label><strong>Low Prices</strong></label>
-    <table id="historicalPricessId" class="table table-bordered table-condensed table-hover col-sm-push-6"></table>
-</div>*@
+        <label><strong>Low Prices</strong></label>
+        <table id="historicalPricessId" class="table table-bordered table-condensed table-hover col-sm-push-6"></table>
+    </div>*@
 
 
 <div class="row">
     <div class="col-md-9">
         <table id="statementTableId" spellcheck="false" class="table table-bordered table-condensed table-striped table-hover"></table>
     </div>
-    <div style="padding-top:100px" class=" col-md-2 ">
-        <button id="resetId"  class="btn btn-primary btn-block">Reset</button>
+
+    <div style="padding-top:20px" class="col-md-2">
+        <a class="btn btn-danger btn-block" disabled><span id="lossRateId" class="badge"></span></a>
     </div>
-    <div style="padding-top:10px" class=" col-md-2 ">
+
+    <div style="padding-top:20px" class="col-md-2">
+        <a class="btn btn-warning btn-block" disabled><span id="rorId" class="badge"></span></a>
+    </div>
+
+    <div style="padding-top:20px" class="col-md-2">
+        <a class="btn btn-success btn-block" disabled><span id="maxRateId" class="badge"></span></a>
+    </div>
+
+
+    <div style="padding-top:100px" class="col-md-2">
+        <button id="resetId" class="btn btn-primary btn-block">Reset</button>
+    </div>
+
+    <div style="padding-top:10px" class="col-md-2">
         <button id="recalculateId" class="btn btn-primary btn-block">Recalculate</button>
     </div>
-   
+
 </div>
 
 @*<div class="row">
-    <div class="col-md-12">
-        <form class="form-horizontal">
-            <div class="form-group form-group-sm">
-                <label id="growthRateId" class="col-md-5  text-right">Projected Ebitda Growth % </label><input class="col-md-3" id="projectedEbitdaGrowthId" disabled />
-            </div>
-            <div class="form-group form-group-sm">
-                <label id="projectedEbitdaFormulaId" class="col-md-5  text-right">Projected Ebitda </label><input class="col-md-3" id="projectedEbitdaId" />
-            </div>
-            <div class="form-group">
-                <label id="projectedNumOfSharesFormulaId" class="col-md-5   text-right">Projected Wtd Avg Dilt Shares </label><input class="col-md-3" id="projectedNumOfSharesId" />
-            </div>
-            <div class="form-group">
-                <label class="col-md-5   text-right">Share Price </label><input class="col-md-3" id="sharePriceId" />
-            </div>
-            <div class="form-group">
-                <label class="col-md-5  text-right">Call Premium </label><input class="col-md-3" id="callPremiumId" />
-            </div>
-            <div class="form-group">
-                <label class="col-md-5  text-right">Liab minus Crnt Assets </label><input class="col-md-3" id="lblMinusCurrAssId" />
-            </div>
-            <div class="form-group">
+        <div class="col-md-12">
+            <form class="form-horizontal">
+                <div class="form-group form-group-sm">
+                    <label id="growthRateId" class="col-md-5  text-right">Projected Ebitda Growth % </label><input class="col-md-3" id="projectedEbitdaGrowthId" disabled />
+                </div>
+                <div class="form-group form-group-sm">
+                    <label id="projectedEbitdaFormulaId" class="col-md-5  text-right">Projected Ebitda </label><input class="col-md-3" id="projectedEbitdaId" />
+                </div>
+                <div class="form-group">
+                    <label id="projectedNumOfSharesFormulaId" class="col-md-5   text-right">Projected Wtd Avg Dilt Shares </label><input class="col-md-3" id="projectedNumOfSharesId" />
+                </div>
+                <div class="form-group">
+                    <label class="col-md-5   text-right">Share Price </label><input class="col-md-3" id="sharePriceId" />
+                </div>
+                <div class="form-group">
+                    <label class="col-md-5  text-right">Call Premium </label><input class="col-md-3" id="callPremiumId" />
+                </div>
+                <div class="form-group">
+                    <label class="col-md-5  text-right">Liab minus Crnt Assets </label><input class="col-md-3" id="lblMinusCurrAssId" />
+                </div>
+                <div class="form-group">
 
-                <label id="buyingPriceFormulaId" class="col-md-5   text-right">Buying Price </label><input class="col-md-3" id="buyingPriceId" /><button id="resetId" type="button" class="col-xs-offset-1 col-xs-2 btn btn-primary btn-sm">Reset</button>
-            </div>
-            <div class="form-group">
+                    <label id="buyingPriceFormulaId" class="col-md-5   text-right">Buying Price </label><input class="col-md-3" id="buyingPriceId" /><button id="resetId" type="button" class="col-xs-offset-1 col-xs-2 btn btn-primary btn-sm">Reset</button>
+                </div>
+                <div class="form-group">
 
-                <label id="cashFlowFormulaId" class="col-md-5  text-right">Cash Flow Multiple </label><input class="col-md-3" id="cashFlowMultipleId" /> <button id="recalculateId" type="button" class="col-xs-offset-1 col-md-2 btn btn-primary btn-sm">Re-Caculate</button>
-            </div>
+                    <label id="cashFlowFormulaId" class="col-md-5  text-right">Cash Flow Multiple </label><input class="col-md-3" id="cashFlowMultipleId" /> <button id="recalculateId" type="button" class="col-xs-offset-1 col-md-2 btn btn-primary btn-sm">Re-Caculate</button>
+                </div>
 
-        </form>
-    </div>
-</div>*@
+            </form>
+        </div>
+    </div>*@
 
 
 
@@ -99,7 +140,8 @@
      var historicalPrices = @Html.Raw(Model.JsonHistoricalPrices)
     var jsonFiscalYears = @Html.Raw(Model.JsonFiscalYears)
     var JsonStatementTable = @Html.Raw(Model.JsonStatementTable)
-     var ReportUrl =  "@Html.UrlEncoder.Encode(Model.Report10KUrl)"
+     var ReportUrl = "@Html.UrlEncoder.Encode(Model.Report10KUrl)"
+    var jsonDividendString = @Html.Raw(Model.JsonDividendInfo)
 </script>
 
 

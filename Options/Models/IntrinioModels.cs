@@ -179,6 +179,24 @@ namespace Options.Models
 
 
 
+    public class Dividend
+    {
+        public DividendItem[] data { get; set; }
+        public string identifier { get; set; }
+        public string item { get; set; }
+        public int result_count { get; set; }
+        public int page_size { get; set; }
+        public int current_page { get; set; }
+        public int total_pages { get; set; }
+        public int api_call_credits { get; set; }
+    }
+
+    public class DividendItem
+    {
+        public string date { get; set; }
+        public float value { get; set; }
+    }
+
 
 
 }

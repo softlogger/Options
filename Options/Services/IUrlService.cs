@@ -12,5 +12,7 @@ namespace Options.Services
         string StatementUrl(string identifier, string statement, string type, string fiscalYear);
 
         string Report10KUrl(string identifier);
+
+         string GetDividend(string identifer);
     }
 }

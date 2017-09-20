@@ -31,5 +31,10 @@ namespace Options.Services
 
             return $"https://api.intrinio.com/companies/filings?identifier={identifier}&report_type=10-K&start_date={startDate}";
         }
+
+        public string GetDividend(string identifer)
+        {
+            return $"https://api.intrinio.com/historical_data?identifier={identifer}&item=dividend";
+        }
     }
 }

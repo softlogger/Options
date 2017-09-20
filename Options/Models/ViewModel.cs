@@ -30,6 +30,8 @@ namespace Options.Models
         public List<List<string>> StatementTable { get; set; }
 
         public string JsonStatementTable { get; set; }
+
+        public string JsonDividendInfo { get; set; }
         public void SetJsonStrings()
         {
             JsonFiscalYears = JsonConvert.SerializeObject(FiscalYears);

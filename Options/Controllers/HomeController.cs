@@ -35,6 +35,10 @@ namespace Options.Controllers
 
             ViewModel viewModel = new ViewModel();
 
+            string dividendJsonString = _intrinioService.GetDividendInfo(tickerName);
+
+            viewModel.JsonDividendInfo = dividendJsonString;
+
             viewModel.Report10KUrl = _intrinioService.GetReport10KUrl(tickerName);
             
             TickerContainer container = _optionService.GetNetTickerContainerFor(tickerName);
