@@ -36,7 +36,7 @@ namespace Options.Services
         public Dictionary<int, string> GetHistoricalLowPrices(string ticker)
         {
             string endDate = DateTime.Now.ToString("yyyy-MM-dd");
-            string startDate = (new DateTime(DateTime.Now.Year - 3, 01, 01)).ToString("yyyy-MM-dd");
+            string startDate = (new DateTime(DateTime.Now.Year - 4, 01, 01)).ToString("yyyy-MM-dd");
             string identifier = ticker;
             string frequency = "monthly";
 
@@ -287,7 +287,7 @@ namespace Options.Services
                 var LiabMinusAssets = decimal.Parse(TotalLiabilitesMinusCurrentAssets[index]);
                 var numOfShares = decimal.Parse(WeightedAvgDilutedShares[index]);
 
-                var buyingPriceRow = lowestStockPrice + (LiabMinusAssets / numOfShares);
+                var buyingPriceRow = lowestStockPrice;// + (LiabMinusAssets / numOfShares);
                 BuyingPrice.Add(buyingPriceRow.ToString("0.##"));
                 index++;
             }
@@ -521,6 +521,16 @@ ebitda/revenue
             
         }
 
+        public void Normalize(Dictionary<int, string> historicalPrices, Dictionary<int, string> fiscalYears)
+        {
+            if (fiscalYears.Keys.All(k => historicalPrices.Keys.Contains(k))) return;
 
+            foreach (var key in fiscalYears.Keys)
+            {
+                if (historicalPrices.Keys.Contains(key)) continue;
+
+                historicalPrices.Add(key, "0");
+            }
+        }
     }
 }

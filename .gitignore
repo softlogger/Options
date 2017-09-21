@@ -70,6 +70,8 @@ artifacts/
 *.svclog
 *.scc
 
+
+
 # Chutzpah Test files
 _Chutzpah*
 
@@ -259,6 +261,10 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Log files
+/Options/log-*.txt
+
 /Options/log-{ Date}-20170915.txt
 /Options/Properties/PublishProfiles/coveredcalls - Web Deploy.pubxml
 /Options/log-20170915.txt

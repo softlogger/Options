@@ -43,6 +43,8 @@ namespace Options.Controllers
             
             TickerContainer container = _optionService.GetNetTickerContainerFor(tickerName);
 
+            if (container == null) return View();
+
             viewModel.TickerContainer = container;
 
             Dictionary<int, string> HistoricalLowPrices = _intrinioService.GetHistoricalLowPrices(tickerName);
@@ -52,6 +54,8 @@ namespace Options.Controllers
             Dictionary<int, string> fiscalYears = _intrinioService.GetFiscalYears(tickerName);
 
             viewModel.FiscalYears = fiscalYears;
+
+            _intrinioService.Normalize(HistoricalLowPrices, fiscalYears);
 
             Dictionary<int, Dictionary<string, Dictionary<string, string>>> Statements = _intrinioService.GetStatements(tickerName, fiscalYears);
 

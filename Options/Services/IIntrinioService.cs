@@ -48,5 +48,6 @@ namespace Options.Services
         List<List<string>> GetProjectedStatementTable(List<List<string>> statementTable);
 
         string GetDividendInfo(string ticker);
+        void Normalize(Dictionary<int, string> historicalPrices, Dictionary<int, string> fiscalYears);
     }
 }
