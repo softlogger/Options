@@ -98,7 +98,7 @@ function setLossRate() {
         totalDividendRecd = Number(0);
     }
 
-    var lossRate = (sp - (bprice + totalDividendRecd)) / sp;
+    var lossRate = (sp - (bprice - totalDividendRecd)) / sp;
 
     var lossRatePercentage = (lossRate * 100).toFixed(2);
     var toolTipExplanation = "At expiration Stock must have fallen below this rate to lose money on this transaction\n";
@@ -372,8 +372,6 @@ function loadStatementTable() {
         $('#statementTableId > thead > tr:last').append('<th>' + tableHeaderColVal + '</th>');
 
     }
-
-
 
     for (var j = 1; j < JsonStatementTable.length - 1; j++) {
 
