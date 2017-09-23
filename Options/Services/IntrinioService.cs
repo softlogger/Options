@@ -391,6 +391,10 @@ ebitda/revenue
                 ProjectStatement(statement);
             }
 
+            ProjectEbidtaPerRevenue(statementTable);
+
+            ProjectEbitda(statementTable);
+
             ProjectLiabMinusAssetsFor(statementTable);
 
             var fiscalYearEndDatesStatement = statementTable.Where(s => s.First() == "Fiscal_Year_End_Date").First();
@@ -412,6 +416,83 @@ ebitda/revenue
 
         }
 
+        public void ProjectEbidtaPerRevenue(List<List<string>> statements)
+        {
+            var listOfRevenues = statements.Where(s => s.First() == "Total_Revenue").First();
+            var listOfEbitdaPerRevenue = statements.Where(s => s.First() == "Ebitda_Per_Revenue").First();
+
+            var numOfCalcsNeeded = listOfRevenues.Count - listOfEbitdaPerRevenue.Count;
+
+            for (int i = 0; i < numOfCalcsNeeded; i++)
+            {
+                var growthRate = GetGrowthRate(listOfEbitdaPerRevenue);
+                var nextValue = Convert.ToDouble(listOfEbitdaPerRevenue[listOfEbitdaPerRevenue.Count - 1]);
+                var nextValueAfterGrowth = nextValue + (growthRate * nextValue);
+                listOfEbitdaPerRevenue.Add(nextValueAfterGrowth.ToString());
+            }
+
+        }
+
+        public void ProjectEbitda(List<List<string>> statements)
+        {
+            var listOfRevenues = statements.Where(s => s.First() == "Total_Revenue").First();
+            var listOfEbitdaPerRevenue = statements.Where(s => s.First() == "Ebitda_Per_Revenue").First();
+            var listOfEbidta = statements.Where(s => s.First() == "Ebitda").First();
+
+            var numOfCalculationsNeeded = listOfRevenues.Count - listOfEbidta.Count;
+
+            for (var i = 0; i < numOfCalculationsNeeded; i++)
+            {
+                var index = listOfEbidta.Count;
+                var revenue = Convert.ToDouble(listOfRevenues[index]);
+                var ebitdaPerRevenue = Convert.ToDouble(listOfEbitdaPerRevenue[index]);
+                var ebidta = revenue * ebitdaPerRevenue;
+                listOfEbidta.Add(ebidta.ToString("0"));
+            }
+
+        }
+
+        public double GetGrowthRate(List<string> items)
+        {
+            var count = items.Count();
+            var firstItem = Convert.ToDouble(items[1]);
+            var lastItem = Convert.ToDouble(items[count - 1]);
+            // var growthRate = (Math.Pow(lastItem / firstItem, count - 1)) - 1.0;
+            var growthRate = CalculateGrowthRate(firstItem, lastItem, count - 1);
+            return growthRate;
+        }
+
+        public double CalculateGrowthRate(double initialValue, double finalValue, double period)
+        {
+
+            var fraction = finalValue / initialValue;
+            var time = 1.0 / period;
+
+            var pow = Math.Pow(Math.Abs(fraction), time);
+
+            pow = GetNormalizedPow(initialValue, finalValue, pow, period);
+
+            var growthRate = pow - 1;
+
+            // if ((finalValue < initialValue) && (growthRate > 0)) growthRate = -1.0 * growthRate;
+
+            return growthRate;
+
+        }
+
+        public double GetNormalizedPow(double initial, double final, double pow, double period)
+        {
+            if (initial > 0 && final > 0) return pow;
+            if (initial < 0 && final < 0) return pow;
+
+            return (-1 * pow);
+        }
+
+
+
+
+
+
         public void ProjectFiscalYearEndDates(List<string> statement)
         {
             var lastDate = DateTime.Parse(statement.Last());
@@ -431,9 +512,6 @@ ebitda/revenue
             switch (rowIdentifier)
             {
                 case "Total_Revenue":
-                case "Ebit":
-                case "Ebitda":
-                case "Ebitda_Per_Revenue":
                 case "Total_Liabilities":
                 case "Current_Assets":
                 case "Weighted_Avg_Diluted_Shares":
@@ -448,17 +526,10 @@ ebitda/revenue
                     var nextGrowthRate = GetGrowthRate(initialValue, nextValue, period + 1);
                     var nextTonextValue = nextValue + (nextValue * nextGrowthRate);
 
-                    if (rowIdentifier != "Ebitda_Per_Revenue")
-                    {
-                        statement.Add(nextValue.ToString("0"));
-                        statement.Add(nextTonextValue.ToString("0"));
-                    }
-                    else
-                    {
-                        statement.Add(nextValue.ToString("#.0"));
-                        statement.Add(nextTonextValue.ToString("#.0"));
-                    }
+                    statement.Add(nextValue.ToString("0"));
+                    statement.Add(nextTonextValue.ToString("0"));
                     break;
+                case "Ebit":
                 case "Depreciation_Amortization":
                     statement.Add("N/A");
                     statement.Add("N/A");
@@ -472,6 +543,8 @@ ebitda/revenue
                     break;
                 case "Fiscal_Year_End_Date":
                     break;
+                case "Ebitda":
+                case "Ebitda_Per_Revenue":
                 case "":
                     break;
 
@@ -518,7 +591,7 @@ ebitda/revenue
 
             var dynamicJsonString = JsonConvert.SerializeObject(dynamicDividend);
             return dynamicJsonString;
-            
+
         }
 
         public void Normalize(Dictionary<int, string> historicalPrices, Dictionary<int, string> fiscalYears)

@@ -67,9 +67,27 @@ function SetReturns() {
     setMaxRateOfReturn();
 }
 
+function getAverageSharePrice()
+{
+    var shareBid = Number($("#bidId").val());
+    var shareAsk = Number($("#askId").val());
+    var avg = ((shareBid + shareAsk) / 2.0);
+    return avg;
+}
+
+function getAverageCallPremium()
+{
+    //$('#quoteTableId > tbody > tr').append("<td id='optionBid'>" + strikeDict['bid'] + "</td>");
+    //$('#quoteTableId > tbody > tr').append("<td id='optionAsk'>" + strikeDict['ask'] + "</td>");
+    var optionBid = Number($('#quoteTableId #optionBid').text());
+    var optionAsk = Number($('#quoteTableId #optionAsk').text());
+    var avg = ((optionBid + optionAsk) / 2.0);
+    return avg;
+}
+
 function setLossRate() {
 
-    var sp = Number(SharePrice());
+    var sp = getAverageSharePrice(); // Number(SharePrice());
     var colNum = (numOfCols() - 2).toString();
 
     var bprice = Number($('#statementTableId #Buying_Price' + colNum).text().replace(/,/g, ''));
@@ -94,9 +112,9 @@ function setLossRate() {
 
 function SetRateOfReturn() {
 
-    var sp = Number(SharePrice());
+    var sp = getAverageSharePrice(); //Number(SharePrice());
 
-    var cp = Number($('#optionBid').text());
+    var cp = getAverageCallPremium(); // Number($('#optionBid').text());
 
     var dividend = Number($('#dividendTableId #divTotalId').text());
 
@@ -125,7 +143,7 @@ function SetRateOfReturn() {
 
 
 function setMaxRateOfReturn() {
-    var sp = Number(SharePrice());
+    var sp = getAverageSharePrice(); //Number(SharePrice());
     var strikeVal = Number($('#strikeId').val());
     var diff = Math.abs(sp - strikeVal);
 
@@ -133,7 +151,7 @@ function setMaxRateOfReturn() {
         diff = -(diff);
     }
 
-    var cp = Number($('#optionBid').text());
+    var cp = getAverageCallPremium(); // Number($('#optionBid').text());
 
     var dividend = Number($('#dividendTableId #divTotalId').text());
 
@@ -282,7 +300,7 @@ function loadStrikes() {
     var selectedDate = $("#expDateId").find(":selected").val();
     var strikes = jsonStrikes[selectedDate];
     $(ele).empty();
-    var quote = SharePrice();
+    var quote = getAverageSharePrice();  //SharePrice();
     for (var i = 0; i < strikes.length; i++) {
         $(ele).append("<option value='" + strikes[i] + "'>" + strikes[i] + "</option>");
     }
@@ -327,7 +345,7 @@ function loadOptionQuotes() {
     $('#quoteTableId > tbody > tr').append("<td>" + EpoctoLocaleString(strikeDict['lastTradeDate']) + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['lastPrice'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td id='optionBid'>" + strikeDict['bid'] + "</td>");
-    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['ask'] + "</td>");
+    $('#quoteTableId > tbody > tr').append("<td id='optionAsk'>" + strikeDict['ask'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + Number(strikeDict['change']).toFixed(2) + "</td>"); //percentChange
     $('#quoteTableId > tbody > tr').append("<td>" + (Number(strikeDict['percentChange'])).toFixed(2) + "%</td>")
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['volume'] + "</td>");
@@ -440,14 +458,7 @@ function setprojectedEbitda() {
     $("#projectedEbitdaId").val(FormattedValue(projectedEbita.toFixed(0)));
 }
 
-
-function setSharePrice() {
-    $("#sharePriceId").val(SharePrice());
-}
-
-function setCallPremium() {
-    $("#callPremiumId").val($('#optionBid').text());
-}
+ 
 
 
 function setBuyingPrice(num) {
@@ -562,9 +573,9 @@ function TotalLblMinusCurrentAssets() {
 
 function BuyingPrice() {
 
-    var sp = SharePrice();
+    var sp = getAverageSharePrice(); //SharePrice();
 
-    var cp = Number($('#optionBid').text());
+    var cp = getAverageCallPremium(); //Number($('#optionBid').text());
 
 
     var result = sp - cp;
@@ -664,7 +675,7 @@ function cashFlowFormula() {
 
 function callPremiumChanged() {
     var colNum = (numOfCols() - 2).toString();
-    setCallPremium();
+    //setCallPremium();
     setBuyingPrice(colNum);
     setCashFlowMultiple(colNum);
 }

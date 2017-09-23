@@ -295,41 +295,35 @@ namespace Options.Test
         public double CalculateGrowthRate(double initialValue, double finalValue, double period)
         {
 
-            if (initialValue < 0 && finalValue > 0)
-            {
-                bool isOdd = period % 2 != 0;
-
-                var frac = finalValue / initialValue;
-                var gr = Math.Pow(Math.Abs(frac), 1.0 / period);
-
-                if (isOdd)
-                {
-                    gr = -1 * gr;
-                }
-
-                gr = gr - 1.0;
-                return gr;
-            }
-
-
             var fraction = finalValue / initialValue;
-            if (fraction < 0) fraction = Math.Abs(fraction);
+            var time = 1.0 / period;
 
-            
+            var pow = Math.Pow(Math.Abs(fraction), time);
 
-            var growth = Math.Pow(fraction, 1.0D / period);
+            pow = GetNormalizedPow(initialValue, finalValue, pow, period);
 
-            //if finalValue < initialValue && finalValue is -ve && initialValue is +ve
-            if (finalValue < 0 && finalValue < initialValue && initialValue > 0)
-            {
-                growth = -1.0 * growth;
-            }
-           
+            var growthRate = pow - 1;
 
-            var growthRate = growth - 1.0;
+           // if ((finalValue < initialValue) && (growthRate > 0)) growthRate = -1.0 * growthRate;
 
             return growthRate;
 
+        }
+
+        public double GetNormalizedPow(double initial, double final, double pow, double period)
+        {
+            if (initial > 0 && final > 0) return pow;
+            if (initial < 0 && final < 0) return pow;
+
+            return (-1 * pow);
+
+            //if (period % 2.0 == 0) //flip the sign if the number of periods is odd
+            //{
+            //    if (initial < 0 && final > 0) return (-1 * pow);
+            //    if (initial > 0 && final < 0) return (-1 * pow);
+            //}
+
+            //return pow;
         }
 
         public double CalculateFinalValue(double initialValue, double growthRate, double period)
@@ -344,27 +338,41 @@ namespace Options.Test
             }
         }
 
-        [DataRow(300.0, 100.0)]
-        [DataRow(100.0, 300.0)]
-        [DataRow(-300.0, -100.0)]
-        [DataRow(-100.0, -300.0)]
-        [DataRow(-300.0, 100.0)]
-        [DataRow(-100.0, 300.0)]
-        [DataRow(300.0, -100.0)]
-        [DataRow(100.0, -300.0)]
-        [DataRow(198920000.0, -333534000.0)]
+        [DataRow(100.0, 300.0, 3.0)]
+        [DataRow(300.0, 100.0, 3.0)]
+        [DataRow(-300.0, -100.0, 3.0)]
+        [DataRow(-100.0, -300.0, 3.0)]
+        [DataRow(-300.0, 100.0, 3.0)]
+        [DataRow(-100.0, 300.0, 3.0)]
+        [DataRow(300.0, -100.0, 3.0)]
+        [DataRow(100.0, -300.0, 3.0)]
+        [DataRow(198920000.0, -333534000.0, 3.0)]
         [TestMethod]
-        public void VerifyPermutations(double i, double f)
+        public void VerifyPermutationsForOddNumberOfPeriods(double initial, double final, double period)
         {
+            var growthRate = CalculateGrowthRate(initial, final, period);
+            var calculatedValue = CalculateFinalValue(initial, growthRate, period);
 
-            var gr = CalculateGrowthRate(i, f, 4.0);
-            var cfv = CalculateFinalValue(i, gr, 4.0);
+            Assert.IsTrue((Math.Abs(calculatedValue - final) < 1.00), $"calculatedValue: {calculatedValue} final: {final}");
+        }
 
-           // if (f < 0) f = Math.Abs(f);
+        //[DataRow(100.0, 300.0, 4.0)]
+        //[DataRow(300.0, 100.0, 4.0)]
+        //[DataRow(-300.0, -100.0, 4.0)]
+        //[DataRow(-100.0, -300.0, 4.0)]
+        [DataRow(-300.0, 100.0, 4.0)] //fails -1.75
+        [DataRow(-100.0, 300.0, 4.0)] //fails -2.31
+        [DataRow(300.0, -100.0, 4.0)] //fails -1.75
+        [DataRow(100.0, -300.0, 4.0)] //fails -2.31
+        [DataRow(198920000.0, -333534000.0, 4.0)] //fails -2.13
+        [TestMethod]
+        public void VerifyPermutationsForEvenNumberOfPeriods(double initial, double final, double period)
+        {
+            var growthRate = CalculateGrowthRate(initial, final, period);
+            growthRate = 0.26;
+            var calculatedValue = CalculateFinalValue(initial, growthRate, period);
 
-            Assert.IsTrue((Math.Abs(cfv - f) < 1.00), $"cfv: {cfv} f: {f}");
-
-            //198920000.0  81566000.0  -333534000.0
+            Assert.IsTrue((Math.Abs(calculatedValue - final) < 1.00), $" growthRate: {growthRate} calculatedValue: {calculatedValue} initial: {initial} final: {final}");
         }
 
     }
