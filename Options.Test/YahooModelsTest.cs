@@ -37,7 +37,7 @@ namespace Options.Test
 
         //[DataRow("MSFT", "1547769600")]
         //[DataRow("MSFT", "1518739200")]
-        [DataRow("GPRO", "")]
+        [DataRow("LUV", "")]
         [TestMethod]
         public void VerifyOptionContainer_Net(string ticker, string expirationDate)
         {

@@ -578,16 +578,24 @@ ebitda/revenue
 
             dynamic dynamicDividend = new ExpandoObject();
 
+            dynamicDividend.HasValue = false;
+
             if (dividend.result_count > 0)
             {
-                dynamicDividend.Date = dividend.data.First().date;
-                dynamicDividend.Value = dividend.data.First().value;
-                dynamicDividend.HasValue = true;
+                DateTime dateTime;
+
+                if (DateTime.TryParse(dividend.data.First().date, out dateTime))
+                {
+                    if (Math.Abs((DateTime.Now.Subtract(dateTime).TotalDays)) < 100)
+                    {
+                        dynamicDividend.Date = dividend.data.First().date;
+                        dynamicDividend.Value = dividend.data.First().value;
+                        dynamicDividend.HasValue = true;
+                    }
+
+                }
             }
-            else
-            {
-                dynamicDividend.HasValue = false;
-            }
+           
 
             var dynamicJsonString = JsonConvert.SerializeObject(dynamicDividend);
             return dynamicJsonString;

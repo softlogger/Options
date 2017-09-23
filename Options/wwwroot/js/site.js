@@ -36,7 +36,7 @@ function loadHeader() {
     var shorty = jsonQuoteObject["shortName"];
     var bid = jsonQuoteObject["bid"];
     var ask = jsonQuoteObject["ask"];
-    var regPrice = jsonQuoteObject["regularMarketPreviousClose"];
+    var regPrice = jsonQuoteObject["regularMarketPrice"];
     var postMktPrice = jsonQuoteObject["postMarketPrice"];
 
     if (typeof postMktPrice === 'number') {
@@ -67,16 +67,22 @@ function SetReturns() {
     setMaxRateOfReturn();
 }
 
-function getAverageSharePrice()
-{
+function getAverageSharePrice() {
+     
     var shareBid = Number($("#bidId").val());
     var shareAsk = Number($("#askId").val());
     var avg = ((shareBid + shareAsk) / 2.0);
-    return avg;
+    if ((!(Number.isNaN(avg)) && Number > 0)) return avg;
+
+    var regPrice = Number($("#regPriceId").val());
+    if (!(Number.isNaN(regPrice) && regPrice > 0)) return regPrice;
+
+    var lastPrice = Number($("#lastPriceId").val());
+    if (!(Number.isNaN(lastPrice) && lastPrice > 0)) return lastPrice;
+   
 }
 
-function getAverageCallPremium()
-{
+function getAverageCallPremium() {
     //$('#quoteTableId > tbody > tr').append("<td id='optionBid'>" + strikeDict['bid'] + "</td>");
     //$('#quoteTableId > tbody > tr').append("<td id='optionAsk'>" + strikeDict['ask'] + "</td>");
     var optionBid = Number($('#quoteTableId #optionBid').text());
@@ -359,6 +365,9 @@ function loadOptionQuotes() {
 function loadStatementTable() {
 
     var headerDates = JsonStatementTable[JsonStatementTable.length - 1];
+    var editableColumnIndex = headerDates.length - 2;
+
+    var editableRowNames = ['Ebitda', 'Total_Liabilities', 'Current_Assets','Weighted_Avg_Diluted_Shares', 'Buying_Price'];
 
     $('#statementTableId').empty();
 
@@ -381,6 +390,7 @@ function loadStatementTable() {
         for (var k = 0; k < nextArray.length; k++) {
             var nextId = nextArray[0] + k;
             var colVal = nextArray[k];
+            var rowName = nextArray[0];
             var formattedVal = FormattedValue(colVal);
             // $('#statementTableId tr:last').append('<td id=' + nextId + '>' + formattedVal + '</td>');
 
@@ -392,13 +402,30 @@ function loadStatementTable() {
             if (colVal == "Cash_Flow_Multiple") {
                 $('#statementTableId  tr:last').attr('title', cashFlowFormula());
             }
+
+            if (k === editableColumnIndex && rowName === "Buying_Price")
+            {
+                var sp = getAverageSharePrice();
+                var cp = getAverageCallPremium();
+
+                var titleString = "Buying Price: " + sp + " less Call Premium:  " + cp + "\nCall Premium is average of bid and ask. Share price is either -  average of Bid and Ask or Regular Price or Last Price based on available data";
+                $('#statementTableId  tr:last td:last').prop('title', titleString);
+            }
+
+            //if (k === editableColumnIndex && editableRowNames.includes(rowName)) {
+
+            //    $('#statementTableId  tr:last td:last').attr('contenteditable', true);
+            //    $('#statementTableId  tr:last td:last').css('background-color', 'cyan');
+            //}
+
+
         }
 
 
     }
 
     //  $('#statementTableId td:nth-child(n+5').attr('contenteditable', 'true');
-    $('#statementTableId td:nth-child(5)').attr('contenteditable', 'true');
+    //$('#statementTableId td:nth-child(5)').attr('contenteditable', 'true');
 }
 
 function GetNextYearFor(year) {
@@ -456,7 +483,7 @@ function setprojectedEbitda() {
     $("#projectedEbitdaId").val(FormattedValue(projectedEbita.toFixed(0)));
 }
 
- 
+
 
 
 function setBuyingPrice(num) {
@@ -515,8 +542,9 @@ function Reset() {
     }
     setBuyingPrice(colNum);
     setCashFlowMultiple(colNum);
-    SetRateOfReturn();
     setDividendAmount();
+    SetRateOfReturn();
+    
 }
 
 
@@ -681,10 +709,13 @@ function callPremiumChanged() {
 function Recalculate() {
     var colNum = (numOfCols() - 2).toString();
     setTotalLibMinusCurrentAssets();
-    setBuyingPrice(colNum);
+
+
+   // setBuyingPrice(colNum);
     setCashFlowMultiple(colNum);
+   // setDividendAmount();
     SetRateOfReturn();
-    setDividendAmount();
+    
 }
 
 function setTotalLibMinusCurrentAssets() {
