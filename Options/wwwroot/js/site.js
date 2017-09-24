@@ -43,7 +43,7 @@ function loadHeader() {
         postMktPrice = Number(postMktPrice).toFixed(2);
     }
 
-    var headerName = "<h4><strong>" + shorty + "</strong><h4>";
+    var headerName = "<h5><strong>" + shorty + "</strong></h5>";
     var headerLastClose = "Last Close:<strong> " + postMktPrice + "</strong>";
     var headerReg = "Regular:<strong> " + regPrice + "</strong>";
     var headerBid = "Bid:<strong> " + bid + "</strong>";
@@ -338,24 +338,24 @@ function loadOptionQuotes() {
     $('#quoteTableId').empty();
     $('#quoteTableId').append('<thead><tr></thead></tr>');
     $('#quoteTableId').append('<tbody><tr></tbody></tr>');
-    $('#quoteTableId > thead > tr').append("<th>" + "Last Trade" + "</th>");
+    //$('#quoteTableId > thead > tr').append("<th>" + "Last Trade" + "</th>");
     $('#quoteTableId > thead > tr').append("<th>" + "Last Price" + "</th>");
     $('#quoteTableId > thead > tr').append("<th>" + "Bid" + "</th>");
     $('#quoteTableId > thead > tr').append("<th>" + "Ask" + "</th>");
-    $('#quoteTableId > thead > tr').append("<th>" + "Change" + "</th>");
-    $('#quoteTableId > thead > tr').append("<th>" + "% Change" + "</th>");
-    $('#quoteTableId > thead > tr').append("<th>" + "Volume" + "</th>");
-    $('#quoteTableId > thead > tr').append("<th>" + "Open Int" + "</th>");
+    //$('#quoteTableId > thead > tr').append("<th>" + "Change" + "</th>");
+    //$('#quoteTableId > thead > tr').append("<th>" + "% Change" + "</th>");
+    //$('#quoteTableId > thead > tr').append("<th>" + "Volume" + "</th>");
+    //$('#quoteTableId > thead > tr').append("<th>" + "Open Int" + "</th>");
     $('#quoteTableId > thead > tr').append("<th>" + "Imp Volatility" + "</th>");
 
-    $('#quoteTableId > tbody > tr').append("<td>" + EpoctoLocaleString(strikeDict['lastTradeDate']) + "</td>");
+    //$('#quoteTableId > tbody > tr').append("<td>" + EpoctoLocaleString(strikeDict['lastTradeDate']) + "</td>");
     $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['lastPrice'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td id='optionBid'>" + strikeDict['bid'] + "</td>");
     $('#quoteTableId > tbody > tr').append("<td id='optionAsk'>" + strikeDict['ask'] + "</td>");
-    $('#quoteTableId > tbody > tr').append("<td>" + Number(strikeDict['change']).toFixed(2) + "</td>"); //percentChange
-    $('#quoteTableId > tbody > tr').append("<td>" + (Number(strikeDict['percentChange'])).toFixed(2) + "%</td>")
-    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['volume'] + "</td>");
-    $('#quoteTableId > tbody > tr').append("<td>" + strikeDict['openInterest'] + "</td>");
+    //$('#quoteTableId > tbody > tr').append("<td>" + Number(strikeDict['change']).toFixed(2) + "</td>"); //percentChange
+    //$('#quoteTableId > tbody > tr').append("<td>" + (Number(strikeDict['percentChange'])).toFixed(2) + "%</td>")
+    //$('#quoteTableId > tbody > tr').append("<td>" + strikeDict['volume'] + "</td>");
+    //$('#quoteTableId > tbody > tr').append("<td>" + strikeDict['openInterest'] + "</td>");
     var impVolatility = ((Number(strikeDict['impliedVolatility']) * 100).toFixed(2)) + '%';
     $('#quoteTableId > tbody > tr').append("<td>" + impVolatility + "</td>");
 
