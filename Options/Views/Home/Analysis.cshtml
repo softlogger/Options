@@ -15,7 +15,7 @@
         <input id="lastPriceId" type="hidden" />
         <input id="bidId" type="hidden" />
         <input id="regPriceId" type="hidden" />
-        
+
     </div>
 
     <div class="col-md-4">
@@ -49,7 +49,7 @@
         <table id="statementTableId" spellcheck="false" class="table table-bordered table-condensed table-striped table-hover"></table>
     </div>
 
-    
+
 
 
 
@@ -60,13 +60,15 @@
     { return; }
 }
 
-<div>
-    <label>Expiration Date:</label>
-    <select id="expDateId"></select>
-
-    <label>Strike:</label>
-    <select id="strikeId"></select>
-
+<div class="form-group row">
+    <div class="col-md-2">
+        <label>Expiration Date:</label>
+        <select id="expDateId"></select>
+    </div>
+    <div class="col-md-1">
+        <label>Strike:</label>
+        <select id="strikeId"></select>
+    </div>
 
 </div>
 
@@ -76,22 +78,54 @@
         <table id="quoteTableId" class="table table-bordered table-condensed"></table>
     </div>
 
-    <div style="padding-top:20px" class="col-md-1">
+
+
+    <div style="padding-top:20px" class="col-md-2">
         <a class="btn btn-danger btn-block" disabled><span id="lossRateId" class="badge"></span></a>
     </div>
 
-    <div style="padding-top:20px" class="col-md-1">
+    <div style="padding-top:20px" class="col-md-2">
         <a class="btn btn-warning btn-block" disabled><span id="rorId" class="badge"></span></a>
     </div>
 
-    <div style="padding-top:20px" class="col-md-1">
+    <div style="padding-top:20px" class="col-md-2">
         <a class="btn btn-success btn-block" disabled><span id="maxRateId" class="badge"></span></a>
     </div>
-    
+
 </div>
 
 
+<div class="form-group row">
+    <div class="col-md-2">
+        <label>Expiration Date:</label>
+        <select id="putExpDateId"></select>
+    </div>
+    <div class="col-md-1">
+        <label>Strike:</label>
+        <select id="putStrikeId"></select>
+    </div>
 
+</div>
+
+
+<div class="form-group row">
+    <div class="col-md-3">
+        <table id="putQuoteTableId" class="table table-bordered table-condensed"></table>
+    </div>
+
+    <div style="padding-top:20px" class="col-md-1">
+        <a class="btn btn-danger btn-block" disabled><span id="putLossRateId" class="badge"></span></a>
+    </div>
+
+    <div style="padding-top:20px" class="col-md-1">
+        <a class="btn btn-warning btn-block" disabled><span id="putRorId" class="badge"></span></a>
+    </div>
+
+    <div style="padding-top:20px" class="col-md-1">
+        <a class="btn btn-success btn-block" disabled><span id="putMaxRateId" class="badge"></span></a>
+    </div>
+
+</div>
 
 
 
@@ -111,6 +145,8 @@
     var JsonStatementTable = @Html.Raw(Model.JsonStatementTable)
      var ReportUrl = "@Html.UrlEncoder.Encode(Model.Report10KUrl)"
     var jsonDividendString = @Html.Raw(Model.JsonDividendInfo)
+    var jsonPutContainer = @Html.Raw(Model.TickerContainer.JsonPutDictionary)
+    var numOfYearsProjected = @Html.Raw(Model.NumberOfYearsProjected)
 </script>
 
 

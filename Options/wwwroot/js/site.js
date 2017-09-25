@@ -17,13 +17,12 @@ function loadInitial() {
     loadHeader();
     bindEvents();
     loadHistoricalLowPrices();
-    loadExpDates();
-    loadStrikes();
-    loadOptionQuotes();
+    loadCallOption();
+    loadPutOption();
     loadStatementTable();
     loadToolTips();
 
-    var numOfCol = (numOfCols() - 2).toString();
+    var numOfCol = colNumberForCallCalculations();// (numOfCols() - 2).toString();
 
     setBuyingPrice(numOfCol);
     setCashFlowMultiple(numOfCol);
@@ -32,6 +31,21 @@ function loadInitial() {
     setMaxRateOfReturn();
     setLossRate();
 }
+
+function loadCallOption()
+{
+    loadExpDates();
+    loadStrikes();
+    loadOptionQuotes();
+}
+
+function loadPutOption()
+{
+    loadPutExpDates();
+    loadPutStrikes();
+    loadPutOptionQuotes();
+}
+
 function loadHeader() {
     var shorty = jsonQuoteObject["shortName"];
     var bid = jsonQuoteObject["bid"];
@@ -91,10 +105,16 @@ function getAverageCallPremium() {
     return avg;
 }
 
+function colNumberForCallCalculations()
+{
+    var colNum = (numOfCols() - Number(numOfYearsProjected));
+    return colNum;
+}
+
 function setLossRate() {
 
     var sp = getAverageSharePrice(); // Number(SharePrice());
-    var colNum = (numOfCols() - 2).toString();
+    var colNum = colNumberForCallCalculations() //(numOfCols() - 2).toString();
 
     var bprice = Number($('#statementTableId #Buying_Price' + colNum).text().replace(/,/g, ''));
 
@@ -232,6 +252,8 @@ function bindEvents() {
     $('#recalculateId').on('click', Recalculate);
     $('#expDateId').on('change', expirationChanged);
     $('#strikeId').on('change', strikesChanged);
+    $('#putExpDateId').on('change', putExpirationChanged);
+    $('#putStrikeId').on('change', putStrikesChanged);
 }
 
 
@@ -279,6 +301,18 @@ function loadExpDates() {
 
 }
 
+function loadPutExpDates() {
+    var ele = '#putExpDateId';
+    $(ele).empty();
+    for (var i = 0; i < jsonDates.length; i++) {
+        $(ele).append("<option value='" + jsonDates[i] + "'>" + EpochToDate(jsonDates[i]) + "</option>")
+    }
+    var finalDateValue = jsonDates[jsonDates.length - 1];
+    console.log(finalDateValue);
+    $('#putExpDateId option[value=' + finalDateValue + ']').prop('selected', 'selected');
+
+}
+
 function expirationChanged() {
     loadStrikes();
     loadOptionQuotes();
@@ -297,6 +331,26 @@ function strikesChanged() {
     SetReturns();
 
 }
+
+function putExpirationChanged() {
+    loadPutStrikes();
+    loadPutOptionQuotes();
+    //callPremiumChanged();
+    //setDividendAmount();
+
+    //SetReturns();
+
+}
+
+function putStrikesChanged() {
+    loadPutOptionQuotes();
+    //callPremiumChanged();
+    //setDividendAmount();
+
+    //SetReturns();
+
+}
+
 
 
 
@@ -323,6 +377,33 @@ function loadStrikes() {
     }
     else {
         $('#strikeId').val(highStrike);
+    }
+
+}
+
+function loadPutStrikes() {
+    var initial = true;
+    var ele = '#putStrikeId';
+    var selectedDate = $("#putExpDateId").find(":selected").val();
+    var strikes = jsonStrikes[selectedDate];
+    $(ele).empty();
+    var quote = getAverageSharePrice();  //SharePrice();
+    for (var i = 0; i < strikes.length; i++) {
+        $(ele).append("<option value='" + strikes[i] + "'>" + strikes[i] + "</option>");
+    }
+
+    var highStrike = 0;
+    for (var i = 0; i < strikes.length; i++) {
+        if (strikes[i] > quote) {
+            highStrike = strikes[i];
+            break;
+        }
+    }
+    if (highStrike == 0) {
+        $('#putStrikeId').val(strikes[strikes.length - 1]);
+    }
+    else {
+        $('#putStrikeId').val(highStrike);
     }
 
 }
@@ -358,10 +439,41 @@ function loadOptionQuotes() {
     //$('#quoteTableId > tbody > tr').append("<td>" + strikeDict['openInterest'] + "</td>");
     var impVolatility = ((Number(strikeDict['impliedVolatility']) * 100).toFixed(2)) + '%';
     $('#quoteTableId > tbody > tr').append("<td>" + impVolatility + "</td>");
-
-
 }
 
+
+function loadPutOptionQuotes() {
+    console.log("in option quotes");
+    var expDateVal = $('#putExpDateId').val();
+
+    var expDict = jsonPutContainer[expDateVal];
+    var strikeVal = $('#putStrikeId').val();
+    var strikeDict = expDict[strikeVal];
+
+    $('#putQuoteTableId').empty();
+    $('#putQuoteTableId').append('<thead><tr></thead></tr>');
+    $('#putQuoteTableId').append('<tbody><tr></tbody></tr>');
+    //$('#putQuoteTableId > thead > tr').append("<th>" + "Last Trade" + "</th>");
+    $('#putQuoteTableId > thead > tr').append("<th>" + "Last Price" + "</th>");
+    $('#putQuoteTableId > thead > tr').append("<th>" + "Bid" + "</th>");
+    $('#putQuoteTableId > thead > tr').append("<th>" + "Ask" + "</th>");
+    //$('#putQuoteTableId > thead > tr').append("<th>" + "Change" + "</th>");
+    //$('#putQuoteTableId > thead > tr').append("<th>" + "% Change" + "</th>");
+    //$('#putQuoteTableId > thead > tr').append("<th>" + "Volume" + "</th>");
+    //$('#putQuoteTableId > thead > tr').append("<th>" + "Open Int" + "</th>");
+    $('#putQuoteTableId > thead > tr').append("<th>" + "Imp Volatility" + "</th>");
+
+    //$('#putQuoteTableId > tbody > tr').append("<td>" + EpoctoLocaleString(strikeDict['lastTradeDate']) + "</td>");
+    $('#putQuoteTableId > tbody > tr').append("<td>" + strikeDict['lastPrice'] + "</td>");
+    $('#putQuoteTableId > tbody > tr').append("<td id='optionBid'>" + strikeDict['bid'] + "</td>");
+    $('#putQuoteTableId > tbody > tr').append("<td id='optionAsk'>" + strikeDict['ask'] + "</td>");
+    //$('#putQuoteTableId > tbody > tr').append("<td>" + Number(strikeDict['change']).toFixed(2) + "</td>"); //percentChange
+    //$('#putQuoteTableId > tbody > tr').append("<td>" + (Number(strikeDict['percentChange'])).toFixed(2) + "%</td>")
+    //$('#putQuoteTableId > tbody > tr').append("<td>" + strikeDict['volume'] + "</td>");
+    //$('#putQuoteTableId > tbody > tr').append("<td>" + strikeDict['openInterest'] + "</td>");
+    var impVolatility = ((Number(strikeDict['impliedVolatility']) * 100).toFixed(2)) + '%';
+    $('#putQuoteTableId > tbody > tr').append("<td>" + impVolatility + "</td>");
+}
 function loadStatementTable() {
 
     var headerDates = JsonStatementTable[JsonStatementTable.length - 1];
@@ -532,7 +644,7 @@ function getBuyingPriceTitleString() {
 function Reset() {
 
 
-    var colNum = (numOfCols() - 2).toString();
+    var colNum = colNumberForCallCalculations() //(numOfCols() - 2).toString();
 
     for (var i = 1; i < 10; i++) {
         var tdObject = '#statementTableId tr:eq(' + i + ') td:eq(' + colNum + ')';
@@ -700,14 +812,14 @@ function cashFlowFormula() {
 
 
 function callPremiumChanged() {
-    var colNum = (numOfCols() - 2).toString();
+    var colNum = colNumberForCallCalculations() //(numOfCols() - 2).toString();
     //setCallPremium();
     setBuyingPrice(colNum);
     setCashFlowMultiple(colNum);
 }
 
 function Recalculate() {
-    var colNum = (numOfCols() - 2).toString();
+    var colNum = colNumberForCallCalculations() //(numOfCols() - 2).toString();
     setTotalLibMinusCurrentAssets();
 
 
@@ -719,7 +831,7 @@ function Recalculate() {
 }
 
 function setTotalLibMinusCurrentAssets() {
-    var colNum = (numOfCols() - 2).toString();
+    var colNum = colNumberForCallCalculations() //(numOfCols() - 2).toString();
 
     var totalLibMinuCurrentAssets = TotalLblMinusCurrentAssets();
     $('#statementTableId #Total_Lbs_Minus_Assets' + colNum).text(totalLibMinuCurrentAssets);

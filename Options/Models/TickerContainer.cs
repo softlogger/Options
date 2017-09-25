@@ -13,6 +13,7 @@ namespace Options.Models
         List<int> _expirationDates = new List<int>();
         Dictionary<int, float[]> _strikes = new Dictionary<int, float[]>();
         Dictionary<int, Dictionary<float, Call>> _ContainerDictionary = new Dictionary<int, Dictionary<float, Call>>();
+        Dictionary<int, Dictionary<float, Put>> _PutContainerDictionary = new Dictionary<int, Dictionary<float, Put>>();
 
 
         public TickerContainer(string ticker)
@@ -30,6 +31,7 @@ namespace Options.Models
         public Dictionary<int, float[]> Strikes { get => _strikes; set => _strikes = value; }
         public Dictionary<int, Dictionary<float, Call>> ContainerDictionary { get => _ContainerDictionary; set => _ContainerDictionary = value; }
 
+        public Dictionary<int, Dictionary<float, Put>> PutContainerDictionary { get => _PutContainerDictionary; set => _PutContainerDictionary = value; }
 
 
         public void Add(OptionContainer optionContainer)
@@ -45,11 +47,15 @@ namespace Options.Models
             _strikes.Add(expDate, strikes);
 
             _ContainerDictionary.Add(expDate, new Dictionary<float, Call>());
+            _PutContainerDictionary.Add(expDate, new Dictionary<float, Put>());
 
             foreach(var strike in strikes)
             {
                Call call = optionContainer.optionChain.result.First().options.First().calls.Where(c => c.strike == strike).First();
                 _ContainerDictionary[expDate].Add(strike, call);
+
+                Put put = optionContainer.optionChain.result.First().options.First().puts.Where(c => c.strike == strike).FirstOrDefault();
+                _PutContainerDictionary[expDate].Add(strike, put);
             }
 
             JsonQuoteObject = JsonConvert.SerializeObject(optionContainer.optionChain.result.First().quote);
@@ -61,7 +67,7 @@ namespace Options.Models
             JsonExpirationDatesArray = JsonConvert.SerializeObject(ExpirationDates);
             JsonStrikesDictionary = JsonConvert.SerializeObject(Strikes);
             JsonCallDictionary = JsonConvert.SerializeObject(ContainerDictionary);
-            
+            JsonPutDictionary = JsonConvert.SerializeObject(PutContainerDictionary);
         }
 
         public string JsonExpirationDatesArray { get; set; }
@@ -70,5 +76,7 @@ namespace Options.Models
         public string JsonCallDictionary { get; set; }
         
         public string JsonQuoteObject { get; set; }
+
+        public string JsonPutDictionary { get; set; }
     }
 }

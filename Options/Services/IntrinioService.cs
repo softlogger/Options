@@ -382,13 +382,13 @@ ebitda/revenue
 
         }
 
-        public List<List<string>> GetProjectedStatementTable(List<List<string>> statementTable)
+        public List<List<string>> GetProjectedStatementTable(List<List<string>> statementTable, int numOfYearsToProject)
         {
-            if (statementTable[0].Count() < 3) return statementTable;
+            if (statementTable[0].Count() <= 2) return statementTable;
 
             foreach (var statement in statementTable)
             {
-                ProjectStatement(statement);
+                ProjectStatement(statement, numOfYearsToProject);
             }
 
             ProjectEbidtaPerRevenue(statementTable);
@@ -399,7 +399,7 @@ ebitda/revenue
 
             var fiscalYearEndDatesStatement = statementTable.Where(s => s.First() == "Fiscal_Year_End_Date").First();
 
-            ProjectFiscalYearEndDates(fiscalYearEndDatesStatement);
+            ProjectFiscalYearEndDates(fiscalYearEndDatesStatement, numOfYearsToProject);
 
             return statementTable;
         }
@@ -410,9 +410,13 @@ ebitda/revenue
             var currentAssets = statements.Where(s => s.First() == "Current_Assets").First();
             var totLibMinuCurrAssets = statements.Where(s => s.First() == "Total_Lbs_Minus_Assets").First();
 
-            int index = totLibMinuCurrAssets.Count();
-            totLibMinuCurrAssets.Add((Convert.ToDouble(totLiability[index]) - Convert.ToDouble(currentAssets[index])).ToString());
-            totLibMinuCurrAssets.Add((Convert.ToDouble(totLiability[index + 1]) - Convert.ToDouble(currentAssets[index + 1])).ToString());
+            int numOfCalculationsNeeded = (totLiability.Count - totLibMinuCurrAssets.Count);
+
+            for (int i = 0; i < numOfCalculationsNeeded; i++)
+            {
+                int index = totLibMinuCurrAssets.Count - 1;
+                totLibMinuCurrAssets.Add((Convert.ToDouble(totLiability[index]) - Convert.ToDouble(currentAssets[index])).ToString());
+            }
 
         }
 
@@ -493,16 +497,17 @@ ebitda/revenue
 
 
 
-        public void ProjectFiscalYearEndDates(List<string> statement)
+        public void ProjectFiscalYearEndDates(List<string> statement, int numOfYearsToProject)
         {
-            var lastDate = DateTime.Parse(statement.Last());
-            lastDate = lastDate.AddYears(1);
-            statement.Add(lastDate.ToString("yyyy-MM-dd"));
-            lastDate = lastDate.AddYears(1);
-            statement.Add(lastDate.ToString("yyyy-MM-dd"));
+            for (int i = 0; i < numOfYearsToProject; i++)
+            {
+                var lastDate = DateTime.Parse(statement.Last());
+                lastDate = lastDate.AddYears(1);
+                statement.Add(lastDate.ToString("yyyy-MM-dd"));
+            }
         }
 
-        public void ProjectStatement(List<string> statement)
+        public void ProjectStatement(List<string> statement, int numOfYears)
         {
             if (statement.Count < 3) return;
 
@@ -516,30 +521,34 @@ ebitda/revenue
                 case "Current_Assets":
                 case "Weighted_Avg_Diluted_Shares":
 
-                    var initialValue = double.Parse(statement[1]);
-                    var finalValue = double.Parse(statement[statement.Count - 1]);
-                    var period = statement.Count - 1;
+                    for (int i = 0; i < numOfYears; i++)
+                    {
+                        var initialValue = double.Parse(statement[1]);
+                        var finalValue = double.Parse(statement[statement.Count - 1]);
+                        var period = statement.Count - 1;
 
-                    var growthRate = GetGrowthRate(initialValue, finalValue, period);
-                    var nextValue = finalValue + (growthRate * finalValue);
+                        var growthRate = GetGrowthRate(initialValue, finalValue, period);
+                        var nextValue = finalValue + (growthRate * finalValue);
+                        statement.Add(nextValue.ToString("0"));
+                    }
 
-                    var nextGrowthRate = GetGrowthRate(initialValue, nextValue, period + 1);
-                    var nextTonextValue = nextValue + (nextValue * nextGrowthRate);
 
-                    statement.Add(nextValue.ToString("0"));
-                    statement.Add(nextTonextValue.ToString("0"));
                     break;
                 case "Ebit":
                 case "Depreciation_Amortization":
-                    statement.Add("N/A");
-                    statement.Add("N/A");
+                    for (int i = 0; i < numOfYears; i++)
+                    {
+                        statement.Add("N/A");
+                    }
                     break;
                 case "Total_Lbs_Minus_Assets":
                     break;
                 case "Buying_Price":
                 case "Cash_Flow_Multiple":
-                    statement.Add(string.Empty);
-                    statement.Add(string.Empty);
+                    for (int i = 0; i < numOfYears; i++)
+                    {
+                        statement.Add(string.Empty);
+                    }
                     break;
                 case "Fiscal_Year_End_Date":
                     break;
@@ -595,7 +604,7 @@ ebitda/revenue
 
                 }
             }
-           
+
 
             var dynamicJsonString = JsonConvert.SerializeObject(dynamicDividend);
             return dynamicJsonString;

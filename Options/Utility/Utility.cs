@@ -29,6 +29,12 @@ namespace Options.Utility
             return friendlyDateTime;
         }
 
+        public static DateTime GetDateTimeFrom(int epochDate)
+        {
+            DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds(Convert.ToDouble(epochDate));
+            return dt;
+        }
+
 
 
     }

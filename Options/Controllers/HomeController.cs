@@ -59,13 +59,15 @@ namespace Options.Controllers
 
             Dictionary<int, Dictionary<string, Dictionary<string, string>>> Statements = _intrinioService.GetStatements(tickerName, fiscalYears);
 
-           
-
             viewModel.Statements = Statements;
 
             List<List<string>> statementTable = _intrinioService.GetStatementsTable(Statements, HistoricalLowPrices);
 
-            List<List<string>> projectedStatementTable = _intrinioService.GetProjectedStatementTable(statementTable);
+            int numOfYearsToProject = NumOfYearsToProject(container.ExpirationDates, fiscalYears);
+
+            viewModel.NumberOfYearsProjected = numOfYearsToProject.ToString();
+
+            List<List<string>> projectedStatementTable = _intrinioService.GetProjectedStatementTable(statementTable, numOfYearsToProject);
 
             // viewModel.StatementTable = statementTable;
             viewModel.StatementTable = projectedStatementTable;
@@ -78,6 +80,29 @@ namespace Options.Controllers
             return View("Analysis", viewModel);
         }
 
+       
+        int NumOfYearsToProject(IList<int> expirationDates, Dictionary<int, string> fiscalYears)
+        {
+            int finalExpiration = expirationDates.OrderByDescending(i => i).First();
+
+            DateTime finalExpirationDate = Utility.Utility.GetDateTimeFrom(finalExpiration);
+
+            string finalFiscalYearDateString = fiscalYears.Last().Value.Split(' ').Last();
+
+            DateTime finalFiscalYearDateTime = DateTime.Parse(finalFiscalYearDateString);
+
+            for (int i = 0; i < 5; i ++)
+            {
+                var comp = DateTime.Compare(finalFiscalYearDateTime, finalExpirationDate);
+
+                if (comp == 1) return i;
+
+                finalFiscalYearDateTime = finalFiscalYearDateTime.AddYears(1);
+
+            }
+
+            throw new ArgumentException("Cannot determine numbe of years to project");
+        }
 
         public IActionResult Index()
         {

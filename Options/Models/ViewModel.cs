@@ -32,6 +32,8 @@ namespace Options.Models
         public string JsonStatementTable { get; set; }
 
         public string JsonDividendInfo { get; set; }
+
+        public string NumberOfYearsProjected { get; set; }
         public void SetJsonStrings()
         {
             JsonFiscalYears = JsonConvert.SerializeObject(FiscalYears);

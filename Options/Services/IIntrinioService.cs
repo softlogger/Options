@@ -45,9 +45,11 @@ namespace Options.Services
         string GetReport10KUrl(string ticker);
 
         List<List<string>> GetStatementsTable(Dictionary<int, Dictionary<string, Dictionary<string, string>>> statements, Dictionary<int, string> historicalLowPrices);
-        List<List<string>> GetProjectedStatementTable(List<List<string>> statementTable);
+        List<List<string>> GetProjectedStatementTable(List<List<string>> statementTable, int numOfYearsToProject);
 
         string GetDividendInfo(string ticker);
         void Normalize(Dictionary<int, string> historicalPrices, Dictionary<int, string> fiscalYears);
+
+        
     }
 }
