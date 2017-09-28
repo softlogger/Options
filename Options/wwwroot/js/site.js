@@ -32,23 +32,14 @@ function loadInitial() {
     var numOfCol = putColumnIndex();
 
     UpdatePutCalculations();
-    ////setPutBuyingPrice(numOfCol);
-    ////setCashFlowMultiple(numOfCol);
-    
-    //var calColNum = callColumnIndex();
-    //setBuyingPrice(calColNum);
-    //setCashFlowMultiple(calColNum);
+   
 
     setDividendAmount();
 
     SetCallReturns();
     SetPutReturns();
 
-    ////SetRateOfReturn();
-    ////setMaxRateOfReturn();
-    ////setLossRate();
-
-
+  
 }
 
 function loadCallOption() {
@@ -297,8 +288,8 @@ function getNumberOfNinetyDayPeriods(startDate) {
 }
 
 function bindEvents() {
-    $('#resetId').on('click', Reset);
-    $('#recalculateId').on('click', Recalculate);
+    ////$('#resetId').on('click', Reset);
+    ////$('#recalculateId').on('click', Recalculate);
     $('#expDateId').on('change', expirationChanged);
     $('#strikeId').on('change', strikesChanged);
     $('#putExpDateId').on('change', putExpirationChanged);
@@ -366,7 +357,7 @@ function expirationChanged() {
     loadStrikes();
     loadOptionQuotes();
     callPremiumChanged();
-    setDividendAmount();
+   
 
     SetCallReturns();
 
@@ -1181,8 +1172,8 @@ function callPremiumChanged() {
     setBuyingPrice(colNum);
     setCashFlowMultiple(colNum);
 
-    setBuyingPrice(callColumnIndex);
-    setCashFlowMultiple(callColumnIndex);
+    setBuyingPrice(callColumnIndex());
+    setCashFlowMultiple(callColumnIndex());
 }
 
 function Recalculate() {
