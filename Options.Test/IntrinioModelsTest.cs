@@ -13,7 +13,7 @@ using System.Numerics;
 
 namespace Options.Test
 {
-    [TestClass]
+    //[TestClass]
     public class IntrinioModelsTest
     {
         NetService NetService

@@ -414,7 +414,7 @@ ebitda/revenue
 
             for (int i = 0; i < numOfCalculationsNeeded; i++)
             {
-                int index = totLibMinuCurrAssets.Count - 1;
+                int index = totLibMinuCurrAssets.Count;
                 totLibMinuCurrAssets.Add((Convert.ToDouble(totLiability[index]) - Convert.ToDouble(currentAssets[index])).ToString());
             }
 

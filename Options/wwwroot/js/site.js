@@ -26,21 +26,38 @@ function loadInitial() {
 
     setBuyingPrice(numOfCol);
     setCashFlowMultiple(numOfCol);
+
+    updateCallCalculations();
+
+    var numOfCol = putColumnIndex();
+
+    UpdatePutCalculations();
+    ////setPutBuyingPrice(numOfCol);
+    ////setCashFlowMultiple(numOfCol);
+    
+    //var calColNum = callColumnIndex();
+    //setBuyingPrice(calColNum);
+    //setCashFlowMultiple(calColNum);
+
     setDividendAmount();
-    SetRateOfReturn();
-    setMaxRateOfReturn();
-    setLossRate();
+
+    SetCallReturns();
+    SetPutReturns();
+
+    ////SetRateOfReturn();
+    ////setMaxRateOfReturn();
+    ////setLossRate();
+
+
 }
 
-function loadCallOption()
-{
+function loadCallOption() {
     loadExpDates();
     loadStrikes();
     loadOptionQuotes();
 }
 
-function loadPutOption()
-{
+function loadPutOption() {
     loadPutExpDates();
     loadPutStrikes();
     loadPutOptionQuotes();
@@ -74,15 +91,48 @@ function loadHeader() {
     $("#lastPriceId").val(postMktPrice);
 }
 
-function SetReturns() {
+function SetCallReturns() {
 
     setLossRate();
     SetRateOfReturn();
     setMaxRateOfReturn();
 }
 
+function SetPutReturns()
+{
+    setPutLossRate();
+    setPutMaxRateOfReturn();
+}
+
+function setPutLossRate()
+{
+    //get todays Price
+    //get buying Price
+    //cal % diff
+    var colIndex = putColumnIndex();
+    var sharePrice = getAverageSharePrice();
+
+    var putBuyingPriceId = "#statementTableId #Buying_Price" + colIndex;
+    var buyingPriceAmount = $(putBuyingPriceId).text();
+
+    var diff = (((sharePrice - buyingPriceAmount) / sharePrice) * 100).toFixed(2);
+    $("#putLossRateId").text(diff + ' %');
+
+}
+function setPutMaxRateOfReturn()
+{
+    var colIndex = putColumnIndex();
+    var putBuyingPriceId = "#statementTableId #Buying_Price" + colIndex;
+    var buyingPriceAmount = $(putBuyingPriceId).text();
+
+    var putPremAmount = getAveragePutPremium();
+    var maxRateReturn = ((putPremAmount / buyingPriceAmount) * 100).toFixed(2);
+
+    $("#putMaxRateId").text(maxRateReturn + ' %');
+}
+
 function getAverageSharePrice() {
-     
+
     var shareBid = Number($("#bidId").val());
     var shareAsk = Number($("#askId").val());
     var avg = ((shareBid + shareAsk) / 2.0);
@@ -93,7 +143,7 @@ function getAverageSharePrice() {
 
     var lastPrice = Number($("#lastPriceId").val());
     if (!(Number.isNaN(lastPrice) && lastPrice > 0)) return lastPrice;
-   
+
 }
 
 function getAverageCallPremium() {
@@ -105,16 +155,15 @@ function getAverageCallPremium() {
     return avg;
 }
 
-function colNumberForCallCalculations()
-{
-    var colNum = (numOfCols() - Number(numOfYearsProjected));
+function colNumberForCallCalculations() {
+    var colNum = (numOfCols() - 2 - Number(numOfYearsProjected));
     return colNum;
 }
 
 function setLossRate() {
 
     var sp = getAverageSharePrice(); // Number(SharePrice());
-    var colNum = colNumberForCallCalculations() //(numOfCols() - 2).toString();
+    var colNum = callColumnIndex(); //  colNumberForCallCalculations() //(numOfCols() - 2).toString();
 
     var bprice = Number($('#statementTableId #Buying_Price' + colNum).text().replace(/,/g, ''));
 
@@ -319,7 +368,8 @@ function expirationChanged() {
     callPremiumChanged();
     setDividendAmount();
 
-    SetReturns();
+    SetCallReturns();
+
 
 }
 
@@ -328,7 +378,8 @@ function strikesChanged() {
     callPremiumChanged();
     setDividendAmount();
 
-    SetReturns();
+
+    SetCallReturns();
 
 }
 
@@ -339,8 +390,216 @@ function putExpirationChanged() {
     //setDividendAmount();
 
     //SetReturns();
-
+    UpdatePutCalculations();
 }
+
+function callColumnIndex() {
+    return $("#statementTableId tr th").length - 2;
+}
+
+function updateCallCalculations() {
+    var expDate = Epoch(Date);
+    var sourceIndex = getColWithinNumberOfDays(expDate, 32);
+    var destIndex = callColumnIndex();
+
+    if (sourceIndex > 0) {
+        copyColumnData(sourceIndex, destIndex);
+    }
+    else {
+        var todaysDate = getTodaysDate();
+        var Columns = getColoumnsOnEitherSideOfDate(todaysDate);
+        copyAverageValuesForCalculations(Columns.First, Columns.Second, callColumnIndex());
+    }
+
+    setDerivedValuesForCallCalculations(destIndex);
+
+    setBuyingPrice(destIndex);
+    setCashFlowMultiple(destIndex);
+}
+
+function setDerivedValuesForCallCalculations(colIndex) {
+    var callColIndex = colIndex; //callColumnIndex();
+
+    //Set Ebitda Per Revenue
+    var ebitdaPerRevId = "#statementTableId #Ebitda_Per_Revenue" + callColIndex;
+    var ebitdaPerRevString = $(ebitdaPerRevId).text();
+    var ebitdaPerRevNum = Number(ebitdaPerRevString.replace(/,/g, ''));
+
+    var total_RevId = "#statementTableId #Total_Revenue" + callColIndex;
+    var total_RevString = $(total_RevId).text();
+    var totalRevNum = Number(total_RevString.replace(/,/g, ''));
+
+    var ebitda = (ebitdaPerRevNum * totalRevNum).toFixed(0);
+    var ebitdaId = "#statementTableId #Ebitda" + callColIndex;
+    $(ebitdaId).text(FormattedValue(ebitda));
+
+    //Set Total_Liabilities    Current_Assets    Total_Lbs_Minus_Assets
+
+    var currentAssetsId = "#statementTableId #Current_Assets" + callColIndex;
+    var currentAssetsString = $(currentAssetsId).text();
+    var currentAssetsNum = Number(currentAssetsString.replace(/,/g, ''));
+
+    var totalLiabilitiesId = "#statementTableId #Total_Liabilities" + callColIndex;
+    var totalLiabilitiesString = $(totalLiabilitiesId).text();
+    var totalLiabilitiesNum = Number(totalLiabilitiesString.replace(/,/g, ''));
+
+    var totalLibMinusAssets = totalLiabilitiesNum - currentAssetsNum;
+
+
+    var totalLibsMinusAssetsId = "#statementTableId #Total_Lbs_Minus_Assets" + callColIndex;
+    $(totalLibsMinusAssetsId).text(FormattedValue(totalLibMinusAssets));
+}
+
+function UpdatePutCalculations() {
+    var expDate = EpochToDate(getPutExpirationDate());
+
+    UpdatePutHeaderDate(expDate);
+
+    var sourceColNum = getColWithinNumberOfDays(expDate, 32);
+    var destColNum = putColumnIndex();
+    if (sourceColNum > 0) {
+        copyColumnData(sourceColNum, destColNum);
+    }
+    else {
+        var ColumnsIndexes = getColoumnsOnEitherSideOfDate(expDate);
+        copyAverageValuesForCalculations(ColumnsIndexes.First, ColumnsIndexes.Second, putColumnIndex());
+    }
+
+    setDerivedValuesForCallCalculations(destColNum);
+    setPutBuyingPrice(destColNum);
+    setCashFlowMultiple(destColNum);
+}
+
+function UpdatePutHeaderDate(expDate) {
+    var putColumnDateIndex = putColumnIndex();
+    var putColumnDateId = '#statementTableId tr:first th:eq(' + putColumnDateIndex + ')';
+
+    $(putColumnDateId).text(expDate);
+}
+
+function putColumnIndex() {
+    return $("#statementTableId tr th").length - 1;
+}
+
+function copyColumnData(sourceColNum, destinationColNum) {
+    //var destinationColNum = putColumnIndex();
+
+    var colNames = getColumnNames();
+
+    for (var cname in colNames) {
+        if (colNames.hasOwnProperty(cname)) {
+            var destId = "#" + colNames[cname] + destinationColNum;
+            var sourceId = "#" + colNames[cname] + sourceColNum;
+
+            $(destId).text($(sourceId).text());
+        }
+    }
+}
+
+
+
+function getRowNamesForOptionsProjectionCalculations() {
+    var rowNames = ['Total_Revenue', 'Ebitda_Per_Revenue', 'Total_Liabilities', 'Current_Assets', 'Weighted_Avg_Diluted_Shares'];
+    return rowNames;
+}
+
+function copyAverageValuesForCalculations(firstCol, secondCol, colmIndex) {
+    
+
+    var startDateQString = "#statementTableId > thead > tr > th:eq(" + firstCol + ")";
+    var startDateString = $(startDateQString).text();
+    var startDateEp = Epoch(startDateString);
+
+    var endDateQString = "#statementTableId > thead > tr > th:eq(" + secondCol + ")";
+    var endDateString = $(endDateQString).text();
+    var endDateEp = Epoch(endDateString);
+
+    var callDateStringId = "#statementTableId > thead > tr > th:eq(" + colmIndex + ")";
+    var callDateString = $(callDateStringId).text();
+    var callDateEp = Epoch(callDateString);
+
+    var rowNamesForProjection = getRowNamesForOptionsProjectionCalculations();
+
+    var numOfDaysSinceStartDate = diffInNumberOfDays(startDateString, callDateString);
+
+    for (var rowName in rowNamesForProjection) {
+        if (rowNamesForProjection.hasOwnProperty(rowName)) {
+
+            var beginAmt = getCellValue(rowNamesForProjection[rowName], firstCol);
+            var endAmt = getCellValue(rowNamesForProjection[rowName], secondCol);
+            var amtPerDay = getValueForPeriod(beginAmt, endAmt, numOfDaysSinceStartDate);
+
+            setCalculatedValues(rowNamesForProjection[rowName], colmIndex, amtPerDay);
+        }
+    }
+}
+
+function getCellValue(rowName, colNumber) {
+    var cellId = "#statementTableId #" + rowName + colNumber;
+    var cellVal = $(cellId).text();
+    return Number(cellVal.replace(/,/g, ''));
+}
+
+
+
+function setCalculatedValues(rowName, colNum, cellValue) {
+    if (rowName != "Ebitda_Per_Revenue") {
+        cellValue = FormattedValue(cellValue.toFixed(0));
+    }
+    else if (rowName == "Ebitda_Per_Revenue")
+    {
+        cellValue = FormattedValue(cellValue.toFixed(3));
+    }
+    var cellId = "#statementTableId #" + rowName + colNum;
+    $(cellId).text(cellValue);
+}
+
+function getValueForPeriod(startAmount, endAmount, numOfDays) {
+    var perDay = (Math.abs(startAmount - endAmount)) / 365;
+
+    if (startAmount >= endAmount) //values going down
+    {
+        return (startAmount - (perDay * numOfDays));
+    }
+    else //values going up
+    {
+        return (startAmount + (perDay * numOfDays));
+    }
+}
+
+function getTodaysDate() {
+    return new Date();
+}
+
+function getColoumnsOnEitherSideOfDate(date) {
+    var expDate = Epoch(date); //Number(getCallExpirationDate());
+    var headerDates = getHeaderDatesRow();
+
+    var Columns = {};
+    Columns.First = -1;
+    Columns.Second = -1;
+
+    for (var cindex = 0; cindex < headerDates.length; cindex++) {
+
+        var epochNum = Epoch(headerDates[cindex]);
+        if (Number.isNaN(epochNum)) continue;
+        var epochNum2 = Epoch(headerDates[cindex + 1]);
+        if ((epochNum <= expDate) && (expDate <= epochNum2)) {
+            Columns.First = cindex;
+            Columns.Second = cindex + 1;
+
+            return Columns;
+        }
+    }
+
+
+    return Columns;
+}
+
+function getColoumnsOnEitherSideOfCallPutDate() {
+    var putDate = getPutExpirationDate();
+}
+
 
 function putStrikesChanged() {
     loadPutOptionQuotes();
@@ -348,7 +607,7 @@ function putStrikesChanged() {
     //setDividendAmount();
 
     //SetReturns();
-
+    UpdatePutCalculations();
 }
 
 
@@ -474,15 +733,21 @@ function loadPutOptionQuotes() {
     var impVolatility = ((Number(strikeDict['impliedVolatility']) * 100).toFixed(2)) + '%';
     $('#putQuoteTableId > tbody > tr').append("<td>" + impVolatility + "</td>");
 }
+
+
+function getHeaderDatesRow() {
+    var headerDates = JsonStatementTable[JsonStatementTable.length - 1];
+    return headerDates;
+}
+
 function loadStatementTable() {
 
-    var headerDates = JsonStatementTable[JsonStatementTable.length - 1];
+    var headerDates = getHeaderDatesRow();
     var editableColumnIndex = headerDates.length - 2;
 
-    var editableRowNames = ['Ebitda', 'Total_Liabilities', 'Current_Assets','Weighted_Avg_Diluted_Shares', 'Buying_Price'];
+    var editableRowNames = ['Ebitda', 'Total_Liabilities', 'Current_Assets', 'Weighted_Avg_Diluted_Shares', 'Buying_Price'];
 
     $('#statementTableId').empty();
-
     $('#statementTableId').append('<thead></thead>');
     $('#statementTableId').append('<tbody></tbody>');
 
@@ -493,6 +758,16 @@ function loadStatementTable() {
         $('#statementTableId > thead > tr:last').append('<th>' + tableHeaderColVal + '</th>');
 
     }
+
+    var callExpirationDate = Epoch(Date.now()); //getCallExpirationDate();
+    var formattedCallExpirationDate = EpochToDate(callExpirationDate);
+
+    $('#statementTableId > thead > tr:last').append('<th>' + formattedCallExpirationDate + '</th>');
+
+    var putExpirationDate = getPutExpirationDate();
+    var formattedPutExpDate = EpochToDate(putExpirationDate);
+
+    $('#statementTableId > thead > tr:last').append('<th>' + formattedPutExpDate + '</th>');
 
     for (var j = 1; j < JsonStatementTable.length - 1; j++) {
 
@@ -508,6 +783,7 @@ function loadStatementTable() {
 
             $('#statementTableId tr:last').append('<td id=' + nextId + ' data-val=' + formattedVal + '>' + formattedVal + '</td>');
 
+
             if (colVal == "Buying_Price") {
                 $('#statementTableId  tr:last').attr('title', buyingPriceFormula());
             }
@@ -515,8 +791,7 @@ function loadStatementTable() {
                 $('#statementTableId  tr:last').attr('title', cashFlowFormula());
             }
 
-            if (k === editableColumnIndex && rowName === "Buying_Price")
-            {
+            if (k === editableColumnIndex && rowName === "Buying_Price") {
                 var sp = getAverageSharePrice();
                 var cp = getAverageCallPremium();
 
@@ -532,12 +807,79 @@ function loadStatementTable() {
 
 
         }
-
+        nextId = rowName + (k);
+        $('#statementTableId tr:last').append('<td id=' + nextId + ' data-val=CallDateDataVal>' + "CallDat" + '</td>');
+        nextId = rowName + (k + 1);
+        $('#statementTableId tr:last').append('<td id=' + nextId + ' data-val=PutDateDataVal>' + "PutData" + '</td>');
 
     }
 
     //  $('#statementTableId td:nth-child(n+5').attr('contenteditable', 'true');
     //$('#statementTableId td:nth-child(5)').attr('contenteditable', 'true');
+}
+
+function getColumnNames() {
+    var colNames = [];
+    for (var j = 1; j < JsonStatementTable.length - 1; j++) {
+        var rowArray = JsonStatementTable[j];
+        colNames.push(rowArray[0]);
+    }
+    return colNames;
+}
+
+
+
+function getColWithinNumberOfDays(expDate, numOfDays) {
+
+    var expDateString = EpochToDate(expDate);
+    var headerDates = getHeaderDatesRow();
+
+    var colNumberMatch = 0;
+
+    for (var dateProp in headerDates) {
+        if (headerDates.hasOwnProperty(dateProp)) {
+            var hdDate = headerDates[dateProp];
+            if (isDiffInDateWithinNumberOfDays(hdDate, expDateString, numOfDays)) return colNumberMatch;
+            colNumberMatch++;
+            if (colNumberMatch >= callColumnIndex()) return 0;
+        }
+    }
+
+    return 0;
+
+}
+
+function isDiffInDateWithinNumberOfDays(date1, date2, numOfDays) {
+
+
+    var diff = diffInNumberOfDays(date1, date2);
+
+    return (diff <= numOfDays);
+}
+
+function diffInNumberOfDays(date1, date2) {
+    var date1Seconds = new Date(date1);
+    var date2Seconds = new Date(date2);
+
+    var epochDate1 = Epoch(date1Seconds);
+    var epochDate2 = Epoch(date2Seconds);
+
+    var diff = Math.abs(epochDate1 - epochDate2);
+    var numOfDays = diff / (24 * 60 * 60);
+
+    return numOfDays;
+}
+
+
+
+function getCallExpirationDate() {
+    var selectedDate = $("#expDateId").find(":selected").val();
+    return selectedDate;
+}
+
+function getPutExpirationDate() {
+    var selectedDate = $("#putExpDateId").find(":selected").val();
+    return selectedDate;
 }
 
 function GetNextYearFor(year) {
@@ -595,8 +937,33 @@ function setprojectedEbitda() {
     $("#projectedEbitdaId").val(FormattedValue(projectedEbita.toFixed(0)));
 }
 
+function setPutBuyingPrice(colNum) {
+    var putBuyingPriceId = "#statementTableId #Buying_Price" + colNum;
 
+    var putStrikePrice = getPutStrikePrice();
 
+    var putPremium = getAveragePutPremium();
+
+    var bp = putStrikePrice - putPremium;
+
+    $(putBuyingPriceId).text(bp.toFixed(2));
+
+}
+
+function getPutStrikePrice()
+{
+    var putStrike = $('#putStrikeId').val();
+    return Number(putStrike);
+}
+
+function getAveragePutPremium() {
+    //$('#quoteTableId > tbody > tr').append("<td id='optionBid'>" + strikeDict['bid'] + "</td>");
+    //$('#quoteTableId > tbody > tr').append("<td id='optionAsk'>" + strikeDict['ask'] + "</td>");
+    var optionBid = Number($('#putQuoteTableId #optionBid').text());
+    var optionAsk = Number($('#putQuoteTableId #optionAsk').text());
+    var avg = ((optionBid + optionAsk) / 2.0);
+    return avg;
+}
 
 function setBuyingPrice(num) {
 
@@ -656,7 +1023,7 @@ function Reset() {
     setCashFlowMultiple(colNum);
     setDividendAmount();
     SetRateOfReturn();
-    
+
 }
 
 
@@ -712,10 +1079,7 @@ function TotalLblMinusCurrentAssets() {
 function BuyingPrice() {
 
     var sp = getAverageSharePrice(); //SharePrice();
-
     var cp = getAverageCallPremium(); //Number($('#optionBid').text());
-
-
     var result = sp - cp;
 
     return result.toFixed(2);
@@ -816,6 +1180,9 @@ function callPremiumChanged() {
     //setCallPremium();
     setBuyingPrice(colNum);
     setCashFlowMultiple(colNum);
+
+    setBuyingPrice(callColumnIndex);
+    setCashFlowMultiple(callColumnIndex);
 }
 
 function Recalculate() {
@@ -823,11 +1190,11 @@ function Recalculate() {
     setTotalLibMinusCurrentAssets();
 
 
-   // setBuyingPrice(colNum);
+    // setBuyingPrice(colNum);
     setCashFlowMultiple(colNum);
-   // setDividendAmount();
+    // setDividendAmount();
     SetRateOfReturn();
-    
+
 }
 
 function setTotalLibMinusCurrentAssets() {

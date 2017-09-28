@@ -18,7 +18,12 @@
 
     </div>
 
-    <div class="col-md-4">
+    @{
+        if (Model == null)
+        { return; }
+    }
+
+    <div class="col-md-3">
         <table id="dividendTableId" class="table table-bordered table-condensed">
 
             <thead>
@@ -45,90 +50,61 @@
 </div>
 
 <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-12">
         <table id="statementTableId" spellcheck="false" class="table table-bordered table-condensed table-striped table-hover"></table>
     </div>
-
-
-
-
-
-</div>
-
-@{
-    if (Model == null)
-    { return; }
-}
-
-<div class="form-group row">
-    <div class="col-md-2">
-        <label>Expiration Date:</label>
-        <select id="expDateId"></select>
-    </div>
-    <div class="col-md-1">
-        <label>Strike:</label>
-        <select id="strikeId"></select>
-    </div>
-
 </div>
 
 
 <div class="form-group row">
-    <div class="col-md-3">
-        <table id="quoteTableId" class="table table-bordered table-condensed"></table>
+    <div class="col-md-6">
+        <div class="row">
+            <div>
+                <label>Expiration Date:</label>
+                <select id="expDateId"></select>
+
+                <label>Strike:</label>
+                <select id="strikeId"></select>
+            </div>
+            <div>
+                <table id="quoteTableId" class="table table-bordered table-condensed"></table>
+            </div>
+
+            <div class="col-md-2" style="padding-top:10px">
+                <a id="lossRateId" class="btn btn-danger btn-block" disabled></a>
+            </div>
+
+            <div  class="col-md-2" style="padding-top:10px">
+                <a id="rorId" class="btn btn-warning btn-block" disabled></a>
+            </div>
+
+            <div  class="col-md-2" style="padding-top:10px">
+                <a id="maxRateId" class="btn btn-success btn-block" disabled></a>
+            </div>
+        </div>
     </div>
+    <div class="col-md-6">
+        <div class="row">
+            <div>
+                <label>Expiration Date:</label>
+                <select id="putExpDateId"></select>
 
+                <label>Strike:</label>
+                <select id="putStrikeId"></select>
+            </div>
+            <div>
+                <table id="putQuoteTableId" class="table table-bordered table-condensed"></table>
+            </div>
+            <div  class="col-md-2" style="padding-top:10px">
+                <a id="putLossRateId" class="btn btn-danger btn-block" disabled></a>
+            </div>
 
-
-    <div style="padding-top:20px" class="col-md-2">
-        <a class="btn btn-danger btn-block" disabled><span id="lossRateId" class="badge"></span></a>
+            <div  class="col-md-2" style="padding-top:10px">
+                <a id="putMaxRateId" class="btn btn-success btn-block" disabled></a>
+            </div>
+        </div>
     </div>
-
-    <div style="padding-top:20px" class="col-md-2">
-        <a class="btn btn-warning btn-block" disabled><span id="rorId" class="badge"></span></a>
-    </div>
-
-    <div style="padding-top:20px" class="col-md-2">
-        <a class="btn btn-success btn-block" disabled><span id="maxRateId" class="badge"></span></a>
-    </div>
-
 </div>
-
-
-<div class="form-group row">
-    <div class="col-md-2">
-        <label>Expiration Date:</label>
-        <select id="putExpDateId"></select>
-    </div>
-    <div class="col-md-1">
-        <label>Strike:</label>
-        <select id="putStrikeId"></select>
-    </div>
-
-</div>
-
-
-<div class="form-group row">
-    <div class="col-md-3">
-        <table id="putQuoteTableId" class="table table-bordered table-condensed"></table>
-    </div>
-
-    <div style="padding-top:20px" class="col-md-1">
-        <a class="btn btn-danger btn-block" disabled><span id="putLossRateId" class="badge"></span></a>
-    </div>
-
-    <div style="padding-top:20px" class="col-md-1">
-        <a class="btn btn-warning btn-block" disabled><span id="putRorId" class="badge"></span></a>
-    </div>
-
-    <div style="padding-top:20px" class="col-md-1">
-        <a class="btn btn-success btn-block" disabled><span id="putMaxRateId" class="badge"></span></a>
-    </div>
-
-</div>
-
-
-
 
 
 
