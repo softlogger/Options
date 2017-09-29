@@ -16,30 +16,29 @@
 function loadInitial() {
     loadHeader();
     bindEvents();
-    loadHistoricalLowPrices();
+    //loadHistoricalLowPrices();
     loadCallOption();
     loadPutOption();
     loadStatementTable();
     loadToolTips();
 
-    var numOfCol = colNumberForCallCalculations();// (numOfCols() - 2).toString();
-
-    setBuyingPrice(numOfCol);
-    setCashFlowMultiple(numOfCol);
+    //var numOfCol = colNumberForCallCalculations();// (numOfCols() - 2).toString();
+    //setBuyingPrice(numOfCol);
+    //setCashFlowMultiple(numOfCol);
 
     updateCallCalculations();
 
-    var numOfCol = putColumnIndex();
+    ////var numOfCol = putColumnIndex();
 
     UpdatePutCalculations();
-   
+
 
     setDividendAmount();
 
     SetCallReturns();
     SetPutReturns();
 
-  
+
 }
 
 function loadCallOption() {
@@ -80,6 +79,15 @@ function loadHeader() {
     $("#bidId").val(bid);
     $("#askId").val(ask);
     $("#lastPriceId").val(postMktPrice);
+
+    $('#shortNameId').text(shorty);
+    $('#regPriceId').text(regPrice);
+    $('#previousClosePriceId').text(postMktPrice);
+    $("#bidId").text(bid);
+    $("#askId").text(ask);
+    $("#lastPriceId").text(postMktPrice);
+
+
 }
 
 function SetCallReturns() {
@@ -89,14 +97,12 @@ function SetCallReturns() {
     setMaxRateOfReturn();
 }
 
-function SetPutReturns()
-{
+function SetPutReturns() {
     setPutLossRate();
     setPutMaxRateOfReturn();
 }
 
-function setPutLossRate()
-{
+function setPutLossRate() {
     //get todays Price
     //get buying Price
     //cal % diff
@@ -114,14 +120,13 @@ function setPutLossRate()
 
 
 }
-function setPutMaxRateOfReturn()
-{
+function setPutMaxRateOfReturn() {
     var colIndex = putColumnIndex();
     var putBuyingPriceId = "#statementTableId #Buying_Price" + colIndex;
     var buyingPriceAmount = $(putBuyingPriceId).text();
 
     var putPremAmount = getAveragePutPremium();
-     
+
     var futureEpochDate = $("#putExpDateId").find(":selected").val();
 
     var todaysEpochDate = Epoch(new Date());
@@ -184,7 +189,7 @@ function setLossRate() {
     var lossRate = (sp - (bprice - totalDividendRecd)) / sp;
 
     var lossRatePercentage = (lossRate * 100).toFixed(2);
-    
+
     var toolTip = "Stock Price: " + sp + "\nCall Premium: " + getAverageCallPremium() + "\nDividends: " + totalDividendRecd + "\nBuying Price: " + bprice;
 
     $('#lossRateId').text(lossRatePercentage + " %");
@@ -313,35 +318,35 @@ function bindEvents() {
 
 
 
-function loadHistoricalLowPrices() {
+////function loadHistoricalLowPrices() {
 
-    $('#historicalPricessId').empty();
-    $('#historicalPricessId').append('<thead><tr></thead></tr>');
-    $('#historicalPricessId').append('<tbody><tr></tbody></tr>');
+////    $('#historicalPricessId').empty();
+////    $('#historicalPricessId').append('<thead><tr></thead></tr>');
+////    $('#historicalPricessId').append('<tbody><tr></tbody></tr>');
 
-    for (var key in historicalPrices) {
-        if (historicalPrices.hasOwnProperty(key)) {
+////    for (var key in historicalPrices) {
+////        if (historicalPrices.hasOwnProperty(key)) {
 
-            var priceAndDate = historicalPrices[key];
-            var priceAndDateArray = priceAndDate.split(" ");
-            var theDate = priceAndDateArray[1];
-            var Price = Number(priceAndDateArray[0]);
+////            var priceAndDate = historicalPrices[key];
+////            var priceAndDateArray = priceAndDate.split(" ");
+////            var theDate = priceAndDateArray[1];
+////            var Price = Number(priceAndDateArray[0]);
 
-            var date = new Date(theDate);
-            var month = date.getMonth();
-            var monthString = months(Number(month));
+////            var date = new Date(theDate);
+////            var month = date.getMonth();
+////            var monthString = months(Number(month));
 
-            $('#historicalPricessId > thead > tr').append("<th>" + monthString + " " + key + "</th>");
+////            $('#historicalPricessId > thead > tr').append("<th>" + monthString + " " + key + "</th>");
 
-            $('#historicalPricessId > tbody > tr').append("<td>" + Price.toFixed(2) + "</td>");
+////            $('#historicalPricessId > tbody > tr').append("<td>" + Price.toFixed(2) + "</td>");
 
-        }
+////        }
 
-    }
+////    }
 
 
 
-}
+////}
 
 
 function loadExpDates() {
@@ -371,9 +376,8 @@ function loadPutExpDates() {
 function expirationChanged() {
     loadStrikes();
     loadOptionQuotes();
+    setDividendAmount();
     callPremiumChanged();
-   
-
     SetCallReturns();
 
 
@@ -381,21 +385,14 @@ function expirationChanged() {
 
 function strikesChanged() {
     loadOptionQuotes();
-    callPremiumChanged();
     setDividendAmount();
-
-
+    callPremiumChanged();
     SetCallReturns();
-
 }
 
 function putExpirationChanged() {
     loadPutStrikes();
     loadPutOptionQuotes();
-    //callPremiumChanged();
-    //setDividendAmount();
-
-    //SetReturns();
     UpdatePutCalculations();
 }
 
@@ -410,29 +407,32 @@ function updateCallCalculations() {
 
     if (sourceIndex > 0) {
         copyColumnData(sourceIndex, destIndex);
+        highLightColoumns(sourceIndex, destIndex);
     }
     else {
         var todaysDate = getTodaysDate();
         var Columns = getColoumnsOnEitherSideOfDate(todaysDate);
-        copyAverageValuesForCalculations(Columns.First, Columns.Second, callColumnIndex());
+        copyAverageValuesForCalculations(Columns.First, Columns.Second, destIndex);
+        highLightColoumns(Columns.First, Columns.Second, destIndex);
     }
 
-    setDerivedValuesForCallCalculations(destIndex);
+    setDerivedValuesForCallAndPutCalculations(destIndex);
 
     setBuyingPrice(destIndex);
     setCashFlowMultiple(destIndex);
 }
 
-function highLightColoumn(sourceCol, callIndex)
-{
+function highLightColoumns(sourceCol, callIndex) {
+    var originalColor = $('#statementId > thead > tr > td:eq(0)').css("border-color");
+
+    $('#statementId > thead > tr > td:nth-child(3)').css("border-color", "red");
+    // var originalColor = $('#statementId > thead > tr > td:e').css("border-color", "red");
+}
+function highLightColoumns(sourceCol, destCol, callIndex) {
 
 }
-function highLightColoumn(sourceCol, destCol, callIndex)
-{
 
-}
-
-function setDerivedValuesForCallCalculations(colIndex) {
+function setDerivedValuesForCallAndPutCalculations(colIndex) {
     var callColIndex = colIndex; //callColumnIndex();
 
     //Set Ebitda Per Revenue
@@ -480,7 +480,7 @@ function UpdatePutCalculations() {
         copyAverageValuesForCalculations(ColumnsIndexes.First, ColumnsIndexes.Second, putColumnIndex());
     }
 
-    setDerivedValuesForCallCalculations(destColNum);
+    setDerivedValuesForCallAndPutCalculations(destColNum);
     setPutBuyingPrice(destColNum);
     setCashFlowMultiple(destColNum);
     SetPutReturns();
@@ -520,7 +520,7 @@ function getRowNamesForOptionsProjectionCalculations() {
 }
 
 function copyAverageValuesForCalculations(firstCol, secondCol, colmIndex) {
-    
+
 
     var startDateQString = "#statementTableId > thead > tr > th:eq(" + firstCol + ")";
     var startDateString = $(startDateQString).text();
@@ -562,8 +562,7 @@ function setCalculatedValues(rowName, colNum, cellValue) {
     if (rowName != "Ebitda_Per_Revenue") {
         cellValue = FormattedValue(cellValue.toFixed(0));
     }
-    else if (rowName == "Ebitda_Per_Revenue")
-    {
+    else if (rowName == "Ebitda_Per_Revenue") {
         cellValue = FormattedValue(cellValue.toFixed(3));
     }
     var cellId = "#statementTableId #" + rowName + colNum;
@@ -964,10 +963,10 @@ function setPutBuyingPrice(colNum) {
 
     $(putBuyingPriceId).text(bp.toFixed(2));
 
+    $(putBuyingPriceId).attr("title", "Put Strike Price - Put Premium");
 }
 
-function getPutStrikePrice()
-{
+function getPutStrikePrice() {
     var putStrike = $('#putStrikeId').val();
     return Number(putStrike);
 }

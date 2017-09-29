@@ -3,13 +3,41 @@
 <div class="form-group row">
     <div class="col-md-4">
         <div>
-            <p></p>
             <input id="ticker" placeholder="enter ticker" />
             <button id="searchTickerBtn" class="btn btn-primary" onclick="searchTicker()">Search <span class="glyphicon glyphicon-search"></span></button>
         </div>
     </div>
+    @{
+        if (Model == null)
+        { return; }
+    }
 
-    <div class="col-md-4">
+    <div class="col-md-5">
+        <table id="headerTableId" class="table table-bordered table-condensed">
+
+            <thead>
+                <tr>
+                    <th id="shortNameId"></th>
+                    <th>Regular Price</th>
+                    <th>Prev Close</th>
+                    <th>Bid</th>
+                    <th>Ask</th>
+                    <th>Last Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="@Model.Report10KUrl" target="_blank"><strong>10-K</strong></a></td>
+                    <td id="regPriceId">N/A</td>
+                    <td id="previousClosePriceId">N/A</td>
+                    <td id="bidId">N/A</td>
+                    <td id="askId">N/A</td>
+                    <td id="lastPriceId">N/A</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div hidden>
         <p id="headerId" class="form-control-static"> </p>
         <input id="askId" type="hidden" />
         <input id="lastPriceId" type="hidden" />
@@ -18,17 +46,14 @@
 
     </div>
 
-    @{
-        if (Model == null)
-        { return; }
-    }
+   
 
-    <div class="col-md-4">
+    <div class="col-md-3">
         <table id="dividendTableId" class="table table-bordered table-condensed">
 
             <thead>
                 <tr>
-                    <th>Dividend Ex Date</th>
+                    <th>Ex Date</th>
                     <th>Dividend</th>
                     <th>Periods</th>
                     <th>Total</th>
@@ -56,8 +81,8 @@
 </div>
 
 
-<div class="row">
-    <div class="col-md-6">
+<div class="form-group row">
+    <div class="col-md-5 col-md-offset-0">
         <div class="form-group row">
             <div>
                 <label>Expiration Date:</label>
@@ -70,20 +95,20 @@
                 <table id="quoteTableId" class="table table-bordered table-condensed"></table>
             </div>
 
-            <div class="col-md-2" style="padding-top:10px">
+            <div class="col-md-3" style="padding-top:10px">
                 <a id="lossRateId" class="btn btn-danger btn-block" disabled></a>
             </div>
 
-            <div  class="col-md-2" style="padding-top:10px">
+            <div  class="col-md-3" style="padding-top:10px">
                 <a id="rorId" class="btn btn-warning btn-block" disabled></a>
             </div>
 
-            <div  class="col-md-2" style="padding-top:10px">
+            <div  class="col-md-3" style="padding-top:10px">
                 <a id="maxRateId" class="btn btn-success btn-block" disabled></a>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-5 pull-right">
         <div class="form-group row">
             <div>
                 <label>Expiration Date:</label>
@@ -95,11 +120,11 @@
             <div>
                 <table id="putQuoteTableId" class="table table-bordered table-condensed"></table>
             </div>
-            <div  class="col-md-2" style="padding-top:10px">
+            <div  class="col-md-3" style="padding-top:10px">
                 <a id="putLossRateId" class="btn btn-danger btn-block" disabled></a>
             </div>
 
-            <div  class="col-md-2" style="padding-top:10px">
+            <div  class="col-md-3" style="padding-top:10px">
                 <a id="putMaxRateId" class="btn btn-success btn-block" disabled></a>
             </div>
         </div>
