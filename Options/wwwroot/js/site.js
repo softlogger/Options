@@ -823,9 +823,9 @@ function loadStatementTable() {
 
         }
         nextId = rowName + (k);
-        $('#statementTableId tr:last').append('<td id=' + nextId + ' data-val=CallDateDataVal>' + "CallDat" + '</td>');
+        $('#statementTableId tr:last').append('<td id=' + nextId + ' data-val=CallDateDataVal>' + "N/A" + '</td>');
         nextId = rowName + (k + 1);
-        $('#statementTableId tr:last').append('<td id=' + nextId + ' data-val=PutDateDataVal>' + "PutData" + '</td>');
+        $('#statementTableId tr:last').append('<td id=' + nextId + ' data-val=PutDateDataVal>' + "N/A" + '</td>');
 
     }
 
@@ -1193,8 +1193,8 @@ function cashFlowFormula() {
 function callPremiumChanged() {
     var colNum = colNumberForCallCalculations() //(numOfCols() - 2).toString();
     //setCallPremium();
-    setBuyingPrice(colNum);
-    setCashFlowMultiple(colNum);
+    //setBuyingPrice(colNum);
+    //setCashFlowMultiple(colNum);
 
     setBuyingPrice(callColumnIndex());
     setCashFlowMultiple(callColumnIndex());
