@@ -65,7 +65,7 @@ function loadHeader() {
         postMktPrice = Number(postMktPrice).toFixed(2);
     }
 
-    var headerName = "<h5><strong>" + shorty + "</strong></h5>";
+    var headerName = "<h6><strong>" + shorty + "</strong></h6>";
     var headerLastClose = "Last Close:<strong> " + postMktPrice + "</strong>";
     var headerReg = "Regular:<strong> " + regPrice + "</strong>";
     var headerBid = "Bid:<strong> " + bid + "</strong>";
@@ -109,6 +109,10 @@ function setPutLossRate()
     var diff = (((sharePrice - buyingPriceAmount) / sharePrice) * 100).toFixed(2);
     $("#putLossRateId").text(diff + ' %');
 
+    var titleString = "Share Price: " + sharePrice + "\n" + "Put Premium: " + getAveragePutPremium() + "\n" + "Buying Price: " + buyingPriceAmount;
+    $("#putLossRateId").prop('title', titleString);
+
+
 }
 function setPutMaxRateOfReturn()
 {
@@ -117,9 +121,22 @@ function setPutMaxRateOfReturn()
     var buyingPriceAmount = $(putBuyingPriceId).text();
 
     var putPremAmount = getAveragePutPremium();
-    var maxRateReturn = ((putPremAmount / buyingPriceAmount) * 100).toFixed(2);
+     
+    var futureEpochDate = $("#putExpDateId").find(":selected").val();
 
-    $("#putMaxRateId").text(maxRateReturn + ' %');
+    var todaysEpochDate = Epoch(new Date());
+
+    var totalNumberOfSeconds = futureEpochDate - todaysEpochDate;
+
+    var totalNumberOfDays = (totalNumberOfSeconds / (60 * 60 * 24)) + 1; //86400 + 1
+
+    var percentRate = (((putPremAmount / buyingPriceAmount) * (365 / totalNumberOfDays)) * 100).toFixed(2);
+
+    $("#putMaxRateId").text(percentRate + ' %');
+
+    var titleString = "Share Price: " + getAverageSharePrice() + "\nPut Premium: "
+        + putPremAmount + "\nBuying Price: " + buyingPriceAmount + "\nNum of days: " + Math.floor(totalNumberOfDays);
+    $("#putMaxRateId").prop('title', titleString);
 }
 
 function getAverageSharePrice() {
@@ -167,8 +184,8 @@ function setLossRate() {
     var lossRate = (sp - (bprice - totalDividendRecd)) / sp;
 
     var lossRatePercentage = (lossRate * 100).toFixed(2);
-    var toolTipExplanation = "At expiration Stock must have fallen below this rate to lose money on this transaction\n";
-    var toolTip = toolTipExplanation + "Stock Price: " + sp + " Buying Price: " + bprice + " Dividends: " + totalDividendRecd;
+    
+    var toolTip = "Stock Price: " + sp + "\nCall Premium: " + getAverageCallPremium() + "\nDividends: " + totalDividendRecd + "\nBuying Price: " + bprice;
 
     $('#lossRateId').text(lossRatePercentage + " %");
     $('#lossRateId').attr('title', toolTip);
@@ -200,8 +217,7 @@ function SetRateOfReturn() {
 
     var percentRate = (((totalReturn / sp) * (365 / totalNumberOfDays)) * 100).toFixed(2);
 
-    var toolTipExplanation = "This is the annualized rate of return at expiration if the Calls expire worthless\n";
-    var toolTip = toolTipExplanation + "Stock Price: " + sp + " Call Premium: " + cp + " Dividends: " + dividend + " Number of Days: " + Math.floor(totalNumberOfDays);
+    var toolTip = "Stock Price: " + sp + "\nCall Premium: " + cp + "\nDividends: " + dividend + "\nNumber of Days: " + Math.floor(totalNumberOfDays);
 
     $('#rorId').attr('title', toolTip);
     $('#rorId').text(percentRate + " %");
@@ -237,8 +253,7 @@ function setMaxRateOfReturn() {
 
     var percentRate = (((totalReturn / sp) * (365 / totalNumberOfDays)) * 100).toFixed(2);
 
-    var toolTipExplanation = "This is the maximum annualized rate of return at expiration if the Stock is trading above strike price and called(sold)\n";
-    var toolTip = toolTipExplanation + "Stock Price: " + sp + " Call Premium: " + cp + " Dividends: " + dividend + " Diff in Strike and Stock Price: " + diff.toFixed(2) + " Number of Days: " + Math.floor(totalNumberOfDays);
+    var toolTip = "Stock Price: " + sp + "\nCall Premium: " + cp + "\nDividends: " + dividend + "\nStrike: " + strikeVal + "\nNumber of Days: " + Math.floor(totalNumberOfDays);
 
     $('#maxRateId').attr('title', toolTip);
     $('#maxRateId').text(percentRate + " %");
@@ -408,6 +423,15 @@ function updateCallCalculations() {
     setCashFlowMultiple(destIndex);
 }
 
+function highLightColoumn(sourceCol, callIndex)
+{
+
+}
+function highLightColoumn(sourceCol, destCol, callIndex)
+{
+
+}
+
 function setDerivedValuesForCallCalculations(colIndex) {
     var callColIndex = colIndex; //callColumnIndex();
 
@@ -459,6 +483,7 @@ function UpdatePutCalculations() {
     setDerivedValuesForCallCalculations(destColNum);
     setPutBuyingPrice(destColNum);
     setCashFlowMultiple(destColNum);
+    SetPutReturns();
 }
 
 function UpdatePutHeaderDate(expDate) {
