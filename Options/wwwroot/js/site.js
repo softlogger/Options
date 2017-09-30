@@ -401,7 +401,7 @@ function callColumnIndex() {
 }
 
 function updateCallCalculations() {
-    var expDate = Epoch(Date);
+    var expDate = Date(); //EpochToDate(getCallExpirationDate());
     var sourceIndex = getColWithinNumberOfDays(expDate, 32);
     var destIndex = callColumnIndex();
 
@@ -844,9 +844,9 @@ function getColumnNames() {
 
 
 
-function getColWithinNumberOfDays(expDate, numOfDays) {
+function getColWithinNumberOfDays(expDateString, numOfDays) {
 
-    var expDateString = EpochToDate(expDate);
+    //var expDateString = expDate;
     var headerDates = getHeaderDatesRow();
 
     var colNumberMatch = 0;
