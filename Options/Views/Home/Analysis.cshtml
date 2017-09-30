@@ -137,6 +137,10 @@
 
 
 <script>
+    var existingCallColsColored = [];
+    var existingPutColsColored = [];
+    var newPutColsColored = [];
+    var originalColor = "rgba(0,0,0,0)";
     var jsonDates = @Html.Raw(Model.TickerContainer.JsonExpirationDatesArray)
     var jsonStrikes = @Html.Raw(Model.TickerContainer.JsonStrikesDictionary)
     var jsonContainer =  @Html.Raw(Model.TickerContainer.JsonCallDictionary)

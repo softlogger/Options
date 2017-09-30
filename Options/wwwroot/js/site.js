@@ -10,10 +10,17 @@
         }
     });
 
+   
+
     loadInitial();
 })
 
 function loadInitial() {
+
+    //var originalColor = "rgb(0,0,0,0)";
+    //var existingCallColsColored = [];
+    //var existingPutColsColored = [];
+
     loadHeader();
     bindEvents();
     //loadHistoricalLowPrices();
@@ -38,8 +45,15 @@ function loadInitial() {
     SetCallReturns();
     SetPutReturns();
 
-
+    bindColorCallEvents();
 }
+
+//function bindMouseEvents() {
+//    var putColNum = putColNum();
+//    var callColNum = callColNum();
+
+
+//}
 
 function loadCallOption() {
     loadExpDates();
@@ -314,9 +328,53 @@ function bindEvents() {
     $('#strikeId').on('change', strikesChanged);
     $('#putExpDateId').on('change', putExpirationChanged);
     $('#putStrikeId').on('change', putStrikesChanged);
+
+
 }
 
+function bindColorCallEvents()
+{
+    var callIndexNum = callColumnIndex();
+    
+    var thId = getTHIdFor(callIndexNum);
+    var tdId = getTDIdFor(callIndexNum);
 
+    $(thId).on("mouseenter", turnOnCallColors);
+    $(thId).on("mouseleave", turnOffCallColors);
+
+   // $(tdId).on("mouseenter", turnOnCallColors);
+   // $(tdId).on("mouseleave", turnOffCallColors);
+
+    var putIndexNum = putColumnIndex();
+    thId = getTHIdFor(putIndexNum);
+    tdId = getTDIdFor(putIndexNum);
+
+    $(thId).on("mouseenter", turnOnPutColors);
+    $(thId).on("mouseleave", turnOffPutColors);
+
+  //  $(tdId).on("mouseenter", turnOnPutColors);
+  //  $(tdId).on("mouseleave", turnOffPutColors);
+}
+
+function turnOnPutColors() {
+    turnOffPutColors();
+    highLightPutColoumns(newPutColsColored, "yellow");
+    existingPutColsColored = newPutColsColored;
+}
+
+function turnOffPutColors() {
+    highLightPutColoumns(existingPutColsColored, originalColor);
+}
+
+function turnOnCallColors()
+{
+    highLightCallColoumns(existingCallColsColored, "cyan");
+}
+
+function turnOffCallColors()
+{
+    highLightCallColoumns(existingCallColsColored, originalColor);
+}
 
 ////function loadHistoricalLowPrices() {
 
@@ -404,33 +462,60 @@ function updateCallCalculations() {
     var expDate = Date(); //EpochToDate(getCallExpirationDate());
     var sourceIndex = getColWithinNumberOfDays(expDate, 32);
     var destIndex = callColumnIndex();
+    let Colls = [];
 
     if (sourceIndex > 0) {
         copyColumnData(sourceIndex, destIndex);
-        highLightColoumns(sourceIndex, destIndex);
+        Colls.push(sourceIndex, destIndex);
     }
     else {
         var todaysDate = getTodaysDate();
         var Columns = getColoumnsOnEitherSideOfDate(todaysDate);
         copyAverageValuesForCalculations(Columns.First, Columns.Second, destIndex);
-        highLightColoumns(Columns.First, Columns.Second, destIndex);
+        Colls.push(Columns.First, Columns.Second, destIndex);
+        
     }
 
     setDerivedValuesForCallAndPutCalculations(destIndex);
 
     setBuyingPrice(destIndex);
     setCashFlowMultiple(destIndex);
+    existingCallColsColored = Colls;
 }
 
-function highLightColoumns(sourceCol, callIndex) {
-    var originalColor = $('#statementId > thead > tr > td:eq(0)').css("border-color");
-
-    $('#statementId > thead > tr > td:nth-child(3)').css("border-color", "red");
-    // var originalColor = $('#statementId > thead > tr > td:e').css("border-color", "red");
+function getTHIdFor(colNum) {
+    var thId = "#statementTableId > thead > tr > th:eq(" + Number(colNum) + ")";
+    return thId;
 }
-function highLightColoumns(sourceCol, destCol, callIndex) {
-
+function getTDIdFor(colNum) {
+    var tdId = "#statementTableId > tbody > tr > td:nth-child(" + Number(colNum + 1) + ")";
+    return tdId;
 }
+
+
+
+function highLightCallColoumns(Colls, color) {
+    colorColumns(Colls, color);
+}
+
+function highLightPutColoumns(Colls, color) {
+    colorColumns(existingPutColsColored, originalColor);
+    colorColumns(Colls, color);
+    existingPutColsColored = Colls;
+}
+
+function colorColumns(Colls, color) {
+for (var col in Colls) {
+        if (Colls.hasOwnProperty(col)) {
+            var colThId = getTHIdFor(Colls[col]);
+            $(colThId).css('background-color', color);
+
+            var coltdId = getTDIdFor(Colls[col]);
+            $(coltdId).css('background-color', color);
+        }
+    }
+}
+
 
 function setDerivedValuesForCallAndPutCalculations(colIndex) {
     var callColIndex = colIndex; //callColumnIndex();
@@ -467,23 +552,26 @@ function setDerivedValuesForCallAndPutCalculations(colIndex) {
 
 function UpdatePutCalculations() {
     var expDate = EpochToDate(getPutExpirationDate());
-
+    let Colls = [];
     UpdatePutHeaderDate(expDate);
 
     var sourceColNum = getColWithinNumberOfDays(expDate, 32);
     var destColNum = putColumnIndex();
     if (sourceColNum > 0) {
         copyColumnData(sourceColNum, destColNum);
+        Colls.push(sourceColNum, destColNum);
     }
     else {
         var ColumnsIndexes = getColoumnsOnEitherSideOfDate(expDate);
-        copyAverageValuesForCalculations(ColumnsIndexes.First, ColumnsIndexes.Second, putColumnIndex());
+        copyAverageValuesForCalculations(ColumnsIndexes.First, ColumnsIndexes.Second, destColNum);
+        Colls.push(ColumnsIndexes.First, ColumnsIndexes.Second, destColNum);
     }
 
     setDerivedValuesForCallAndPutCalculations(destColNum);
     setPutBuyingPrice(destColNum);
     setCashFlowMultiple(destColNum);
     SetPutReturns();
+    newPutColsColored = Colls;
 }
 
 function UpdatePutHeaderDate(expDate) {
@@ -758,9 +846,7 @@ function getHeaderDatesRow() {
 function loadStatementTable() {
 
     var headerDates = getHeaderDatesRow();
-    var editableColumnIndex = headerDates.length - 2;
 
-    var editableRowNames = ['Ebitda', 'Total_Liabilities', 'Current_Assets', 'Weighted_Avg_Diluted_Shares', 'Buying_Price'];
 
     $('#statementTableId').empty();
     $('#statementTableId').append('<thead></thead>');
@@ -799,26 +885,6 @@ function loadStatementTable() {
             $('#statementTableId tr:last').append('<td id=' + nextId + ' data-val=' + formattedVal + '>' + formattedVal + '</td>');
 
 
-            if (colVal == "Buying_Price") {
-                $('#statementTableId  tr:last').attr('title', buyingPriceFormula());
-            }
-            if (colVal == "Cash_Flow_Multiple") {
-                $('#statementTableId  tr:last').attr('title', cashFlowFormula());
-            }
-
-            if (k === editableColumnIndex && rowName === "Buying_Price") {
-                var sp = getAverageSharePrice();
-                var cp = getAverageCallPremium();
-
-                var titleString = "Buying Price: " + sp + " less Call Premium:  " + cp + "\nCall Premium is average of bid and ask. Share price is either -  average of Bid and Ask or Regular Price or Last Price based on available data";
-                $('#statementTableId  tr:last td:last').prop('title', titleString);
-            }
-
-            //if (k === editableColumnIndex && editableRowNames.includes(rowName)) {
-
-            //    $('#statementTableId  tr:last td:last').attr('contenteditable', true);
-            //    $('#statementTableId  tr:last td:last').css('background-color', 'cyan');
-            //}
 
 
         }
