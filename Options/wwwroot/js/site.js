@@ -358,7 +358,7 @@ function bindColorCallEvents()
 
 function turnOnPutColors() {
     turnOffPutColors();
-    highLightPutColoumns(newPutColsColored, "yellow");
+    highLightPutColoumns(newPutColsColored, highLightPutColor);
     existingPutColsColored = newPutColsColored;
 }
 
@@ -368,7 +368,7 @@ function turnOffPutColors() {
 
 function turnOnCallColors()
 {
-    highLightCallColoumns(existingCallColsColored, "cyan");
+    highLightCallColoumns(existingCallColsColored, highLightCallColor);
 }
 
 function turnOffCallColors()
