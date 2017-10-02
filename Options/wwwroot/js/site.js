@@ -10,7 +10,7 @@
         }
     });
 
-   
+
 
     loadInitial();
 })
@@ -322,8 +322,6 @@ function getNumberOfNinetyDayPeriods(startDate) {
 }
 
 function bindEvents() {
-    ////$('#resetId').on('click', Reset);
-    ////$('#recalculateId').on('click', Recalculate);
     $('#expDateId').on('change', expirationChanged);
     $('#strikeId').on('change', strikesChanged);
     $('#putExpDateId').on('change', putExpirationChanged);
@@ -332,49 +330,66 @@ function bindEvents() {
 
 }
 
-function bindColorCallEvents()
-{
+function bindColorCallEvents() {
     var callIndexNum = callColumnIndex();
-    
+
     var thId = getTHIdFor(callIndexNum);
     var tdId = getTDIdFor(callIndexNum);
 
-    $(thId).on("mouseenter", turnOnCallColors);
-    $(thId).on("mouseleave", turnOffCallColors);
+    $(thId).hover(hoverVariable);
 
-   // $(tdId).on("mouseenter", turnOnCallColors);
-   // $(tdId).on("mouseleave", turnOffCallColors);
+
 
     var putIndexNum = putColumnIndex();
-    thId = getTHIdFor(putIndexNum);
-    tdId = getTDIdFor(putIndexNum);
+    var putHdId = getTHIdFor(putIndexNum);
+    $(putHdId).hover(hoverPutVariable);
 
-    $(thId).on("mouseenter", turnOnPutColors);
-    $(thId).on("mouseleave", turnOffPutColors);
 
-  //  $(tdId).on("mouseenter", turnOnPutColors);
-  //  $(tdId).on("mouseleave", turnOffPutColors);
 }
 
-function turnOnPutColors() {
-    turnOffPutColors();
-    highLightPutColoumns(newPutColsColored, highLightPutColor);
-    existingPutColsColored = newPutColsColored;
+function originalCellColor() {
+    return "rgba(0,0,0,0)";
 }
 
-function turnOffPutColors() {
-    highLightPutColoumns(existingPutColsColored, originalColor);
+function hoveringPutColls(Colls) {
+
+    console.log("Incoming Colls: " + Colls);
+
+    var toggle = false;
+    var onColor = "rgba(165,217,168,1)";
+    var offColor = originalCellColor();
+    putColls = Colls;
+
+    return function () {
+        console.log("putColls is " + putColls);
+        toggle = !toggle;
+        if (toggle)
+            colorColumns(putColls, onColor);
+        else colorColumns(putColls, offColor);
+    }
 }
 
-function turnOnCallColors()
-{
-    highLightCallColoumns(existingCallColsColored, highLightCallColor);
+function hovering(Colls) {
+    var toggle = false;
+    var callColoumns = Colls;
+    var originalColor = originalCellColor();
+    var cyanColor = "rgba(108,216,224,1)";
+
+    return function () {
+        toggle = !toggle;
+        if (toggle)
+            colorColumns(callColoumns, cyanColor);
+        else
+            colorColumns(callColoumns, originalColor);
+    }
 }
 
-function turnOffCallColors()
-{
-    highLightCallColoumns(existingCallColsColored, originalColor);
-}
+
+
+
+
+
+
 
 ////function loadHistoricalLowPrices() {
 
@@ -473,15 +488,48 @@ function updateCallCalculations() {
         var Columns = getColoumnsOnEitherSideOfDate(todaysDate);
         copyAverageValuesForCalculations(Columns.First, Columns.Second, destIndex);
         Colls.push(Columns.First, Columns.Second, destIndex);
-        
+
     }
 
     setDerivedValuesForCallAndPutCalculations(destIndex);
 
     setBuyingPrice(destIndex);
     setCashFlowMultiple(destIndex);
-    existingCallColsColored = Colls;
+    //existingCallColsColored = Colls;
+    hoverVariable = hovering(Colls);
+    callColumnsFunctionVar = callColumnsClosureFunction(Colls);
+    console.log("in updateCallCalculations var callColumnsFunctionVar is  " + callColumnsFunctionVar);
 }
+
+function callColumnsClosureFunction(CollsArray) {
+    console.log("in callColumnsClosureFunction for colls: " + CollsArray);
+    var sourceAndDestinationColumns;
+    var offColColor;
+    var onColColor;
+
+
+    if (sourceAndDestinationColumns === undefined) {
+        sourceAndDestinationColumns = CollsArray;
+        offColor = "rgba(0,0,0,0)";
+        onColor = "cyan";
+    }
+
+    return function (e) {
+        var data = e.data;
+
+        console.log("in function to color or uncolor per value " + data.on);
+
+        if (data.on) {
+            colorColumns(sourceAndDestinationColumns, onColor);
+        }
+        else {
+            colorColumns(sourceAndDestinationColumns, offColor);
+        }
+    }
+
+}
+
+
 
 function getTHIdFor(colNum) {
     var thId = "#statementTableId > thead > tr > th:eq(" + Number(colNum) + ")";
@@ -494,18 +542,9 @@ function getTDIdFor(colNum) {
 
 
 
-function highLightCallColoumns(Colls, color) {
-    colorColumns(Colls, color);
-}
-
-function highLightPutColoumns(Colls, color) {
-    colorColumns(existingPutColsColored, originalColor);
-    colorColumns(Colls, color);
-    existingPutColsColored = Colls;
-}
-
 function colorColumns(Colls, color) {
-for (var col in Colls) {
+    console.log("in colorColumns for Colls: " + Colls + " for color: " + color);
+    for (var col in Colls) {
         if (Colls.hasOwnProperty(col)) {
             var colThId = getTHIdFor(Colls[col]);
             $(colThId).css('background-color', color);
@@ -571,7 +610,8 @@ function UpdatePutCalculations() {
     setPutBuyingPrice(destColNum);
     setCashFlowMultiple(destColNum);
     SetPutReturns();
-    newPutColsColored = Colls;
+    //newPutColsColored = Colls;
+    hoverPutVariable = hoveringPutColls(Colls);
 }
 
 function UpdatePutHeaderDate(expDate) {
